@@ -93,6 +93,20 @@ public class ClaimService {
         return Optional.ofNullable(claimStore.get(claimId));
     }
 
+    public String getFrozenCommitHash() {
+        try {
+            File hashFile = new File("protocol/COMMIT_HASH.txt");
+            if (!hashFile.exists()) hashFile = new File("../protocol/COMMIT_HASH.txt");
+            if (hashFile.exists()) {
+                List<String> lines = Files.readAllLines(hashFile.toPath());
+                if (!lines.isEmpty() && !lines.get(0).isBlank()) {
+                    return lines.get(0).trim();
+                }
+            }
+        } catch (Exception ignored) {}
+        return "0371cad";
+    }
+
     public synchronized ClaimBundle updateAdjusterDecision(String claimId, ClaimBundle.AdjusterDecisionRequest req) {
         ClaimBundle existing = claimStore.get(claimId);
         if (existing == null) {
@@ -108,7 +122,7 @@ public class ClaimService {
                 oldAudit != null ? oldAudit.modelVersion() : "gemini-2.0-flash-001",
                 oldAudit != null ? oldAudit.promptVersion() : "v2.1.0",
                 oldAudit != null ? oldAudit.anchorImageIds() : List.of("anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"),
-                oldAudit != null ? oldAudit.frozenProtocolCommitHash() : "0371cad",
+                oldAudit != null ? oldAudit.frozenProtocolCommitHash() : getFrozenCommitHash(),
                 existing.evidence() != null ? existing.evidence().evidenceTimestampUtc() : Instant.now(),
                 false,
                 existing.decision() != null ? existing.decision().outcomeClass() : Contracts.OutcomeClass.CONSISTENT,
@@ -256,7 +270,7 @@ public class ClaimService {
                 claimId, safePlotId, Instant.now(),
                 "gemini-2.0-flash-001", "v2.1.0",
                 List.of("anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"),
-                "0371cad", Instant.now(), false,
+                getFrozenCommitHash(), Instant.now(), false,
                 outcomeClass, action,
                 null, Contracts.AdjusterAction.PENDING, null, null
         );

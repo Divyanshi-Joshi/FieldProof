@@ -34,8 +34,11 @@ export const ValidationView: React.FC<ValidationViewProps> = ({ language, onOpen
       });
   }, []);
 
+  const commitHash = summary?.frozen_protocol?.frozen_commit_hash || '0371cad';
+  const commitDate = summary?.frozen_protocol?.frozen_commit_timestamp || '2026-10-16T11:09:07+05:30';
+
   const handleCopyHash = () => {
-    navigator.clipboard.writeText('0371cad');
+    navigator.clipboard.writeText(commitHash);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -56,6 +59,62 @@ export const ValidationView: React.FC<ValidationViewProps> = ({ language, onOpen
         <p className="text-sm text-slate-400 mt-1">{t.validation.subtitle}</p>
       </div>
 
+      {/* Buyer Persona & Pilot Ask Banner */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="p-5 rounded-2xl bg-gradient-to-br from-brand-950/30 to-slate-900 border border-brand-500/20">
+          <div className="flex items-start space-x-3">
+            <div className="h-10 w-10 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 shrink-0 mt-0.5">
+              <DollarSign className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white mb-1 flex items-center space-x-2">
+                <span>Economic Buyer</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-500/10 text-brand-300 border border-brand-500/20">Target Persona</span>
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <span className="font-semibold text-white">Claims/Product Head</span> at an index insurer or MGA — e.g., PMFBY scheme administrators (India), ACRE Africa (Kenya), or Pula Advisors partners.
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
+                Decision maker who owns loss-ratio optimization and can authorize a 1-district pilot.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/30 to-slate-900 border border-emerald-500/20">
+          <div className="flex items-start space-x-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 shrink-0 mt-0.5">
+              <TrendingUp className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white mb-1 flex items-center space-x-2">
+                <span>Our Ask: 1-District Pilot</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Go-to-Market</span>
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Start with <span className="font-semibold text-white">600 plots in one sub-county</span>, one Long Rains season. Compare AI triage accuracy vs manual CCE results. If gap detection ≥ 85% and false escalation &lt; 5%, expand to full district.
+              </p>
+              <p className="text-xs text-emerald-400 mt-1 font-semibold">
+                Formula: Savings = N × (1 − abstain_rate) × (C_visit − C_AI) → $13,946 / 1,000 claims
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Innovation Differentiator Banner */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/20 via-slate-900 to-cyan-950/20 border border-amber-500/20">
+        <div className="flex items-center space-x-3">
+          <Cpu className="h-5 w-5 text-amber-400 shrink-0" />
+          <div>
+            <h3 className="text-sm font-bold text-white">Innovation: Three-Signal Concordance Loop — No Competitor Offers This</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              FieldProof is the only system that fuses <span className="text-cyan-400">frozen rainfall index</span> × <span className="text-amber-400">calibrated photo forensics (0–3 signs, two-pass gated)</span> × <span className="text-emerald-400">satellite NDVI anomaly + phenological dry-spell timing</span> into a single deterministic concordance table with 7 outcome classes and mandatory human sign-off.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Protocol Freeze Banner */}
       <div className="glass-panel p-5 rounded-2xl border border-brand-500/30 bg-gradient-to-r from-emerald-950/20 via-slate-900 to-slate-900">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -72,7 +131,7 @@ export const ValidationView: React.FC<ValidationViewProps> = ({ language, onOpen
                 </span>
               </div>
               <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                Commit <code className="font-mono text-brand-300 font-bold">0371cad</code> (recorded in <code className="font-mono text-slate-400">protocol/COMMIT_HASH.txt</code> on 2026-10-16T11:09:07+05:30) proves the 30th percentile trigger, NDVI z-score threshold (-1.5), and concept-bottleneck signs rubric were frozen before running test evaluations, preventing circularity or post-hoc threshold gaming.
+                Commit <code className="font-mono text-brand-300 font-bold">{commitHash}</code> (recorded in <code className="font-mono text-slate-400">protocol/COMMIT_HASH.txt</code> on {commitDate}) proves the 30th percentile trigger, NDVI z-score threshold (-1.5), and concept-bottleneck signs rubric were frozen before running test evaluations, preventing circularity or post-hoc threshold gaming.
               </p>
             </div>
           </div>
@@ -83,7 +142,7 @@ export const ValidationView: React.FC<ValidationViewProps> = ({ language, onOpen
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono transition-colors flex items-center space-x-1.5"
             >
               <Copy className="h-3.5 w-3.5" />
-              <span>{copied ? 'Copied 0371cad' : '0371cad'}</span>
+              <span>{copied ? `Copied ${commitHash}` : commitHash}</span>
             </button>
             <button
               onClick={onOpenPolicy}

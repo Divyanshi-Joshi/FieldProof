@@ -155,11 +155,23 @@ export const ClaimDetailModal: React.FC<ClaimDetailModalProps> = ({
                   <div className="relative aspect-video rounded-md overflow-hidden bg-slate-950 mb-2">
                     <img
                       src={
-                        i === 0
-                          ? 'https://images.unsplash.com/photo-1595838742445-5d97f6c3ee72?auto=format&fit=crop&w=500&q=80'
-                          : i === 1
-                          ? 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=500&q=80'
-                          : 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=500&q=80'
+                        // Use real Eyes on the Ground images based on photo index
+                        (() => {
+                          const realImages = [
+                            '/images/L361F02340C01S03417Ip.jpg',
+                            '/images/L361F02340C01S03417Rp00625.jpg',
+                            '/images/L361F02340C01S03417Rp01918.jpg',
+                            '/images/L361F02354C01S03638Ip.jpg',
+                            '/images/L361F02354C01S03638Rp06734.jpg',
+                            '/images/L361F02354C01S03638Rp10810.jpg',
+                            '/images/L371F00662C01S04023Ip.jpg',
+                            '/images/L371F00662C01S04023Rp05561.jpg',
+                            '/images/L371F00662C01S04023Rp11144.jpg',
+                          ];
+                          // Use claim case number to pick different image sets per claim
+                          const caseOffset = ((claim?._case || 1) - 1) * 3;
+                          return realImages[(caseOffset + i) % realImages.length];
+                        })()
                       }
                       alt={`Photo ${i + 1}`}
                       className="w-full h-full object-cover"

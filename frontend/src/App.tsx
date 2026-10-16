@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
+import { HeroLanding } from './components/HeroLanding';
 import { FarmerView } from './components/FarmerView';
 import { InsurerView } from './components/InsurerView';
 import { ValidationView } from './components/ValidationView';
 import { PolicyModal } from './components/PolicyModal';
 import { Language } from './i18n/translations';
-import { Shield, Sparkles, GitBranch, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState<'farmer' | 'insurer' | 'validation'>('insurer');
+  const [currentTab, setCurrentTab] = useState<'landing' | 'farmer' | 'insurer' | 'validation'>('landing');
   const [language, setLanguage] = useState<Language>('en');
   const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [selectedClauseId, setSelectedClauseId] = useState<string | null>(null);
@@ -23,12 +23,16 @@ export const App: React.FC = () => {
     setSelectedClaimId(claimId);
   };
 
+  const handleNavigate = (tab: 'farmer' | 'insurer' | 'validation') => {
+    setCurrentTab(tab);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white">
-      {/* Top Navigation */}
+      {/* Top Navigation — hidden on landing */}
       <Navbar
         currentTab={currentTab}
-        setTab={setCurrentTab}
+        setTab={(tab) => setCurrentTab(tab)}
         language={language}
         setLanguage={setLanguage}
         onOpenPolicy={() => {
@@ -39,33 +43,47 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1">
+        {currentTab === 'landing' && (
+          <div className="animate-in fade-in duration-500">
+            <HeroLanding
+              language={language}
+              onNavigate={handleNavigate}
+            />
+          </div>
+        )}
+
         {currentTab === 'farmer' && (
-          <FarmerView
-            language={language}
-            onClaimSubmitted={(id) => {
-              handleClaimSubmitted(id);
-              // Option to switch to insurer triage
-              setCurrentTab('insurer');
-            }}
-          />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
+            <FarmerView
+              language={language}
+              onClaimSubmitted={(id) => {
+                handleClaimSubmitted(id);
+                setCurrentTab('insurer');
+              }}
+            />
+          </div>
         )}
 
         {currentTab === 'insurer' && (
-          <InsurerView
-            language={language}
-            onOpenClause={handleOpenClause}
-            selectedClaimId={selectedClaimId}
-          />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
+            <InsurerView
+              language={language}
+              onOpenClause={handleOpenClause}
+              selectedClaimId={selectedClaimId}
+            />
+          </div>
         )}
 
         {currentTab === 'validation' && (
-          <ValidationView
-            language={language}
-            onOpenPolicy={() => {
-              setSelectedClauseId(null);
-              setPolicyModalOpen(true);
-            }}
-          />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
+            <ValidationView
+              language={language}
+              onOpenPolicy={() => {
+                setSelectedClauseId(null);
+                setPolicyModalOpen(true);
+              }}
+            />
+          </div>
         )}
       </main>
 

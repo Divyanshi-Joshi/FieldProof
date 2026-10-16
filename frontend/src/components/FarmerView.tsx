@@ -19,19 +19,19 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, onClaimSubmitt
   const [photos, setPhotos] = useState<{ [key: number]: { name: string; url: string; hash?: string; size?: string } }>({
     0: {
       name: 'wanjiru_overview_plot.jpg',
-      url: 'https://images.unsplash.com/photo-1595838742445-5d97f6c3ee72?auto=format&fit=crop&w=600&q=80',
+      url: '/images/L361F02340C01S03417Ip.jpg',
       hash: 'a3f18e9c4b2d071a',
       size: '2.4 MB'
     },
     1: {
       name: 'wanjiru_canopy_rolled_leaves.jpg',
-      url: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80',
+      url: '/images/L361F02340C01S03417Rp00625.jpg',
       hash: 'b7c29e1d8a4f3320',
       size: '1.9 MB'
     },
     2: {
       name: 'wanjiru_soil_cracking_roots.jpg',
-      url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80',
+      url: '/images/L361F02340C01S03417Rp01918.jpg',
       hash: 'c8d41a2e9b3f7701',
       size: '3.1 MB'
     }
@@ -50,9 +50,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, onClaimSubmitt
       setCounty('Makueni');
       setSeason('2025-LR');
       setPhotos({
-        0: { name: 'wanjiru_overview_plot.jpg', url: 'https://images.unsplash.com/photo-1595838742445-5d97f6c3ee72?auto=format&fit=crop&w=600&q=80', hash: 'a3f18e9c4b2d071a', size: '2.4 MB' },
-        1: { name: 'wanjiru_canopy_rolled_leaves.jpg', url: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80', hash: 'b7c29e1d8a4f3320', size: '1.9 MB' },
-        2: { name: 'wanjiru_soil_cracking_roots.jpg', url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', hash: 'c8d41a2e9b3f7701', size: '3.1 MB' }
+        0: { name: 'wanjiru_overview_plot.jpg', url: '/images/L361F02340C01S03417Ip.jpg', hash: 'a3f18e9c4b2d071a', size: '2.4 MB' },
+        1: { name: 'wanjiru_canopy_rolled_leaves.jpg', url: '/images/L361F02340C01S03417Rp00625.jpg', hash: 'b7c29e1d8a4f3320', size: '1.9 MB' },
+        2: { name: 'wanjiru_soil_cracking_roots.jpg', url: '/images/L361F02340C01S03417Rp01918.jpg', hash: 'c8d41a2e9b3f7701', size: '3.1 MB' }
       });
     } else if (type === 'duplicate') {
       setPlotId('P-0389');
@@ -60,9 +60,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, onClaimSubmitt
       setCounty('Kitui');
       setSeason('2025-LR');
       setPhotos({
-        0: { name: 'cloned_photo_original.jpg', url: 'https://images.unsplash.com/photo-1595838742445-5d97f6c3ee72?auto=format&fit=crop&w=600&q=80', hash: '99aa88bb77cc66dd', size: '2.1 MB' },
-        1: { name: 'cloned_photo_resized_copy.jpg', url: 'https://images.unsplash.com/photo-1595838742445-5d97f6c3ee72?auto=format&fit=crop&w=600&q=80', hash: '99aa88bb77cc66de', size: '1.2 MB' },
-        2: { name: 'field_sample_3.jpg', url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', hash: '12345678abcdef01', size: '2.8 MB' }
+        0: { name: 'cloned_photo_original.jpg', url: '/images/L371F00662C01S04023Ip.jpg', hash: '99aa88bb77cc66dd', size: '2.1 MB' },
+        1: { name: 'cloned_photo_resized_copy.jpg', url: '/images/L371F00662C01S04023Ip.jpg', hash: '99aa88bb77cc66de', size: '1.2 MB' },
+        2: { name: 'field_sample_3.jpg', url: '/images/L371F00662C01S04023Rp05561.jpg', hash: '12345678abcdef01', size: '2.8 MB' }
       });
     } else {
       setPlotId('P-0891');
@@ -70,9 +70,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, onClaimSubmitt
       setCounty('Machakos');
       setSeason('2025-LR');
       setPhotos({
-        0: { name: 'indoor_office_computer_screen.jpg', url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80', hash: 'ffff0000aaaa1111', size: '1.8 MB' },
-        1: { name: 'canopy_dark_blurry.jpg', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80', hash: '0000ffff1111aaaa', size: '1.4 MB' },
-        2: { name: 'parking_lot_pavement.jpg', url: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=600&q=80', hash: '1212121234343434', size: '2.0 MB' }
+        0: { name: 'indoor_office_computer_screen.jpg', url: '/images/16_initial_1_1029_1029.JPG', hash: 'ffff0000aaaa1111', size: '1.8 MB' },
+        1: { name: 'canopy_dark_blurry.jpg', url: '/images/135_initial_1_1286_1286.JPG', hash: '0000ffff1111aaaa', size: '1.4 MB' },
+        2: { name: 'parking_lot_pavement.jpg', url: '/images/16_repeat_2_1029_519_375.JPG', hash: '1212121234343434', size: '2.0 MB' }
       });
     }
   };

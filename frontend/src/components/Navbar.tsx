@@ -1,10 +1,10 @@
 import React from 'react';
-import { Shield, Sparkles, CheckCircle, Globe, Layers, BarChart3, Upload } from 'lucide-react';
+import { Shield, Sparkles, CheckCircle, Globe, Layers, BarChart3, Upload, Home } from 'lucide-react';
 import { Language, translations } from '../i18n/translations';
 
 interface NavbarProps {
-  currentTab: 'farmer' | 'insurer' | 'validation';
-  setTab: (tab: 'farmer' | 'insurer' | 'validation') => void;
+  currentTab: 'landing' | 'farmer' | 'insurer' | 'validation';
+  setTab: (tab: 'landing' | 'farmer' | 'insurer' | 'validation') => void;
   language: Language;
   setLanguage: (lang: Language) => void;
   onOpenPolicy: () => void;
@@ -23,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo & Title */}
-        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setTab('insurer')}>
+        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setTab('landing')}>
           <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-brand-500/20 border border-brand-400/30">
             <Shield className="h-5 w-5 text-slate-950 font-bold" />
           </div>
