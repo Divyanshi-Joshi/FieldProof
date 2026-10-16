@@ -554,5 +554,87 @@
       "adjuster_notes": "All signals aligned. Approved for fast-track payout.",
       "decided_at_utc": "2026-10-16T11:20:00Z"
     }
+  },
+
+  {
+    "_case": 8,
+    "_label": "POSSIBLE_OVERPAYMENT — Index pays + photo shows healthy crop",
+    "_description": "Rainfall index triggers (240 mm < 280 mm trigger), but photos show healthy green crop with no drought signs (band NONE), confirmed by healthy satellite NDVI (z = +0.6). Flagged for overpayment review.",
+    "grading": {
+      "claim_id": "CLM-2026-008",
+      "plot_id": "P-0519",
+      "uploaded_at": "2026-10-16T11:30:00Z",
+      "photo_urls": [
+        "gs://fieldproof-uploads/op1aaa111.jpg",
+        "gs://fieldproof-uploads/op1bbb222.jpg",
+        "gs://fieldproof-uploads/op1ccc333.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false,
+      "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null,
+      "rejected_photo_indices": [],
+      "exif_timestamp_present": true,
+      "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.95,
+        "visible_evidence": ["vigorous green canopy", "no leaf rolling", "moist dark soil"],
+        "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.94,
+        "visible_evidence": ["uniform green stand", "healthy vegetative growth"],
+        "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "vegetative",
+      "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+      "damage_type": "none", "confidence": 0.95,
+      "visible_evidence": ["vigorous green canopy", "no leaf rolling", "moist dark soil"],
+      "photo_quality_flags": [],
+      "pass_1_band": "NONE", "pass_2_band": "NONE",
+      "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0519", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "vegetative",
+      "season_rain_mm": 240, "trigger_rain_mm": 280, "trigger_percentile": 30,
+      "index_pays": true, "low_local_rain": true,
+      "max_dry_spell_days": 8, "dry_spell_window_start": "2025-03-10", "dry_spell_window_end": "2025-03-18",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.62, "ndvi_baseline_mean": 0.58, "ndvi_anomaly_z": 0.6,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T11:32:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-008", "plot_id": "P-0519",
+      "outcome_class": "POSSIBLE_OVERPAYMENT", "recommended_action": "REVIEW",
+      "failure_mode": "Rainfall index triggered payout (240 mm < 280 mm), but ground photo shows healthy crop (band NONE) and Sentinel-2 NDVI z = +0.6 shows no vegetation stress. Possible overpayment review.",
+      "cited_clause_ids": ["CL-2.2"], "citations_validated_by_code": true,
+      "adjuster_brief": "Area-level rainfall index triggered, but farmer photo and satellite evidence both indicate a healthy, undamaged crop. Hold automated payout for adjuster review under CL-2.2.",
+      "farmer_messages": {
+        "en": "Your claim CLM-2026-008 for plot P-0519 is currently under review by our claims team. Reference: CLM-2026-008.",
+        "hi": "आपका दावा CLM-2026-008 प्लॉट P-0519 के लिए समीक्षाधीन है।",
+        "sw": "Dai lako CLM-2026-008 kwa shamba P-0519 linakaguliwa na timu yetu ya bima."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-008", "claim_id": "CLM-2026-008", "plot_id": "P-0519",
+      "timestamp_utc": "2026-10-16T11:35:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "0371cad", "evidence_timestamp_utc": "2026-10-16T11:32:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "POSSIBLE_OVERPAYMENT", "system_recommended_action": "REVIEW",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
   }
 ]
