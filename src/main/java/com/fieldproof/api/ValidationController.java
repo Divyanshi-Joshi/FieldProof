@@ -8,7 +8,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/validation")
-@CrossOrigin(origins = "*")
 public class ValidationController {
 
     private final ValidationService validationService;

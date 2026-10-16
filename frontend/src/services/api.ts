@@ -131,7 +131,8 @@ export const api = {
   async simulateIndexDoctor(percentile: number): Promise<IndexDoctorSimulation> {
     const res = await fetch(`${API_BASE}/index-doctor/simulate?percentile=${percentile}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const data = await res.json();
+    return data.simulation ? data.simulation : data;
   },
 
   async getValidationSummary(): Promise<ValidationSummary> {

@@ -23,7 +23,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")  // Allow React frontend during development
 public class IndexDoctorController {
 
     private final IndexDoctorService service;
@@ -38,7 +37,7 @@ public class IndexDoctorController {
      * @param percentile rainfall trigger percentile (5–60, default 30)
      * @return structured simulation response with disclaimer
      */
-    @GetMapping("/index-doctor")
+    @GetMapping({"/index-doctor", "/index-doctor/simulate"})
     public ResponseEntity<Map<String, Object>> simulate(
             @RequestParam(name = "percentile", defaultValue = "30") int percentile) {
 

@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/policy")
-@CrossOrigin(origins = "*")
 public class PolicyController {
 
     private final PolicyService policyService;
