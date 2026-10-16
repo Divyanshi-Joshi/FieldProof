@@ -43,3 +43,8 @@ desktop.ini
 .env.*
 *.env
 !.env.example
+
+# FieldProof: dataset images, response cache, and evaluation output (never committed)
+data/
+cache/
+out/

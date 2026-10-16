@@ -1,0 +1,7 @@
+# Allowed damage types for Gemini prompt and validation.
+# Until Decision D6 is finalized with Person B, this contains placeholder values only.
+# The smoke evaluation run will check this file and prompt for real classes if not populated.
+
+allowed-damage-types:
+  - none
+  - other
