@@ -25,7 +25,7 @@ public class ClaimController {
     }
 
     @GetMapping("/{claimId}")
-    public ResponseEntity<ClaimBundle> getClaim(@PathVariable String claimId) {
+    public ResponseEntity<ClaimBundle> getClaim(@PathVariable("claimId") String claimId) {
         return claimService.getClaim(claimId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -33,7 +33,7 @@ public class ClaimController {
 
     @PostMapping("/{claimId}/decision")
     public ResponseEntity<ClaimBundle> recordAdjusterDecision(
-            @PathVariable String claimId,
+            @PathVariable("claimId") String claimId,
             @RequestBody ClaimBundle.AdjusterDecisionRequest request
     ) {
         try {
