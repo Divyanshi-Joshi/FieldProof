@@ -1,0 +1,68 @@
+{
+  "trigger_percentile": 30,
+  "trigger_rain_mm_median": 290,
+  "total_plots": 312,
+  "gap_count": 47,
+  "gap_rate": 0.151,
+  "overpayment_count": 12,
+  "overpayment_rate": 0.038,
+  "payout_count": 89,
+  "payout_frequency": 0.285,
+  "illustrative_payout_total_usd": 4450,
+  "flat_payout_per_plot_usd": 50,
+  "county_breakdown": [
+    {
+      "county": "Makueni",
+      "total_plots": 104,
+      "gap_count": 22,
+      "gap_rate": 0.212,
+      "overpayment_count": 3,
+      "overpayment_rate": 0.029,
+      "payout_count": 28,
+      "payout_frequency": 0.269
+    },
+    {
+      "county": "Kitui",
+      "total_plots": 98,
+      "gap_count": 15,
+      "gap_rate": 0.153,
+      "overpayment_count": 5,
+      "overpayment_rate": 0.051,
+      "payout_count": 31,
+      "payout_frequency": 0.316
+    },
+    {
+      "county": "Machakos",
+      "total_plots": 110,
+      "gap_count": 10,
+      "gap_rate": 0.091,
+      "overpayment_count": 4,
+      "overpayment_rate": 0.036,
+      "payout_count": 30,
+      "payout_frequency": 0.273
+    }
+  ],
+  "season_breakdown": [
+    {
+      "season": "2024-SR",
+      "total_plots": 156,
+      "gap_count": 18,
+      "gap_rate": 0.115,
+      "overpayment_count": 8,
+      "overpayment_rate": 0.051,
+      "payout_count": 52,
+      "payout_frequency": 0.333
+    },
+    {
+      "season": "2025-LR",
+      "total_plots": 156,
+      "gap_count": 29,
+      "gap_rate": 0.186,
+      "overpayment_count": 4,
+      "overpayment_rate": 0.026,
+      "payout_count": 37,
+      "payout_frequency": 0.237
+    }
+  ],
+  "computed_at_utc": "2026-10-16T08:00:00Z"
+}

@@ -1,0 +1,27 @@
+{
+  "plot_id": "P-0142",
+  "county": "Makueni",
+  "season": "2025-LR",
+  "crop": "maize",
+  "critical_growth_stage": "flowering",
+
+  "season_rain_mm": 341,
+  "trigger_rain_mm": 290,
+  "trigger_percentile": 30,
+  "index_pays": false,
+  "low_local_rain": true,
+
+  "max_dry_spell_days": 21,
+  "dry_spell_window_start": "2025-03-12",
+  "dry_spell_window_end": "2025-04-01",
+  "dry_spell_overlaps_critical_stage": true,
+
+  "ndvi_observed": 0.31,
+  "ndvi_baseline_mean": 0.52,
+  "ndvi_anomaly_z": -1.9,
+  "ndvi_stress_cutoff_z": -1.5,
+  "satellite_stress": true,
+
+  "evidence_source": "BIGQUERY_DATASET",
+  "evidence_timestamp_utc": "2026-10-16T07:25:12Z"
+}

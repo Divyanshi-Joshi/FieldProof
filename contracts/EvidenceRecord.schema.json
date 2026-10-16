@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldproof.dev/contracts/EvidenceRecord.schema.json",
+  "title": "EvidenceRecord",
+  "description": "Independent evidence gathered by the Concordance Agent for a single plot and season: rainfall, index trigger, dry-spell timing, and satellite vegetation anomaly.",
+  "type": "object",
+  "required": [
+    "plot_id",
+    "county",
+    "season",
+    "crop",
+    "critical_growth_stage",
+    "season_rain_mm",
+    "trigger_rain_mm",
+    "trigger_percentile",
+    "index_pays",
+    "low_local_rain",
+    "max_dry_spell_days",
+    "dry_spell_window_start",
+    "dry_spell_window_end",
+    "dry_spell_overlaps_critical_stage",
+    "ndvi_observed",
+    "ndvi_baseline_mean",
+    "ndvi_anomaly_z",
+    "ndvi_stress_cutoff_z",
+    "satellite_stress",
+    "evidence_source",
+    "evidence_timestamp_utc"
+  ],
+  "properties": {
+    "plot_id": {
+      "type": "string",
+      "description": "Plot identifier, e.g. P-0142."
+    },
+    "county": {
+      "type": "string",
+      "description": "Administrative county or district, e.g. 'Makueni'."
+    },
+    "season": {
+      "type": "string",
+      "description": "Season identifier, e.g. '2025-LR' (Long Rains)."
+    },
+    "crop": {
+      "type": "string",
+      "description": "Crop planted on the plot, e.g. 'maize'."
+    },
+    "critical_growth_stage": {
+      "type": "string",
+      "enum": ["seedling", "vegetative", "flowering", "grain_filling", "maturity"],
+      "description": "Growth stage most sensitive to water stress for this crop (from the frozen protocol)."
+    },
+
+    "season_rain_mm": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Cumulative season rainfall at the plot (mm)."
+    },
+    "trigger_rain_mm": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Rainfall threshold below which the index pays (mm), from the frozen protocol."
+    },
+    "trigger_percentile": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentile of long-term history used as the trigger, e.g. 30."
+    },
+    "index_pays": {
+      "type": "boolean",
+      "description": "True if season_rain_mm < trigger_rain_mm (index triggers a payout)."
+    },
+    "low_local_rain": {
+      "type": "boolean",
+      "description": "True if plot-level rain is below median but above the trigger (supports spatial gap)."
+    },
+
+    "max_dry_spell_days": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Longest consecutive dry-spell (days with < 1 mm rain) during the season."
+    },
+    "dry_spell_window_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the longest dry spell (ISO-8601 date)."
+    },
+    "dry_spell_window_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the longest dry spell (ISO-8601 date)."
+    },
+    "dry_spell_overlaps_critical_stage": {
+      "type": "boolean",
+      "description": "True if the dry spell overlaps the crop's critical growth stage window."
+    },
+
+    "ndvi_observed": {
+      "type": "number",
+      "description": "Observed NDVI value for the plot's pixel during the target period."
+    },
+    "ndvi_baseline_mean": {
+      "type": "number",
+      "description": "Long-term NDVI mean for the same pixel and period."
+    },
+    "ndvi_anomaly_z": {
+      "type": "number",
+      "description": "NDVI anomaly z-score: (observed - mean) / std. Negative = stress."
+    },
+    "ndvi_stress_cutoff_z": {
+      "type": "number",
+      "description": "Z-score threshold below which satellite_stress = true (from frozen protocol)."
+    },
+    "satellite_stress": {
+      "type": "boolean",
+      "description": "True if ndvi_anomaly_z <= ndvi_stress_cutoff_z."
+    },
+
+    "evidence_source": {
+      "type": "string",
+      "enum": ["BIGQUERY_DATASET", "OPEN_METEO_FALLBACK"],
+      "description": "Where the evidence data was sourced from."
+    },
+    "evidence_timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when the evidence was retrieved."
+    }
+  },
+  "additionalProperties": false
+}

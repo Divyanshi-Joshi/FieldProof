@@ -1,0 +1,20 @@
+{
+  "audit_id": "AUD-2026-001",
+  "claim_id": "CLM-2026-001",
+  "plot_id": "P-0142",
+  "timestamp_utc": "2026-10-16T07:30:00Z",
+
+  "model_version": "gemini-2.0-flash-001",
+  "prompt_version": "v2.1.0",
+  "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+  "frozen_protocol_commit_hash": "a3f7b2c",
+  "evidence_timestamp_utc": "2026-10-16T07:25:12Z",
+  "cache_hit": false,
+
+  "system_outcome_class": "PHENOLOGICAL_BASIS_RISK_GAP",
+  "system_recommended_action": "ESCALATE",
+  "adjuster_id": null,
+  "adjuster_action": "PENDING",
+  "adjuster_notes": null,
+  "decided_at_utc": null
+}

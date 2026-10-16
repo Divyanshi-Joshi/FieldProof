@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldproof.dev/contracts/IndexDoctorSimulation.schema.json",
+  "title": "IndexDoctorSimulation",
+  "description": "Response from the Index Doctor slider endpoint. When the actuarial team drags the trigger percentile, this is the recomputed simulation over historical test plots.",
+  "type": "object",
+  "required": [
+    "trigger_percentile",
+    "trigger_rain_mm_median",
+    "total_plots",
+    "gap_count",
+    "gap_rate",
+    "overpayment_count",
+    "overpayment_rate",
+    "payout_count",
+    "payout_frequency",
+    "illustrative_payout_total_usd",
+    "flat_payout_per_plot_usd",
+    "county_breakdown",
+    "season_breakdown",
+    "computed_at_utc"
+  ],
+  "properties": {
+    "trigger_percentile": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99,
+      "description": "The percentile the user set with the slider."
+    },
+    "trigger_rain_mm_median": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Median trigger rainfall (mm) across all plots at this percentile."
+    },
+    "total_plots": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of plots in the simulation."
+    },
+    "gap_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of plots with a basis-risk gap (photo shows damage, index does not pay)."
+    },
+    "gap_rate": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "gap_count / total_plots."
+    },
+    "overpayment_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Plots where the index pays but no damage is detected."
+    },
+    "overpayment_rate": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "overpayment_count / total_plots."
+    },
+    "payout_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of plots where the index triggers a payout."
+    },
+    "payout_frequency": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "payout_count / total_plots."
+    },
+    "illustrative_payout_total_usd": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total illustrative payout = payout_count × flat_payout_per_plot_usd."
+    },
+    "flat_payout_per_plot_usd": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Flat illustrative payout amount per plot (labelled assumption)."
+    },
+    "county_breakdown": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/CountyStats" },
+      "description": "Per-county statistics at this trigger percentile."
+    },
+    "season_breakdown": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SeasonStats" },
+      "description": "Per-season statistics at this trigger percentile."
+    },
+    "computed_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when the simulation was computed."
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "CountyStats": {
+      "type": "object",
+      "required": ["county", "total_plots", "gap_count", "gap_rate", "overpayment_count", "overpayment_rate", "payout_count", "payout_frequency"],
+      "properties": {
+        "county": { "type": "string" },
+        "total_plots": { "type": "integer", "minimum": 0 },
+        "gap_count": { "type": "integer", "minimum": 0 },
+        "gap_rate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "overpayment_count": { "type": "integer", "minimum": 0 },
+        "overpayment_rate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "payout_count": { "type": "integer", "minimum": 0 },
+        "payout_frequency": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "additionalProperties": false
+    },
+    "SeasonStats": {
+      "type": "object",
+      "required": ["season", "total_plots", "gap_count", "gap_rate", "overpayment_count", "overpayment_rate", "payout_count", "payout_frequency"],
+      "properties": {
+        "season": { "type": "string" },
+        "total_plots": { "type": "integer", "minimum": 0 },
+        "gap_count": { "type": "integer", "minimum": 0 },
+        "gap_rate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "overpayment_count": { "type": "integer", "minimum": 0 },
+        "overpayment_rate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "payout_count": { "type": "integer", "minimum": 0 },
+        "payout_frequency": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

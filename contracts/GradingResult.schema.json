@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldproof.dev/contracts/GradingResult.schema.json",
+  "title": "GradingResult",
+  "description": "Output of the Forensics Agent: integrity checks, calibrated two-pass Gemini grading, and agreement-gate decision for a single claim bundle.",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "plot_id",
+    "uploaded_at",
+    "photo_urls",
+    "integrity_passed",
+    "duplicate_within_claim",
+    "duplicate_across_claims",
+    "matched_earlier_claim_id",
+    "rejected_photo_indices",
+    "exif_timestamp_present",
+    "exif_gps_present",
+    "integrity_flags",
+    "pass_1",
+    "pass_2",
+    "is_crop_field",
+    "same_field_across_photos",
+    "screen_recapture_suspected",
+    "crop",
+    "growth_stage",
+    "signs",
+    "damage_type",
+    "confidence",
+    "visible_evidence",
+    "photo_quality_flags",
+    "pass_1_band",
+    "pass_2_band",
+    "passes_agreed",
+    "final_severity_band",
+    "abstain_to_human"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "description": "Unique claim identifier, e.g. CLM-2026-001."
+    },
+    "plot_id": {
+      "type": "string",
+      "description": "Plot identifier matching the insurer's register, e.g. P-0142."
+    },
+    "uploaded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the farmer uploaded the photo bundle."
+    },
+    "photo_urls": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" },
+      "minItems": 1,
+      "maxItems": 5,
+      "description": "Cloud Storage URLs for the uploaded photos (hash-named)."
+    },
+
+    "integrity_passed": {
+      "type": "boolean",
+      "description": "True if all integrity checks passed and grading can proceed."
+    },
+    "duplicate_within_claim": {
+      "type": "boolean",
+      "description": "True if perceptual-hash dedupe found a near-duplicate within the uploaded bundle."
+    },
+    "duplicate_across_claims": {
+      "type": "boolean",
+      "description": "True if a photo matches a photo from an earlier claim."
+    },
+    "matched_earlier_claim_id": {
+      "type": ["string", "null"],
+      "description": "Claim ID of the earlier claim whose photo matched, or null."
+    },
+    "rejected_photo_indices": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "description": "Zero-based indices of photos rejected by integrity checks."
+    },
+    "exif_timestamp_present": {
+      "type": "boolean",
+      "description": "True if at least one photo has a valid EXIF timestamp."
+    },
+    "exif_gps_present": {
+      "type": "boolean",
+      "description": "True if at least one photo has valid EXIF GPS coordinates."
+    },
+    "integrity_flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable integrity warnings, e.g. ['photo_0_duplicate_of_CLM-2025-987', 'no_exif_gps']."
+    },
+
+    "pass_1": { "$ref": "#/$defs/GradingPass" },
+    "pass_2": { "$ref": "#/$defs/GradingPass" },
+
+    "is_crop_field": {
+      "type": "boolean",
+      "description": "Consolidated: the photos show a crop field."
+    },
+    "same_field_across_photos": {
+      "type": "boolean",
+      "description": "Consolidated: all accepted photos appear to be the same field."
+    },
+    "screen_recapture_suspected": {
+      "type": "boolean",
+      "description": "Consolidated: at least one photo appears to be a photograph of a screen."
+    },
+    "crop": {
+      "type": "string",
+      "description": "Identified crop, e.g. 'maize', 'wheat', 'rice'."
+    },
+    "growth_stage": {
+      "type": "string",
+      "enum": ["seedling", "vegetative", "flowering", "grain_filling", "maturity", "unknown"],
+      "description": "Identified growth stage of the crop."
+    },
+    "signs": { "$ref": "#/$defs/Signs" },
+    "damage_type": {
+      "type": "string",
+      "enum": ["drought", "pest", "disease", "weed", "nutrient", "other", "none"],
+      "description": "Primary damage type observed. Code never sets this — Gemini does."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Gemini's self-assessed confidence in the consolidated grading (0.0–1.0)."
+    },
+    "visible_evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Observable signs noted by Gemini, e.g. ['leaf curling', 'patchy stand']."
+    },
+    "photo_quality_flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Quality issues, e.g. ['photo_2_blurry', 'photo_0_overexposed']."
+    },
+
+    "pass_1_band": { "$ref": "#/$defs/SeverityBand" },
+    "pass_2_band": { "$ref": "#/$defs/SeverityBand" },
+    "passes_agreed": {
+      "type": "boolean",
+      "description": "True if pass_1_band == pass_2_band."
+    },
+    "final_severity_band": { "$ref": "#/$defs/SeverityBand" },
+    "abstain_to_human": {
+      "type": "boolean",
+      "description": "True if the two passes disagreed and the claim is routed to a human."
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "Signs": {
+      "type": "object",
+      "required": [
+        "leaf_rolling_0_3",
+        "canopy_senescence_0_3",
+        "stunting_0_3",
+        "soil_cracking_visible"
+      ],
+      "properties": {
+        "leaf_rolling_0_3": {
+          "type": "integer", "minimum": 0, "maximum": 3,
+          "description": "Leaf rolling severity: 0 = none, 3 = severe."
+        },
+        "canopy_senescence_0_3": {
+          "type": "integer", "minimum": 0, "maximum": 3,
+          "description": "Canopy senescence / yellowing: 0 = none, 3 = severe."
+        },
+        "stunting_0_3": {
+          "type": "integer", "minimum": 0, "maximum": 3,
+          "description": "Stand stunting: 0 = none, 3 = severe."
+        },
+        "soil_cracking_visible": {
+          "type": "boolean",
+          "description": "Whether dry soil cracking is visible in the photos."
+        }
+      },
+      "additionalProperties": false
+    },
+    "GradingPass": {
+      "type": "object",
+      "description": "Output of a single Gemini grading pass (with a specific anchor order).",
+      "required": [
+        "is_crop_field",
+        "same_field_across_photos",
+        "screen_recapture_suspected",
+        "crop",
+        "growth_stage",
+        "signs",
+        "damage_type",
+        "confidence",
+        "visible_evidence",
+        "photo_quality_flags"
+      ],
+      "properties": {
+        "is_crop_field": { "type": "boolean" },
+        "same_field_across_photos": { "type": "boolean" },
+        "screen_recapture_suspected": { "type": "boolean" },
+        "crop": { "type": "string" },
+        "growth_stage": {
+          "type": "string",
+          "enum": ["seedling", "vegetative", "flowering", "grain_filling", "maturity", "unknown"]
+        },
+        "signs": { "$ref": "#/$defs/Signs" },
+        "damage_type": {
+          "type": "string",
+          "enum": ["drought", "pest", "disease", "weed", "nutrient", "other", "none"]
+        },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "visible_evidence": { "type": "array", "items": { "type": "string" } },
+        "photo_quality_flags": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "SeverityBand": {
+      "type": "string",
+      "enum": ["NONE", "MILD", "MODERATE", "SEVERE", "ABSTAIN"],
+      "description": "Deterministic severity band computed by core/SeverityBand from Gemini sign scores."
+    }
+  }
+}

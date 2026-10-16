@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldproof.dev/contracts/ClaimDecision.schema.json",
+  "title": "ClaimDecision",
+  "description": "Output of the three-signal concordance and the Policy Agent: the named outcome, recommended action, policy-cited adjuster brief, and multilingual farmer messages.",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "plot_id",
+    "outcome_class",
+    "recommended_action",
+    "failure_mode",
+    "cited_clause_ids",
+    "citations_validated_by_code",
+    "adjuster_brief",
+    "farmer_messages"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "description": "Unique claim identifier."
+    },
+    "plot_id": {
+      "type": "string",
+      "description": "Plot identifier."
+    },
+    "outcome_class": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED_PAYOUT",
+        "POSSIBLE_OVERPAYMENT",
+        "PHENOLOGICAL_BASIS_RISK_GAP",
+        "SPATIAL_BASIS_RISK_GAP",
+        "EVIDENCE_CONFLICT",
+        "NON_WEATHER_LOSS",
+        "CONSISTENT",
+        "INTEGRITY_HOLD",
+        "ABSTAIN"
+      ],
+      "description": "Concordance table outcome class (deterministic, computed by core/ConcordanceTable)."
+    },
+    "recommended_action": {
+      "type": "string",
+      "enum": [
+        "FAST_TRACK",
+        "REVIEW",
+        "ESCALATE",
+        "ASK_MORE_PHOTOS_HUMAN_REVIEW",
+        "ROUTE_TO_ADVISORY",
+        "NO_ACTION",
+        "HOLD_NO_RECOMMENDATION",
+        "ABSTAIN_TO_HUMAN"
+      ],
+      "description": "Deterministic action mapped from the outcome class."
+    },
+    "failure_mode": {
+      "type": ["string", "null"],
+      "description": "Human-readable explanation of why the index and plot diverged, or null when no gap exists."
+    },
+    "cited_clause_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Policy clause IDs referenced in the adjuster brief, e.g. ['4.2.1', '5.3']."
+    },
+    "citations_validated_by_code": {
+      "type": "boolean",
+      "description": "True if every cited_clause_id was found in the policy index by deterministic code."
+    },
+    "adjuster_brief": {
+      "type": "string",
+      "description": "Markdown-formatted brief for the human adjuster, citing policy clauses."
+    },
+    "farmer_messages": {
+      "type": "object",
+      "required": ["en"],
+      "properties": {
+        "en": { "type": "string", "description": "Farmer notification in English." },
+        "hi": { "type": "string", "description": "Farmer notification in Hindi." },
+        "sw": { "type": "string", "description": "Farmer notification in Swahili." }
+      },
+      "additionalProperties": false,
+      "description": "Multilingual farmer-facing messages (at least English is always present)."
+    }
+  },
+  "additionalProperties": false
+}

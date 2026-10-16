@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldproof.dev/contracts/AuditRecord.schema.json",
+  "title": "AuditRecord",
+  "description": "Immutable audit trail record written to BigQuery after adjuster sign-off. Captures full provenance: model/prompt versions, anchor IDs, protocol commit, system decision, and human decision.",
+  "type": "object",
+  "required": [
+    "audit_id",
+    "claim_id",
+    "plot_id",
+    "timestamp_utc",
+    "model_version",
+    "prompt_version",
+    "anchor_image_ids",
+    "frozen_protocol_commit_hash",
+    "evidence_timestamp_utc",
+    "cache_hit",
+    "system_outcome_class",
+    "system_recommended_action",
+    "adjuster_id",
+    "adjuster_action",
+    "adjuster_notes",
+    "decided_at_utc"
+  ],
+  "properties": {
+    "audit_id": {
+      "type": "string",
+      "description": "Unique audit record identifier, e.g. AUD-2026-001."
+    },
+    "claim_id": {
+      "type": "string",
+      "description": "Claim this audit record belongs to."
+    },
+    "plot_id": {
+      "type": "string",
+      "description": "Plot identifier."
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when this audit record was created."
+    },
+
+    "model_version": {
+      "type": "string",
+      "description": "Pinned Gemini model version used for grading, e.g. 'gemini-2.0-flash-001'."
+    },
+    "prompt_version": {
+      "type": "string",
+      "description": "Semantic version of the grading prompt, e.g. 'v2.1.0'."
+    },
+    "anchor_image_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "IDs of the three visual reference anchors used (healthy, moderate, severe)."
+    },
+    "frozen_protocol_commit_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Git commit hash of the frozen trigger protocol file."
+    },
+    "evidence_timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when evidence (rainfall, NDVI) was retrieved."
+    },
+    "cache_hit": {
+      "type": "boolean",
+      "description": "True if the Gemini grading response was served from cache."
+    },
+
+    "system_outcome_class": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED_PAYOUT",
+        "POSSIBLE_OVERPAYMENT",
+        "PHENOLOGICAL_BASIS_RISK_GAP",
+        "SPATIAL_BASIS_RISK_GAP",
+        "EVIDENCE_CONFLICT",
+        "NON_WEATHER_LOSS",
+        "CONSISTENT",
+        "INTEGRITY_HOLD",
+        "ABSTAIN"
+      ],
+      "description": "The concordance outcome the system computed."
+    },
+    "system_recommended_action": {
+      "type": "string",
+      "enum": [
+        "FAST_TRACK",
+        "REVIEW",
+        "ESCALATE",
+        "ASK_MORE_PHOTOS_HUMAN_REVIEW",
+        "ROUTE_TO_ADVISORY",
+        "NO_ACTION",
+        "HOLD_NO_RECOMMENDATION",
+        "ABSTAIN_TO_HUMAN"
+      ],
+      "description": "The action the system recommended."
+    },
+    "adjuster_id": {
+      "type": ["string", "null"],
+      "description": "Identifier of the human adjuster, or null if not yet reviewed."
+    },
+    "adjuster_action": {
+      "type": "string",
+      "enum": ["PENDING", "APPROVED", "REJECTED", "ESCALATED"],
+      "description": "The human adjuster's final action."
+    },
+    "adjuster_notes": {
+      "type": ["string", "null"],
+      "description": "Free-text notes from the adjuster, or null."
+    },
+    "decided_at_utc": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when the adjuster made their decision, or null if pending."
+    }
+  },
+  "additionalProperties": false
+}

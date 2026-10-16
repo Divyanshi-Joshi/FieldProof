@@ -1,0 +1,79 @@
+{
+  "claim_id": "CLM-2026-001",
+  "plot_id": "P-0142",
+  "uploaded_at": "2026-10-16T07:23:00Z",
+  "photo_urls": [
+    "gs://fieldproof-uploads/abc123def456.jpg",
+    "gs://fieldproof-uploads/789ghi012jkl.jpg",
+    "gs://fieldproof-uploads/mno345pqr678.jpg"
+  ],
+
+  "integrity_passed": true,
+  "duplicate_within_claim": false,
+  "duplicate_across_claims": true,
+  "matched_earlier_claim_id": "CLM-2025-987",
+  "rejected_photo_indices": [0],
+  "exif_timestamp_present": true,
+  "exif_gps_present": false,
+  "integrity_flags": [
+    "photo_0_duplicate_of_CLM-2025-987",
+    "no_exif_gps"
+  ],
+
+  "pass_1": {
+    "is_crop_field": true,
+    "same_field_across_photos": true,
+    "screen_recapture_suspected": false,
+    "crop": "maize",
+    "growth_stage": "flowering",
+    "signs": {
+      "leaf_rolling_0_3": 3,
+      "canopy_senescence_0_3": 2,
+      "stunting_0_3": 1,
+      "soil_cracking_visible": true
+    },
+    "damage_type": "drought",
+    "confidence": 0.85,
+    "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
+    "photo_quality_flags": []
+  },
+  "pass_2": {
+    "is_crop_field": true,
+    "same_field_across_photos": true,
+    "screen_recapture_suspected": false,
+    "crop": "maize",
+    "growth_stage": "flowering",
+    "signs": {
+      "leaf_rolling_0_3": 3,
+      "canopy_senescence_0_3": 2,
+      "stunting_0_3": 1,
+      "soil_cracking_visible": true
+    },
+    "damage_type": "drought",
+    "confidence": 0.82,
+    "visible_evidence": ["tightly rolled leaves", "premature yellowing", "visible soil cracks"],
+    "photo_quality_flags": []
+  },
+
+  "is_crop_field": true,
+  "same_field_across_photos": true,
+  "screen_recapture_suspected": false,
+  "crop": "maize",
+  "growth_stage": "flowering",
+  "signs": {
+    "leaf_rolling_0_3": 3,
+    "canopy_senescence_0_3": 2,
+    "stunting_0_3": 1,
+    "soil_cracking_visible": true
+  },
+  "damage_type": "drought",
+  "confidence": 0.84,
+  "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
+  "photo_quality_flags": [],
+
+  "pass_1_band": "SEVERE",
+  "pass_2_band": "SEVERE",
+  "passes_agreed": true,
+  "final_severity_band": "SEVERE",
+  "abstain_to_human": false
+}
