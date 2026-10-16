@@ -1,0 +1,33 @@
+# FieldProof — Spring Boot configuration
+# Every value is overridable by the corresponding FIELDPROOF_* environment variable.
+# See GEMINI.md and docs/DAY1_PERSON_A.md §T2 for the full mapping.
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: fieldproof
+  jackson:
+    default-property-inclusion: non_null
+
+# ── FieldProof custom properties ──────────────────────────────────────────────
+# Bound to com.fieldproof.config.FieldProofProperties via @ConfigurationProperties("fieldproof")
+# Required values: startup fails fast with a clear message if any is missing.
+
+fieldproof:
+  gcp:
+    project-id: ${FIELDPROOF_GCP_PROJECT:}
+    vertex-location: ${FIELDPROOF_VERTEX_LOCATION:}
+  gemini:
+    model: ${FIELDPROOF_GEMINI_MODEL:}
+    temperature: ${FIELDPROOF_GEMINI_TEMPERATURE:}
+    thinking-level: ${FIELDPROOF_GEMINI_THINKING:}
+    media-resolution: ${FIELDPROOF_GEMINI_MEDIA_RES:}
+    max-concurrency: 4
+    max-retries: 4
+  pricing:
+    input-per-million: ${FIELDPROOF_PRICING_INPUT:}
+    output-per-million: ${FIELDPROOF_PRICING_OUTPUT:}
+  cache:
+    dir: cache/
