@@ -1,0 +1,102 @@
+{
+  "policy_ref": "FP-DEMO-2026-001",
+  "description": "FieldProof illustrative clause index for automated citation validation. Each clause_id maps to a concordance outcome.",
+  "clauses": [
+    {
+      "clause_id": "CL-1.1",
+      "section": 1,
+      "title": "Standard Rainfall Index Trigger (30th Percentile)",
+      "summary": "Index triggers automatic payout when seasonal rainfall falls strictly below the 30th percentile of the 1991–2020 baseline.",
+      "maps_to_outcome": "CONSISTENT",
+      "maps_to_action": "NO_ACTION"
+    },
+    {
+      "clause_id": "CL-2.1",
+      "section": 2,
+      "title": "Confirmed Payout Fast-Track",
+      "summary": "Index triggers AND photo evidence confirms MODERATE or SEVERE damage. Fast-track for adjuster sign-off.",
+      "maps_to_outcome": "CONFIRMED_PAYOUT",
+      "maps_to_action": "FAST_TRACK"
+    },
+    {
+      "clause_id": "CL-2.2",
+      "section": 2,
+      "title": "Possible Overpayment Review",
+      "summary": "Index triggers but photo evidence does NOT confirm MODERATE or SEVERE damage. Manual review required.",
+      "maps_to_outcome": "POSSIBLE_OVERPAYMENT",
+      "maps_to_action": "REVIEW"
+    },
+    {
+      "clause_id": "CL-3.1",
+      "section": 3,
+      "title": "Observable Sign Rubric",
+      "summary": "Photo assessment uses concept-bottleneck rubric: leaf rolling, canopy senescence, stunting (0–3), soil cracking (boolean). Severity bands set by deterministic code.",
+      "maps_to_outcome": null,
+      "maps_to_action": null
+    },
+    {
+      "clause_id": "CL-3.2",
+      "section": 3,
+      "title": "Visual Anchor Calibration",
+      "summary": "Three reference photos (healthy, moderate, severe) calibrate model perception. Anchors excluded from test set.",
+      "maps_to_outcome": null,
+      "maps_to_action": null
+    },
+    {
+      "clause_id": "CL-4.1",
+      "section": 4,
+      "title": "Basis-Risk Definition",
+      "summary": "Basis risk defined as area-level index not triggering while plot-level evidence confirms crop loss.",
+      "maps_to_outcome": null,
+      "maps_to_action": null
+    },
+    {
+      "clause_id": "CL-4.2",
+      "section": 4,
+      "title": "Phenological Basis-Risk Escalation",
+      "summary": "Index does NOT trigger, MODERATE/SEVERE drought confirmed by photo, satellite stress confirmed, dry spell overlaps critical growth stage. Escalate.",
+      "maps_to_outcome": "PHENOLOGICAL_BASIS_RISK_GAP",
+      "maps_to_action": "ESCALATE"
+    },
+    {
+      "clause_id": "CL-4.3",
+      "section": 4,
+      "title": "Spatial Basis-Risk Escalation",
+      "summary": "Index does NOT trigger, MODERATE/SEVERE drought confirmed by photo, satellite stress confirmed, no dry-spell overlap but plot-level rain is below county median. Escalate.",
+      "maps_to_outcome": "SPATIAL_BASIS_RISK_GAP",
+      "maps_to_action": "ESCALATE"
+    },
+    {
+      "clause_id": "CL-5.1",
+      "section": 5,
+      "title": "Evidence Conflict Hold",
+      "summary": "Index does NOT trigger, photo confirms weather damage, but satellite does NOT confirm stress. Request additional photos; human review.",
+      "maps_to_outcome": "EVIDENCE_CONFLICT",
+      "maps_to_action": "ASK_MORE_PHOTOS_HUMAN_REVIEW"
+    },
+    {
+      "clause_id": "CL-6.1",
+      "section": 6,
+      "title": "Non-Weather Peril Exclusion / Advisory Routing",
+      "summary": "Damage identified as pest, disease, weed, nutrient, or other non-weather cause. Excluded from index cover; routed to advisory.",
+      "maps_to_outcome": "NON_WEATHER_LOSS",
+      "maps_to_action": "ROUTE_TO_ADVISORY"
+    },
+    {
+      "clause_id": "CL-7.1",
+      "section": 7,
+      "title": "Mandatory Human Adjuster Sign-Off & Two-Pass Disagreement Abstention",
+      "summary": "No payout without human sign-off. Two-pass disagreement (passes_agreed = false) immediately abstains to human adjuster with no automated recommendation.",
+      "maps_to_outcome": "ABSTAIN",
+      "maps_to_action": "ABSTAIN_TO_HUMAN"
+    },
+    {
+      "clause_id": "CL-8.1",
+      "section": 8,
+      "title": "Image Integrity Hold",
+      "summary": "Photos fail integrity checks (duplicate, screen recapture, mismatched fields, EXIF issues). Claim held; no recommendation; referred to fraud team.",
+      "maps_to_outcome": "INTEGRITY_HOLD",
+      "maps_to_action": "HOLD_NO_RECOMMENDATION"
+    }
+  ]
+}

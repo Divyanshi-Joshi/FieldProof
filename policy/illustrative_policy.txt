@@ -1,0 +1,168 @@
+================================================================================
+      ILLUSTRATIVE AGRICULTURAL INDEX INSURANCE POLICY (SPECIMEN)
+              FieldProof Demonstration — NOT A BINDING CONTRACT
+================================================================================
+
+  Policy Ref:   FP-DEMO-2026-001
+  Insurer:      [Illustrative Insurer Name]
+  Underwriter:  [Managing General Agent / Reinsurer]
+  Coverage:     Index-Based Crop Insurance — Seasonal Rainfall Trigger
+  Territory:    Kenya (Counties: Makueni, Kitui, Machakos, Tharaka-Nithi)
+  Season:       2025 Long Rains (March–June)
+  Crops:        Maize, Sorghum, Millet, Beans, Cowpeas
+
+  IMPORTANT: This is an illustrative 2-page policy created solely for the
+  FieldProof AI Builder Cup 2026 demonstration. It does not constitute an
+  actual insurance contract, actuarial advice, or regulatory filing. All
+  clause IDs (CL-x.x) are used by the FieldProof system to cite specific
+  provisions in adjuster briefs and audit records.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — INDEX TRIGGER AND PAYOUT DETERMINATION
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-1.1  STANDARD RAINFALL INDEX TRIGGER (30TH PERCENTILE)
+  ─────────────────────────────────────────────────────────────────────────
+  The Index shall trigger an automatic payout when cumulative seasonal
+  rainfall recorded at the Insured Plot falls strictly below the 30th
+  percentile of the long-term historical rainfall distribution for the
+  relevant county and season window.
+
+  The baseline distribution shall be derived from ERA5 reanalysis data
+  covering the 30-year climatological reference period 1991–2020, obtained
+  via the Open-Meteo Historical Weather API, or from the multi-season
+  county-level empirical distribution in the contracted dataset when live
+  API access is unavailable.
+
+  Formally:
+    index_pays = TRUE when season_rain_mm < trigger_rain_mm
+  where trigger_rain_mm is the precipitation depth (mm) at the 30th
+  percentile (trigger_percentile = 30) of the baseline distribution.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — CONFIRMED PAYOUT AND OVERPAYMENT REVIEW
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-2.1  CONFIRMED PAYOUT FAST-TRACK
+  ─────────────────────────────────────────────────────────────────────────
+  Where the Index triggers (index_pays = TRUE) and independent
+  photographic evidence confirms crop damage at MODERATE or SEVERE
+  severity, the claim shall be fast-tracked for adjuster sign-off
+  without further evidence gathering.
+
+  CL-2.2  POSSIBLE OVERPAYMENT REVIEW
+  ─────────────────────────────────────────────────────────────────────────
+  Where the Index triggers (index_pays = TRUE) but photographic evidence
+  does NOT confirm MODERATE or SEVERE crop damage, the claim shall be
+  flagged for manual review by a qualified loss adjuster to assess
+  whether the index payout is warranted despite the absence of visible
+  field-level damage.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — PHOTO EVIDENCE ASSESSMENT AND CALIBRATION
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-3.1  OBSERVABLE SIGN RUBRIC
+  ─────────────────────────────────────────────────────────────────────────
+  Photo evidence shall be assessed using a concept-bottleneck rubric
+  scoring four observable indicators: leaf rolling (0–3), canopy
+  senescence (0–3), stunting (0–3), and visible soil cracking (boolean).
+  Severity bands (NONE, MILD, MODERATE, SEVERE) shall be determined by
+  deterministic tested code, not by the perception model.
+
+  CL-3.2  VISUAL ANCHOR CALIBRATION
+  ─────────────────────────────────────────────────────────────────────────
+  Each assessment shall include three reference photographs (healthy,
+  moderate, severe) from the development set, excluded from any
+  evaluation test set, to calibrate model perception.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — BASIS-RISK ESCALATION
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-4.1  BASIS-RISK DEFINITION
+  ─────────────────────────────────────────────────────────────────────────
+  Basis risk arises when the area-level index does not trigger yet
+  individual plot-level evidence confirms crop loss. The Insurer shall
+  maintain a reconciliation process to detect, classify, and escalate
+  such gaps.
+
+  CL-4.2  PHENOLOGICAL BASIS-RISK ESCALATION
+  ─────────────────────────────────────────────────────────────────────────
+  Where the Index does NOT trigger, but (a) photographic evidence
+  confirms MODERATE or SEVERE drought damage, (b) satellite vegetation
+  anomaly confirms stress (NDVI anomaly z-score < −1.0), and (c) a
+  continuous dry spell overlaps the crop's critical reproductive or
+  flowering growth stage, the claim shall be classified as a
+  PHENOLOGICAL BASIS-RISK GAP and escalated for adjuster review.
+
+  CL-4.3  SPATIAL BASIS-RISK ESCALATION
+  ─────────────────────────────────────────────────────────────────────────
+  Where the Index does NOT trigger, but (a) photographic evidence
+  confirms MODERATE or SEVERE drought damage, (b) satellite vegetation
+  anomaly confirms stress, and (c) the dry spell does NOT overlap the
+  critical growth stage but plot-level seasonal rainfall is below the
+  county median (low_local_rain = TRUE), the claim shall be classified
+  as a SPATIAL BASIS-RISK GAP and escalated for adjuster review.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — EVIDENCE CONFLICT
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-5.1  EVIDENCE CONFLICT HOLD
+  ─────────────────────────────────────────────────────────────────────────
+  Where the Index does NOT trigger, photographic evidence confirms
+  MODERATE or SEVERE weather damage, but satellite vegetation data does
+  NOT confirm stress, the claim shall be placed on hold. The system
+  shall request additional photographs from the policyholder and route
+  the claim for human expert review.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — EXCLUSIONS AND NON-WEATHER PERILS
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-6.1  NON-WEATHER PERIL EXCLUSION AND ADVISORY ROUTING
+  ─────────────────────────────────────────────────────────────────────────
+  This policy covers drought-related crop loss only. Where photographic
+  evidence identifies damage caused by pests, disease, weeds, nutrient
+  deficiency, or other non-weather perils, the claim shall NOT be
+  processed under this index policy. The system shall route the claim
+  to the appropriate agricultural advisory service or alternative
+  coverage product.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — HUMAN OVERSIGHT AND ADJUSTER AUTHORITY
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-7.1  MANDATORY HUMAN ADJUSTER SIGN-OFF AND TWO-PASS ABSTENTION
+  ─────────────────────────────────────────────────────────────────────────
+  No payout shall be issued without explicit sign-off by a qualified
+  human loss adjuster. The automated system provides recommendations
+  only; the adjuster retains sole authority to approve, reject, or
+  escalate any claim.
+
+  Where the two independent photo-assessment passes produce different
+  severity bands (passes_agreed = FALSE), the system shall abstain from
+  making any automated recommendation. The claim shall be immediately
+  routed to a human adjuster for manual review with full photo evidence,
+  sign scores from both passes, and all supporting data.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 8 — IMAGE INTEGRITY AND FRAUD PREVENTION
+────────────────────────────────────────────────────────────────────────────────
+
+  CL-8.1  IMAGE INTEGRITY HOLD
+  ─────────────────────────────────────────────────────────────────────────
+  Where any uploaded photograph fails integrity checks — including but
+  not limited to perceptual-hash duplicate detection (within the claim
+  bundle or across prior claims), screen-recapture detection, mismatched
+  fields across photographs, or missing/inconsistent EXIF metadata —
+  the claim shall be placed on INTEGRITY HOLD. No automated payout
+  recommendation shall be made. The claim shall be referred to the
+  fraud and operations team for investigation.
+
+================================================================================
+                         END OF ILLUSTRATIVE POLICY
+      This document is for FieldProof demonstration purposes only.
+      It does not constitute a binding insurance contract.
+================================================================================
