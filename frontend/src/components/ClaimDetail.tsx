@@ -4,7 +4,6 @@ import { ClaimBundle, api } from '../services/api';
 import { ACTIONS, DAMAGE_TYPE, GROUP_TONE, SEVERITY, flagText, outcomeInfo } from '../lib/outcomes';
 import { fmtDate, fmtDateTime, photoSrc, stageName } from '../lib/format';
 import { readSources } from '../lib/signals';
-import { LANGUAGES, Language } from '../i18n/translations';
 import { OutcomeDot, Photo, Score, VerdictChip } from './ui';
 import { decidedLabel } from './InsurerView';
 
@@ -61,7 +60,6 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [msgLang, setMsgLang] = useState<Language>('en');
 
   const notesRequired = choice === 'REJECTED';
   const canSave = Boolean(choice) && (!notesRequired || notes.trim().length > 0) && !saving;
@@ -262,19 +260,8 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
 
           {/* Farmer message */}
           <section aria-labelledby="msg-h" className="panel p-5">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 id="msg-h" className="text-lg font-semibold">Message the farmer will get</h3>
-              <div role="group" aria-label="Message language" className="flex rounded-md border border-line p-0.5 text-sm">
-                {LANGUAGES.map((l) => (
-                  <button key={l.code} onClick={() => setMsgLang(l.code)} aria-pressed={msgLang === l.code}
-                    disabled={!messages[l.code]}
-                    className={`rounded px-2.5 py-1 font-medium disabled:opacity-40 ${msgLang === l.code ? 'bg-ink text-white' : 'text-muted'}`}>
-                    {l.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <p lang={msgLang} className="mt-3 max-w-prose leading-7">{messages[msgLang] || messages.en || 'No message.'}</p>
+            <h3 id="msg-h" className="text-lg font-semibold">Message the farmer will get</h3>
+            <p className="mt-3 max-w-prose leading-7">{messages.en || 'No message.'}</p>
           </section>
         </div>
 

@@ -13,7 +13,7 @@ const SOURCES = [
     loss: false,
   },
   {
-    source: "Wanjiru's photos",
+    source: "Ramesh's photos",
     says: 'Rolled leaves, drying canopy and cracked soil. Two separate checks both graded it severe.',
     loss: true,
   },
@@ -48,7 +48,7 @@ const STEPS = [
 ];
 
 const PEOPLE: { who: string; does: string; cta: string; tab: ActiveTab }[] = [
-  { who: 'Farmer', does: 'Sends three photos from a phone, in English, Hindi or Swahili.', cta: 'Open the farmer page', tab: 'farmer' },
+  { who: 'Farmer', does: 'Sends three photos from a phone in a simple guided flow.', cta: 'Open the farmer page', tab: 'farmer' },
   { who: 'Claims adjuster', does: 'Sees every source side by side, reads a short brief and makes the call.', cta: 'Open the claims queue', tab: 'insurer' },
   { who: 'Actuarial team', does: 'Sees where the index misses losses and tests a new trigger on past seasons.', cta: 'Open Index Doctor', tab: 'doctor' },
 ];
@@ -59,7 +59,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
     <section className="mx-auto grid max-w-7xl gap-10 px-5 pb-16 pt-10 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pt-16">
       <div className="lg:col-span-5 lg:pt-6">
         <h1 className="text-3xl font-semibold sm:text-4xl lg:text-[3.4rem] lg:leading-[1.05]">
-          Her maize failed. The rain index said it was a normal season.
+          His maize failed. The rain index said it was a normal season.
         </h1>
         <p className="mt-6 max-w-prose text-lg leading-8 text-muted">
           Index insurance pays when an area's rainfall crosses a line. When one field fails and the index doesn't move,
@@ -70,7 +70,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button onClick={() => onNavigate('farmer')} className="btn-primary px-5 py-3 text-base">
-            Follow Wanjiru's claim
+            Follow Ramesh's claim
           </button>
           <button onClick={() => onNavigate('insurer')} className="btn-quiet px-5 py-3 text-base">
             Open the claims queue
@@ -101,7 +101,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
 
           <div className="lg:col-span-8">
             <table className="w-full text-left">
-              <caption className="sr-only">What each source says about Wanjiru's plot</caption>
+              <caption className="sr-only">What each source says about Ramesh's plot</caption>
               <thead>
                 <tr className="border-b border-ink text-sm">
                   <th scope="col" className="w-40 py-3 pr-4 font-semibold">Source</th>

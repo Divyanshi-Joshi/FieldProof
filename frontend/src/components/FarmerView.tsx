@@ -6,8 +6,8 @@ import { ActiveTab } from '../App';
 import { Logo } from './Navbar';
 
 interface FarmerViewProps {
-  language: Language;
-  setLanguage: (l: Language) => void;
+  language?: Language;
+  setLanguage?: (l: Language) => void;
   onNavigate: (tab: ActiveTab, claimId?: string) => void;
 }
 
@@ -29,10 +29,10 @@ interface Sample {
 
 const SAMPLES: Sample[] = [
   {
-    id: 'wanjiru',
-    title: "Wanjiru's drought claim",
-    expect: 'Three photos of her maize plot after a dry spell. Expect it to reach the adjuster as a loss the index missed.',
-    farmer: 'Wanjiru', plot: 'P-0142', crop: 'maize', county: 'Makueni', season: '2025-LR',
+    id: 'ramesh',
+    title: "Ramesh's drought claim",
+    expect: 'Three photos of his maize plot after a dry spell. Expect it to reach the adjuster as a loss the index missed.',
+    farmer: 'Ramesh', plot: 'P-0142', crop: 'maize', county: 'Makueni', season: '2025-LR',
     photos: [
       { url: '/images/L429F00196C01S01028Rp12846.jpg', name: 'L429F00196C01S01028Rp12846.jpg' },
       { url: '/images/L429F00196C01S01028Rp13485.jpg', name: 'L429F00196C01S01028Rp13485.jpg' },
@@ -43,7 +43,7 @@ const SAMPLES: Sample[] = [
     id: 'duplicate',
     title: 'A copied photo',
     expect: 'The same picture is sent twice. Expect the photo check to catch it and ask for a new one.',
-    farmer: 'Mutua', plot: 'P-0389', crop: 'maize', county: 'Kitui', season: '2025-LR',
+    farmer: 'Suresh', plot: 'P-0389', crop: 'maize', county: 'Kitui', season: '2025-LR',
     photos: [
       { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
       { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
@@ -54,7 +54,7 @@ const SAMPLES: Sample[] = [
     id: 'mismatch',
     title: 'Photos from different fields',
     expect: 'Three pictures from three different plots. Expect the claim to be held with no recommendation.',
-    farmer: 'Kamau', plot: 'P-0891', crop: 'maize', county: 'Machakos', season: '2025-LR',
+    farmer: 'Rajesh', plot: 'P-0891', crop: 'maize', county: 'Machakos', season: '2025-LR',
     photos: [
       { url: '/images/L341F02966C01S08093Rp29091.jpg', name: 'L341F02966C01S08093Rp29091.jpg' },
       { url: '/images/L1089F02180C01S07348Rp18597.jpg', name: 'L1089F02180C01S07348Rp18597.jpg' },
@@ -69,8 +69,8 @@ async function toBlob(p: Photo): Promise<Blob> {
   return r.blob();
 }
 
-export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, onNavigate }) => {
-  const t = farmerText[language];
+export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
+  const t = farmerText.en;
   const [sample, setSample] = useState<Sample>(SAMPLES[0]);
   const [plot, setPlot] = useState(SAMPLES[0].plot);
   const [crop, setCrop] = useState<Crop>(SAMPLES[0].crop);
@@ -129,7 +129,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, o
     setResult(null);
   };
 
-  const message = result?.farmer_messages?.[language] || result?.farmer_messages?.en || null;
+  const message = result?.farmer_messages?.en || null;
 
   return (
     <div className="mx-auto grid max-w-7xl gap-10 px-5 py-10 lg:grid-cols-12 lg:px-8">
@@ -137,8 +137,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, o
       <aside className="order-2 lg:order-1 lg:col-span-5">
         <h1 className="text-2xl font-semibold sm:text-3xl">The farmer's side</h1>
         <p className="mt-3 max-w-prose text-muted">
-          This is what a farmer sees on her phone. Open this page on a phone and the photo buttons use the real camera.
-          The language switch at the top of the phone changes every word she reads.
+          This is what a farmer sees on their phone. Open this page on a phone and the photo buttons use the real camera.
         </p>
 
         <h2 className="mt-8 text-base font-semibold">Pick a sample claim</h2>
@@ -166,9 +165,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, o
         </div>
 
         <div className="mt-8 border-t border-line pt-6">
-          <h2 className="text-base font-semibold">After she sends it</h2>
+          <h2 className="text-base font-semibold">After sending the claim</h2>
           <p className="mt-2 max-w-prose text-sm text-muted">
-            She is told her claim was received and that a person makes the decision. The claim lands in the adjuster's
+            The farmer is told the claim was received and that a person makes the decision. The claim lands in the adjuster's
             queue with everything the system found.
           </p>
           <button
@@ -189,22 +188,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, o
               <Logo className="h-6 w-6" />
               <span className="font-semibold">{t.appBar}</span>
             </div>
-            <div role="group" aria-label={t.language} className="flex rounded-md border border-line p-0.5 text-sm">
-              {LANGUAGES.map((l) => (
-                <button
-                  key={l.code}
-                  onClick={() => setLanguage(l.code)}
-                  aria-pressed={language === l.code}
-                  lang={l.code}
-                  className={`rounded px-2 py-1 font-medium ${language === l.code ? 'bg-ink text-white' : 'text-muted'}`}
-                >
-                  {l.code === 'en' ? 'EN' : l.code === 'hi' ? 'हि' : 'SW'}
-                </button>
-              ))}
-            </div>
           </div>
 
-          <div ref={phoneTop} lang={language} className="scroll-thin max-h-[720px] overflow-y-auto">
+          <div ref={phoneTop} lang="en" className="scroll-thin max-h-[720px] overflow-y-auto">
             {!result ? (
               <div className="settle p-5">
                 <p className="font-display text-xl font-semibold">{t.greeting(sample.farmer)}</p>

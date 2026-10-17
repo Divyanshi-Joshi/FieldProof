@@ -99,7 +99,7 @@ Expected response for `/api/health`:
 
 The frontend contains the interactive 4-in-1 claims reconciliation cockpit:
 1. **Hero Landing & Persona Launchpad**
-2. **Farmer View** (mobile camera upload & multilingual status in English, Hindi, Swahili)
+2. **Farmer View** (mobile camera upload & status in English)
 3. **Adjuster Triage Cockpit** (3-signal concordance decisioning, policy citations)
 4. **Index Doctor Slider** (live policy recalibration simulation)
 5. **Validation View** (4-arm ablation study & unit economics)
@@ -130,10 +130,10 @@ Open **`http://localhost:5173`** in your browser:
 
 ### Journey 1: Farmer Claim Submission
 1. Select **"Farmer Claim Submission"**.
-2. Select plot **P-0142** (Wanjiru Mwangi, Maize).
+2. Select plot **P-0142** (Ramesh Kumar, Maize).
 3. Upload field photos or view pre-populated demo bundles.
 4. Inspect real-time image integrity checks (perceptual hash deduplication & EXIF analysis).
-5. View multilingual instant feedback in English, Hindi, or Swahili.
+5. View instant claim feedback in English.
 
 ### Journey 2: Loss Adjuster Triage Cockpit
 1. Switch to **"Insurer / Adjuster Cockpit"**.
