@@ -28,6 +28,7 @@ public class LocalClaimStore implements ClaimStore {
     private final Map<String, ClaimBundle> memoryIndex = new ConcurrentHashMap<>();
     private final List<String> orderedIds = new CopyOnWriteArrayList<>();
 
+    @org.springframework.beans.factory.annotation.Autowired
     public LocalClaimStore(ObjectMapper objectMapper) {
         this(Path.of("target/claims"), objectMapper);
     }
