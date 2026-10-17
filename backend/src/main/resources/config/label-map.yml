@@ -3,5 +3,10 @@
 # The smoke evaluation run will check this file and prompt for real classes if not populated.
 
 allowed-damage-types:
-  - none
+  - drought
+  - pest
+  - disease
+  - weed
+  - nutrient
   - other
+  - none
