@@ -16,6 +16,7 @@ FieldProof is an AI-assisted parametric crop insurance reconciliation platform. 
 
 | Document | Purpose |
 |---|---|
+| **[`ABLATION_STUDY.md`](ABLATION_STUDY.md)** | **Empirical Ablation Study & Evaluation Report.** 4-arm ablation metrics, risk-coverage trade-offs, planted fraud integrity, and unit economics. |
 | **[`FEATURES.md`](FEATURES.md)** | **Exhaustive Feature & Architecture Guide.** Complete breakdown of Orbit-to-Field (GEE), Gemini Vision, Concordance Engine, Image Forensics, and Index Doctor. |
 | **[`RUN_GUIDE.md`](RUN_GUIDE.md)** | **Start here to run the app.** Step-by-step instructions for running Backend, Frontend, Smoke Evaluation, and Cloud Run deployment. |
 | **[`TECHNICAL_ARCHITECTURE.md`](TECHNICAL_ARCHITECTURE.md)** | **Deep-dive technical architecture.** Component breakdown, data flows, concordance matrix, and decision core specifications. |
