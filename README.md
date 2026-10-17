@@ -32,44 +32,28 @@ Ensure you have the following installed on your machine:
 - **Google Cloud CLI (`gcloud`)** (`gcloud --version`)
 - **Docker** (optional, for local container testing and Cloud Run: `docker --version`)
 
-### 2. Authentication & Environment Configuration
-FieldProof connects to Gemini using the Google GenAI SDK and supports two authentication pathways:
+### 2. Project Setup & Authentication
+In order to run Gemini vision inference, a **Google Cloud Project** is required to provision credentials and access Gemini models. FieldProof is calibrated and benchmarked on **`gemini-3-flash-preview`** (configured via `FIELDPROOF_GEMINI_MODEL`).
 
-#### Pathway A: Google Cloud Vertex AI via ADC (Standard Production Setup)
-Use this when developing against your Google Cloud Project or deploying to Cloud Run:
-1. **Authenticate with Google Cloud Application Default Credentials (ADC)**:
-   ```bash
-   gcloud auth login
-   gcloud auth application-default login
-   gcloud auth application-default set-quota-project <your-gcp-project-id>
-   ```
-2. **Export the required environment variables**:
-   - **Linux / macOS**:
-     ```bash
-     export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
-     export FIELDPROOF_VERTEX_LOCATION="global"              # or asia-south1
-     export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
-     export CR_REGION="asia-south1"                          # Mumbai
-     ```
-   - **Windows (PowerShell)**:
-     ```powershell
-     $env:FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
-     $env:FIELDPROOF_VERTEX_LOCATION="global"
-     $env:FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
-     $env:CR_REGION="asia-south1"
-     ```
+#### Step 2.1: Create Your Project & Obtain Credentials
+1. Go to [Google AI Studio](https://aistudio.google.com/) or the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create or select a Google Cloud project (note your **Project ID**, e.g., `my-project-12345`).
+3. Choose your authentication method below:
 
-#### Pathway B: Google AI Studio API Key (Fast Local Development)
-Use this to run and evaluate Gemini vision models immediately without configuring Google Cloud project billing:
+#### Method A: Gemini API Key via `.env` (Recommended for Local Dev)
 1. Copy `.env.example` to `.env` in the repository root:
    ```bash
    cp .env.example .env
    ```
-2. Insert your Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey):
+2. Open `.env` and fill in your Project ID, API Key, and Model ID:
    ```env
-   GEMINI_API_KEY="your-gemini-api-key"
+   FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
+   GEMINI_API_KEY="your-gemini-api-key-here"
+   FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+   FIELDPROOF_VERTEX_LOCATION="global"
+   CR_REGION="asia-south1"
    ```
-3. Load the environment variables:
+3. Load the environment configuration:
    - **Windows (PowerShell)**:
      ```powershell
      . .\setup-env.ps1
@@ -77,6 +61,30 @@ Use this to run and evaluate Gemini vision models immediately without configurin
    - **Linux / macOS**:
      ```bash
      source setup-env.sh
+     ```
+
+#### Method B: Vertex AI via Application Default Credentials (ADC) (Production / Cloud Run)
+Use this when running with a GCP service account or deploying to Google Cloud Run:
+1. Authenticate with Google Cloud Application Default Credentials:
+   ```bash
+   gcloud auth login
+   gcloud auth application-default login
+   gcloud auth application-default set-quota-project <your-gcp-project-id>
+   ```
+2. Export the required environment variables:
+   - **Linux / macOS**:
+     ```bash
+     export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
+     export FIELDPROOF_VERTEX_LOCATION="global"
+     export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+     export CR_REGION="asia-south1"
+     ```
+   - **Windows (PowerShell)**:
+     ```powershell
+     $env:FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
+     $env:FIELDPROOF_VERTEX_LOCATION="global"
+     $env:FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+     $env:CR_REGION="asia-south1"
      ```
 
 ### 3. Start the Backend (Port 8080)

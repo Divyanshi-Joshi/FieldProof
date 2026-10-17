@@ -16,14 +16,20 @@ Ensure you have the following installed on your machine:
 
 ## 2. Environment Configuration
 
-FieldProof supports both **Google AI Studio (`GEMINI_API_KEY`)** for rapid local runs and **Google Cloud Vertex AI (ADC)** for production.
+In order to run Gemini vision perception, a **Google Cloud Project** is required to generate credentials and enable the Generative Language / Vertex AI APIs. FieldProof is tested and calibrated on **`gemini-3-flash-preview`**.
 
 ### Option A: Local Run with Gemini API Key (Recommended)
-1. In the repository root, create or edit `.env` (copied from `.env.example`):
+1. In [Google AI Studio](https://aistudio.google.com/) or [Google Cloud Console](https://console.cloud.google.com/), create or select your project.
+2. Generate an API Key under that project at [Google AI Studio API Keys](https://aistudio.google.com/app/apikey).
+3. In the repository root, copy `.env.example` to `.env` and fill in your values:
    ```env
+   FIELDPROOF_GCP_PROJECT="your-gcp-project-id"
    GEMINI_API_KEY="your-gemini-api-key"
+   FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+   FIELDPROOF_VERTEX_LOCATION="global"
+   CR_REGION="asia-south1"
    ```
-2. Run the environment loader script:
+4. Run the environment loader script:
    - **Windows PowerShell**:
      ```powershell
      . .\setup-env.ps1

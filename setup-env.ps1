@@ -1,17 +1,22 @@
 # FieldProof PowerShell Environment Setup
+
+# 1. Load variables from .env if present
+if (Test-Path "$PSScriptRoot\.env") {
+    Get-Content "$PSScriptRoot\.env" | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -and -not $line.StartsWith("#") -and $line -match "^\s*([A-Za-z0-9_]+)\s*=\s*[`"']?([^`"'\r\n]+)[`"']?\s*$") {
+            $key = $matches[1].Trim()
+            $val = $matches[2].Trim()
+            [Environment]::SetEnvironmentVariable($key, $val, "Process")
+        }
+    }
+}
+
+# 2. Defaults if not specified in .env or environment
 if (-not $env:FIELDPROOF_GCP_PROJECT) { $env:FIELDPROOF_GCP_PROJECT = "fieldproof-prod" }
 if (-not $env:FIELDPROOF_VERTEX_LOCATION) { $env:FIELDPROOF_VERTEX_LOCATION = "global" }
 if (-not $env:FIELDPROOF_GEMINI_MODEL) { $env:FIELDPROOF_GEMINI_MODEL = "gemini-3-flash-preview" }
 if (-not $env:CR_REGION) { $env:CR_REGION = "asia-south1" }
-
-# Load GEMINI_API_KEY from .env if present
-if (Test-Path "$PSScriptRoot\.env") {
-    Get-Content "$PSScriptRoot\.env" | ForEach-Object {
-        if ($_ -match "^\s*GEMINI_API_KEY\s*=\s*[`"']?([^`"'\s]+)[`"']?\s*$") {
-            $env:GEMINI_API_KEY = $matches[1].Trim()
-        }
-    }
-}
 
 Write-Host "FieldProof environment variables loaded:" -ForegroundColor Green
 Write-Host "  FIELDPROOF_GCP_PROJECT     = $env:FIELDPROOF_GCP_PROJECT" -ForegroundColor Cyan
