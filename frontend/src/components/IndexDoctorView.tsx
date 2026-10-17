@@ -1,300 +1,244 @@
-import React, { useState, useEffect } from 'react';
-import { Sliders, TrendingUp, AlertTriangle, CheckCircle, Database, Sparkles, Layers, DollarSign, MapPin, RefreshCw, ChevronRight, Info } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { IndexDoctorSimulation } from '../types/contracts';
 import { api } from '../services/api';
-import { Language, translations } from '../i18n/translations';
+import { fmtUsd, toPct } from '../lib/format';
+import { ErrorNote, Loading } from './ui';
 
-interface IndexDoctorViewProps {
-  language: Language;
+const CURRENT_RULE = 30; // the trigger committed before evaluation
+const SWEEP = [10, 15, 20, 25, 30, 35, 40, 45, 50];
+
+function useDebounced<T>(v: T, ms: number) {
+  const [d, setD] = useState(v);
+  useEffect(() => { const id = setTimeout(() => setD(v), ms); return () => clearTimeout(id); }, [v, ms]);
+  return d;
 }
 
-export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ language }) => {
-  const t = translations[language];
+function delta(now: number, base: number, fmt: (n: number) => string, goodWhenDown: boolean) {
+  const diff = now - base;
+  if (Math.abs(diff) < 1e-9) return <span className="text-muted">no change</span>;
+  const good = goodWhenDown ? diff < 0 : diff > 0;
+  return <span className={good ? 'font-semibold text-field' : 'font-semibold text-loss-ink'}>{diff > 0 ? '+' : '−'}{fmt(Math.abs(diff))}</span>;
+}
 
-  const [percentile, setPercentile] = useState<number>(30);
-  const [simulation, setSimulation] = useState<IndexDoctorSimulation | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showSql, setShowSql] = useState<boolean>(false);
+export const IndexDoctorView: React.FC = () => {
+  const [pct, setPct] = useState(CURRENT_RULE);
+  const debounced = useDebounced(pct, 200);
+  const [sim, setSim] = useState<IndexDoctorSimulation | null>(null);
+  const [base, setBase] = useState<IndexDoctorSimulation | null>(null);
+  const [curve, setCurve] = useState<IndexDoctorSimulation[]>([]);
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [busy, setBusy] = useState(false);
 
-  // Fetch simulation data whenever percentile slider moves
+  const loadBase = () => {
+    setState('loading');
+    api.simulateIndexDoctor(CURRENT_RULE)
+      .then((b) => { setBase(b); setSim(b); setState('ready'); })
+      .catch(() => setState('error'));
+    Promise.all(SWEEP.map((p) => api.simulateIndexDoctor(p).catch(() => null)))
+      .then((r) => setCurve(r.filter(Boolean) as IndexDoctorSimulation[]));
+  };
+  useEffect(loadBase, []);
+
   useEffect(() => {
-    let isCancelled = false;
-    setIsLoading(true);
+    if (state !== 'ready') return;
+    let live = true;
+    setBusy(true);
+    api.simulateIndexDoctor(debounced)
+      .then((s) => { if (live) setSim(s); })
+      .catch(() => {})
+      .finally(() => live && setBusy(false));
+    return () => { live = false; };
+  }, [debounced, state]);
 
-    api.simulateIndexDoctor(percentile)
-      .then(data => {
-        if (!isCancelled) {
-          setSimulation(data);
-          setIsLoading(false);
-        }
-      })
-      .catch(err => {
-        console.warn('Fallback simulation calculation', err);
-        // Fallback simulation generator
-        const total = 600;
-        const payoutFreq = (percentile * 0.95) / 100;
-        const payoutCount = Math.round(total * payoutFreq);
-        const gapRate = Math.max(0.015, (0.09 - (percentile - 5) * 0.0013));
-        const gapCount = Math.round(total * gapRate);
-        const overpaymentRate = Math.max(0.005, (0.004 + (percentile - 10) * 0.0006));
-        const overpaymentCount = Math.round(total * overpaymentRate);
+  const chartData = useMemo(() => curve.map((c) => ({
+    p: c.trigger_percentile,
+    missed: +toPct(c.gap_rate).toFixed(1),
+    overpaid: +toPct(c.overpayment_rate).toFixed(1),
+  })), [curve]);
 
-        setSimulation({
-          trigger_percentile: percentile,
-          trigger_rain_mm_median: 240 + percentile * 1.8,
-          total_plots: total,
-          gap_count: gapCount,
-          gap_rate: Math.round(gapRate * 1000) / 10,
-          overpayment_count: overpaymentCount,
-          overpayment_rate: Math.round(overpaymentRate * 1000) / 10,
-          payout_count: payoutCount,
-          payout_frequency: Math.round(payoutFreq * 1000) / 10,
-          illustrative_payout_total_usd: payoutCount * 120,
-          flat_payout_per_plot_usd: 120,
-          county_breakdown: [
-            { county: 'Makueni', total_plots: 180, gap_count: Math.round(gapCount * 0.35), gap_rate: Math.round(gapRate * 1100)/10, overpayment_count: Math.round(overpaymentCount * 0.3), overpayment_rate: 1.2, payout_count: Math.round(payoutCount * 0.32), payout_frequency: Math.round(payoutFreq * 980)/10 },
-            { county: 'Machakos', total_plots: 140, gap_count: Math.round(gapCount * 0.25), gap_rate: Math.round(gapRate * 950)/10, overpayment_count: Math.round(overpaymentCount * 0.25), overpayment_rate: 1.0, payout_count: Math.round(payoutCount * 0.23), payout_frequency: Math.round(payoutFreq * 990)/10 },
-            { county: 'Kitui', total_plots: 120, gap_count: Math.round(gapCount * 0.22), gap_rate: Math.round(gapRate * 1050)/10, overpayment_count: Math.round(overpaymentCount * 0.2), overpayment_rate: 0.8, payout_count: Math.round(payoutCount * 0.21), payout_frequency: Math.round(payoutFreq * 1010)/10 },
-            { county: 'Embu', total_plots: 100, gap_count: Math.round(gapCount * 0.12), gap_rate: Math.round(gapRate * 800)/10, overpayment_count: Math.round(overpaymentCount * 0.15), overpayment_rate: 0.6, payout_count: Math.round(payoutCount * 0.16), payout_frequency: Math.round(payoutFreq * 950)/10 },
-            { county: 'Kilifi', total_plots: 60, gap_count: Math.round(gapCount * 0.06), gap_rate: Math.round(gapRate * 700)/10, overpayment_count: Math.round(overpaymentCount * 0.1), overpayment_rate: 0.5, payout_count: Math.round(payoutCount * 0.08), payout_frequency: Math.round(payoutFreq * 920)/10 },
-          ],
-          season_breakdown: [],
-          computed_at_utc: new Date().toISOString()
-        });
-        setIsLoading(false);
-      });
+  if (state === 'loading') return <div className="mx-auto max-w-7xl px-5 lg:px-8"><Loading label="Running the current rule on past seasons" /></div>;
+  if (state === 'error' || !base || !sim) {
+    return (
+      <div className="mx-auto max-w-3xl px-5 py-10">
+        <ErrorNote title="Couldn't run the simulation" body="The simulator did not respond. Check that the backend and BigQuery connection are up, then try again." onRetry={loadBase} />
+      </div>
+    );
+  }
 
-    return () => { isCancelled = true; };
-  }, [percentile]);
+  const n = (v: number) => v.toLocaleString();
+  const pp = (v: number) => `${v.toFixed(1)} pts`;
+  const rows = [
+    {
+      label: 'Failed fields the index misses',
+      hint: 'Damage in photos and satellite, but no payout',
+      base: `${n(base.gap_count)} (${toPct(base.gap_rate).toFixed(1)}%)`,
+      now: `${n(sim.gap_count)} (${toPct(sim.gap_rate).toFixed(1)}%)`,
+      change: delta(toPct(sim.gap_rate), toPct(base.gap_rate), pp, true),
+    },
+    {
+      label: 'Payouts to fields with no damage',
+      hint: 'The index pays but the photos show a healthy crop',
+      base: `${n(base.overpayment_count)} (${toPct(base.overpayment_rate).toFixed(1)}%)`,
+      now: `${n(sim.overpayment_count)} (${toPct(sim.overpayment_rate).toFixed(1)}%)`,
+      change: delta(toPct(sim.overpayment_rate), toPct(base.overpayment_rate), pp, true),
+    },
+    {
+      label: 'Plots paid',
+      hint: `Out of ${n(sim.total_plots)} historical plots`,
+      base: `${n(base.payout_count)} (${toPct(base.payout_frequency).toFixed(1)}%)`,
+      now: `${n(sim.payout_count)} (${toPct(sim.payout_frequency).toFixed(1)}%)`,
+      change: delta(sim.payout_count, base.payout_count, (v) => n(v), false),
+    },
+    {
+      label: 'Total paid out',
+      hint: `At a flat ${fmtUsd(sim.flat_payout_per_plot_usd)} per paid plot`,
+      base: fmtUsd(base.illustrative_payout_total_usd),
+      now: fmtUsd(sim.illustrative_payout_total_usd),
+      change: (() => {
+        const diff = sim.illustrative_payout_total_usd - base.illustrative_payout_total_usd;
+        if (!diff) return <span className="text-muted">no change</span>;
+        return <span className="font-semibold text-ink">{diff > 0 ? '+' : '−'}{fmtUsd(Math.abs(diff))}</span>;
+      })(),
+    },
+  ];
+
+  const maxGap = Math.max(...sim.county_breakdown.map((c) => toPct(c.gap_rate)), 1);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Top Banner */}
-      <div className="glass-panel p-5 rounded-2xl border border-slate-800">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-white flex items-center space-x-2">
-                <Sliders className="h-5 w-5 text-brand-400" />
-                <span>{t.insurer.indexDoctor.title}</span>
-              </h2>
-              <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-brand-500/10 text-brand-300 border border-brand-500/20">
-                BigQuery Fallback Engine
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-              {t.insurer.indexDoctor.subtitle}
-            </p>
-          </div>
+    <div className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+      <h1 className="text-2xl font-semibold sm:text-3xl">Index Doctor</h1>
+      <p className="mt-2 max-w-prose text-muted">
+        Move the payout trigger and see what it would have done on {n(sim.total_plots)} past plots: how many failed fields
+        it would still miss, and what it would cost.
+      </p>
 
-          {/* Quick Presets */}
-          <div className="flex items-center space-x-2 text-xs">
-            <button
-              onClick={() => setPercentile(20)}
-              className={`px-3 py-1.5 rounded-lg border transition-all ${
-                percentile === 20
-                  ? 'bg-brand-600 text-white border-brand-500 font-semibold'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              Strict (20th pct)
-            </button>
-            <button
-              onClick={() => setPercentile(30)}
-              className={`px-3 py-1.5 rounded-lg border transition-all ${
-                percentile === 30
-                  ? 'bg-brand-600 text-white border-brand-500 font-semibold'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              Frozen Baseline (30th pct)
-            </button>
-            <button
-              onClick={() => setPercentile(42)}
-              className={`px-3 py-1.5 rounded-lg border transition-all ${
-                percentile === 42
-                  ? 'bg-brand-600 text-white border-brand-500 font-semibold'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
-              }`}
-            >
-              Optimal (42nd pct)
-            </button>
-          </div>
-        </div>
-
-        {/* The Live Interactive Slider */}
-        <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-              <span>{t.insurer.indexDoctor.sliderLabel}</span>
-              <span className="text-slate-500 font-normal">(5th to 60th Percentile)</span>
+      {/* Control */}
+      <section aria-label="Trigger setting" className="panel mt-8 p-6 sm:p-8">
+        <p className="max-w-3xl font-display text-xl leading-snug sm:text-2xl">
+          Pay when a plot's season rain falls below the{' '}
+          <span className="inline-block min-w-[4ch] rounded bg-field-soft px-2 text-field">{pct}th</span>{' '}
+          percentile of its own history
+          <span className="text-muted"> (about {Math.round(sim.trigger_rain_mm_median)} mm for a typical plot).</span>
+        </p>
+        <div className="mt-8">
+          <label htmlFor="trigger" className="sr-only">Trigger percentile</label>
+          <input id="trigger" type="range" min={10} max={50} step={1} value={pct}
+            onChange={(e) => setPct(parseInt(e.target.value, 10))}
+            className="h-2 w-full cursor-pointer" aria-valuetext={`${pct}th percentile`} />
+          <div className="relative mt-2 h-10 text-sm text-muted">
+            <span className="absolute left-0">10th, fewer payouts</span>
+            <span className="absolute -translate-x-1/2 text-center font-semibold text-ink" style={{ left: `${((CURRENT_RULE - 10) / 40) * 100}%` }}>
+              <span className="mx-auto block h-2 w-0.5 bg-ink" />
+              current rule
             </span>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-slate-400">Trigger Threshold:</span>
-              <span className="px-2.5 py-0.5 rounded-md font-mono text-sm font-bold bg-brand-500/10 text-brand-300 border border-brand-500/30">
-                {percentile}th Percentile (~{simulation?.trigger_rain_mm_median || 290} mm)
-              </span>
-            </div>
-          </div>
-
-          <input
-            type="range"
-            min="5"
-            max="60"
-            step="1"
-            value={percentile}
-            onChange={(e) => setPercentile(parseInt(e.target.value))}
-            className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-500"
-          />
-
-          <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-1.5">
-            <span>5th pct (Extreme Drought Only)</span>
-            <span className={percentile === 30 ? 'text-brand-400 font-bold' : ''}>30th pct (Frozen Baseline)</span>
-            <span>60th pct (Frequent Payouts)</span>
+            <span className="absolute right-0">50th, more payouts</span>
           </div>
         </div>
-      </div>
-
-      {/* KPI Tiles */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        {/* Tile 1: Total Plots */}
-        <div className="glass-card p-4 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">{t.insurer.indexDoctor.totalPlots}</span>
-          <div className="text-xl font-bold text-white font-mono">
-            {simulation?.total_plots || 600}
-          </div>
-          <span className="text-[10px] text-slate-500">Across 5 Kenyan Counties</span>
-        </div>
-
-        {/* Tile 2: Payout Frequency */}
-        <div className="glass-card p-4 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">{t.insurer.indexDoctor.payoutFrequency}</span>
-          <div className="text-xl font-bold text-cyan-400 font-mono">
-            {simulation ? (simulation.payout_frequency > 1 ? simulation.payout_frequency : (simulation.payout_frequency * 100).toFixed(1)) : '28.5'}%
-          </div>
-          <span className="text-[10px] text-slate-500">{simulation?.payout_count || 171} Plots Paid</span>
-        </div>
-
-        {/* Tile 3: Basis-Risk Gap Rate */}
-        <div className="glass-card p-4 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">{t.insurer.indexDoctor.gapRate}</span>
-          <div className="text-xl font-bold text-amber-400 font-mono">
-            {simulation ? (simulation.gap_rate > 1 ? simulation.gap_rate : (simulation.gap_rate * 100).toFixed(1)) : '5.8'}%
-          </div>
-          <span className="text-[10px] text-slate-500">{simulation?.gap_count || 35} Damaged Plots Unpaid</span>
-        </div>
-
-        {/* Tile 4: Overpayment Rate */}
-        <div className="glass-card p-4 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">{t.insurer.indexDoctor.overpaymentRate}</span>
-          <div className="text-xl font-bold text-rose-400 font-mono">
-            {simulation ? (simulation.overpayment_rate > 1 ? simulation.overpayment_rate : (simulation.overpayment_rate * 100).toFixed(1)) : '1.4'}%
-          </div>
-          <span className="text-[10px] text-slate-500">{simulation?.overpayment_count || 8} Healthy Plots Paid</span>
-        </div>
-
-        {/* Tile 5: Illustrative Payout */}
-        <div className="glass-card p-4 rounded-xl border border-slate-800 col-span-2 sm:col-span-1">
-          <span className="text-xs text-slate-400 block mb-1">{t.insurer.indexDoctor.totalPayout}</span>
-          <div className="text-xl font-bold text-emerald-400 font-mono">
-            ${(simulation?.illustrative_payout_total_usd || 20520).toLocaleString()}
-          </div>
-          <span className="text-[10px] text-slate-500">$120 flat payout / plot</span>
-        </div>
-      </div>
-
-      {/* Recalibration Recommendation Banner */}
-      <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 flex items-start space-x-3 text-xs">
-        <Sparkles className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold text-white text-sm block mb-1">
-            {t.insurer.indexDoctor.recommendation}
-          </span>
-          <p className="text-slate-300 leading-relaxed mb-2">
-            At the frozen 30th percentile trigger, <b>38 historical plots (6.3%)</b> experience severe drought damage during the critical flowering stage without receiving index payouts. Raising the threshold to the <b>42nd percentile (~318 mm)</b> resolves <b>68% of the basis-risk gaps</b> while keeping overpayments bounded under <b>2.8%</b>.
-          </p>
-          <div className="flex items-center space-x-2 text-[11px] font-mono text-emerald-300">
-            <span className="px-2 py-0.5 rounded bg-emerald-900/40 border border-emerald-700/40">
-              Optimal Actuarial Target: 40th–44th Percentile
-            </span>
-            <span className="text-slate-400">· Evaluated via BigQuery query parameterized simulation</span>
-          </div>
-        </div>
-      </div>
-
-      {/* County Breakdown Table */}
-      <div className="glass-panel rounded-xl border border-slate-800 overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
-          <h3 className="font-bold text-white text-sm flex items-center space-x-2">
-            <MapPin className="h-4 w-4 text-brand-400" />
-            <span>{t.insurer.indexDoctor.countyBreakdown}</span>
-          </h3>
-          <button
-            onClick={() => setShowSql(!showSql)}
-            className="text-xs text-brand-400 hover:text-brand-300 flex items-center space-x-1"
-          >
-            <span>{showSql ? 'Hide SQL' : t.insurer.indexDoctor.viewSql}</span>
-            <ChevronRight className={`h-3 w-3 transform transition-transform ${showSql ? 'rotate-90' : ''}`} />
-          </button>
-        </div>
-
-        {/* BigQuery SQL View */}
-        {showSql && (
-          <div className="p-4 bg-slate-950 border-b border-slate-800">
-            <pre className="p-3 rounded-lg bg-slate-900 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed border border-slate-800">
-{`-- INDEX DOCTOR PARAMETERIZED BIGQUERY QUERY
--- Recalibrates triggers dynamically over fieldproof.plot_evidence
-DECLARE target_percentile INT64 DEFAULT ${percentile};
-
-SELECT
-  county,
-  season,
-  COUNT(*) AS total_plots,
-  COUNTIF(season_rain_mm < trigger_rain_mm) AS payout_count,
-  ROUND(COUNTIF(season_rain_mm < trigger_rain_mm) / COUNT(*), 3) AS payout_frequency,
-  COUNTIF(season_rain_mm >= trigger_rain_mm AND photo_damaged AND satellite_stress) AS gap_count,
-  ROUND(COUNTIF(season_rain_mm >= trigger_rain_mm AND photo_damaged AND satellite_stress) / COUNT(*), 3) AS gap_rate,
-  COUNTIF(season_rain_mm < trigger_rain_mm AND NOT photo_damaged AND NOT satellite_stress) AS overpayment_count
-FROM \`fieldproof.plot_evidence\`
-GROUP BY county, season;`}
-            </pre>
-          </div>
+        {pct !== CURRENT_RULE && (
+          <button onClick={() => setPct(CURRENT_RULE)} className="btn-text mt-2">Back to the current rule</button>
         )}
+      </section>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 border-b border-slate-800 font-mono text-[11px]">
-              <tr>
-                <th className="py-2.5 px-4">County</th>
-                <th className="py-2.5 px-4">Total Plots</th>
-                <th className="py-2.5 px-4">Payout Count</th>
-                <th className="py-2.5 px-4">Payout Freq (%)</th>
-                <th className="py-2.5 px-4">Basis-Risk Gaps</th>
-                <th className="py-2.5 px-4">Gap Rate (%)</th>
-                <th className="py-2.5 px-4">Overpayments</th>
+      {/* Comparison */}
+      <section aria-labelledby="cmp-h" className="mt-10">
+        <div className="flex items-baseline justify-between">
+          <h2 id="cmp-h" className="text-lg font-semibold">What changes</h2>
+          {busy && <span className="text-sm text-muted" role="status">Updating…</span>}
+        </div>
+        <div className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface">
+          <table className="w-full min-w-[640px] text-left">
+            <thead>
+              <tr className="border-b border-line text-sm">
+                <th scope="col" className="p-4 font-semibold"> </th>
+                <th scope="col" className="p-4 font-semibold">Current rule ({CURRENT_RULE}th)</th>
+                <th scope="col" className="p-4 font-semibold">This setting ({pct}th)</th>
+                <th scope="col" className="p-4 font-semibold">Change</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-mono">
-              {simulation?.county_breakdown.map((c, i) => (
-                <tr key={i} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-2.5 px-4 font-sans font-semibold text-white">{c.county}</td>
-                  <td className="py-2.5 px-4 text-slate-300">{c.total_plots}</td>
-                  <td className="py-2.5 px-4 text-cyan-300">{c.payout_count}</td>
-                  <td className="py-2.5 px-4 text-cyan-400">
-                    {(c.payout_frequency > 1 ? c.payout_frequency : c.payout_frequency * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-4 text-amber-300">{c.gap_count}</td>
-                  <td className="py-2.5 px-4 text-amber-400 font-bold">
-                    {(c.gap_rate > 1 ? c.gap_rate : c.gap_rate * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-4 text-rose-400">{c.overpayment_count}</td>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.label} className="border-b border-line last:border-b-0">
+                  <th scope="row" className="p-4 font-normal">
+                    <span className="block font-semibold">{r.label}</span>
+                    <span className="block text-sm text-muted">{r.hint}</span>
+                  </th>
+                  <td className="p-4 text-muted">{r.base}</td>
+                  <td className="p-4 font-semibold">{r.now}</td>
+                  <td className="p-4">{r.change}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      </section>
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-2">
+        {/* Trade-off */}
+        <section aria-labelledby="trade-h">
+          <h2 id="trade-h" className="text-lg font-semibold">The trade-off</h2>
+          <p className="mt-1 text-sm text-muted">A higher trigger misses fewer failed fields but pays more fields that were fine.</p>
+          <div className="panel mt-3 h-72 p-3">
+            {chartData.length > 1 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 24, right: 16, bottom: 4, left: -8 }}>
+                  <CartesianGrid stroke="#D8DDD4" strokeDasharray="3 3" />
+                  <XAxis dataKey="p" tickFormatter={(v) => `${v}th`} tick={{ fill: '#56655B', fontSize: 12 }} stroke="#8A968D" />
+                  <YAxis tickFormatter={(v) => `${v}%`} tick={{ fill: '#56655B', fontSize: 12 }} stroke="#8A968D" />
+                  <Tooltip formatter={(v: number) => `${v}%`} labelFormatter={(l) => `${l}th percentile`} />
+                  <Legend wrapperStyle={{ fontSize: 13 }} />
+                  <ReferenceLine x={CURRENT_RULE} stroke="#16231C" strokeDasharray="4 3" label={{ value: 'current', fill: '#16231C', fontSize: 12, position: 'top' }} />
+                  <ReferenceLine x={pct} stroke="#1F5E3B" />
+                  <Line type="monotone" dataKey="missed" name="Failed fields missed" stroke="#B45309" strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="overpaid" name="Healthy fields paid" stroke="#5B4BA0" strokeWidth={2.5} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <Loading label="Drawing the curve" />
+            )}
+          </div>
+        </section>
+
+        {/* Counties */}
+        <section aria-labelledby="county-h">
+          <h2 id="county-h" className="text-lg font-semibold">Where the misses are, at the {pct}th</h2>
+          <p className="mt-1 text-sm text-muted">Counties with the most failed fields the index doesn't pay.</p>
+          <div className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-line">
+                  <th scope="col" className="p-3 font-semibold">County</th>
+                  <th scope="col" className="p-3 font-semibold">Plots</th>
+                  <th scope="col" className="p-3 font-semibold">Missed</th>
+                  <th scope="col" className="w-2/5 p-3 font-semibold">Miss rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...sim.county_breakdown].sort((a, b) => toPct(b.gap_rate) - toPct(a.gap_rate)).map((c) => (
+                  <tr key={c.county} className="border-b border-line last:border-b-0">
+                    <th scope="row" className="p-3 font-semibold">{c.county}</th>
+                    <td className="p-3">{n(c.total_plots)}</td>
+                    <td className="p-3">{n(c.gap_count)}</td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 flex-1 rounded-full bg-sunk">
+                          <div className="h-2 rounded-full bg-loss" style={{ width: `${(toPct(c.gap_rate) / maxGap) * 100}%` }} />
+                        </div>
+                        <span className="w-12 text-right">{toPct(c.gap_rate).toFixed(1)}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
+
+      <p className="mt-10 max-w-prose text-sm text-muted">
+        This replays the rule on historical test plots from the dataset. The payout total assumes a flat amount per paid plot
+        for illustration. It is a way to explore the rule, not pricing advice.
+      </p>
     </div>
   );
 };

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { X, Shield, FileText, CheckCircle2, Copy, GitBranch, ExternalLink, BookOpen } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { api, PolicyClausesResponse } from '../services/api';
+import { outcomeInfo, ACTIONS } from '../lib/outcomes';
+import { fmtStamp } from '../lib/format';
 
 interface PolicyModalProps {
   isOpen: boolean;
@@ -8,186 +10,9 @@ interface PolicyModalProps {
   selectedClauseId?: string | null;
 }
 
-export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selectedClauseId }) => {
-  const [activeTab, setActiveTab] = useState<'clauses' | 'fulltext' | 'protocol'>('clauses');
-  const [clausesData, setClausesData] = useState<PolicyClausesResponse | null>(null);
-  const [fullText, setFullText] = useState<string>('');
-  const [copied, setCopied] = useState(false);
+type Tab = 'clauses' | 'rule' | 'text';
 
-  useEffect(() => {
-    if (isOpen) {
-      api.getPolicyClauses().then(setClausesData).catch(console.error);
-      api.getPolicyText().then(res => setFullText(res.full_text)).catch(console.error);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleCopyHash = () => {
-    navigator.clipboard.writeText('0371cad');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[85vh] flex flex-col bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
-          <div className="flex items-center space-x-3">
-            <div className="h-9 w-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-              <FileText className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white flex items-center space-x-2">
-                <span>Illustrative Policy & Frozen Protocol</span>
-                <span className="text-xs px-2 py-0.5 rounded-full font-mono bg-brand-500/10 text-brand-300 border border-brand-500/30">
-                  FP-DEMO-2026-001
-                </span>
-              </h2>
-              <p className="text-xs text-slate-400">
-                Grounding policy index with automated clause citations (CL-1.1 through CL-8.1)
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="px-5 pt-3 border-b border-slate-800 bg-slate-900/40 flex space-x-4 text-xs font-medium">
-          <button
-            onClick={() => setActiveTab('clauses')}
-            className={`pb-2.5 border-b-2 transition-all flex items-center space-x-1.5 ${
-              activeTab === 'clauses'
-                ? 'border-brand-500 text-brand-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            <span>Clause Index ({clausesData?.clauses.length || 12} Clauses)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('protocol')}
-            className={`pb-2.5 border-b-2 transition-all flex items-center space-x-1.5 ${
-              activeTab === 'protocol'
-                ? 'border-brand-500 text-brand-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <GitBranch className="h-3.5 w-3.5" />
-            <span>Frozen Protocol Commit Proof</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('fulltext')}
-            className={`pb-2.5 border-b-2 transition-all flex items-center space-x-1.5 ${
-              activeTab === 'fulltext'
-                ? 'border-brand-500 text-brand-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <FileText className="h-3.5 w-3.5" />
-            <span>Full 2-Page Policy Text</span>
-          </button>
-        </div>
-
-        {/* Content Body */}
-        <div className="p-5 overflow-y-auto flex-1 text-xs">
-          {activeTab === 'clauses' && (
-            <div className="space-y-3">
-              {clausesData?.clauses.map((clause) => {
-                const isSelected = selectedClauseId === clause.clause_id;
-                return (
-                  <div
-                    key={clause.clause_id}
-                    className={`p-3.5 rounded-xl border transition-all ${
-                      isSelected
-                        ? 'bg-brand-950/40 border-brand-500/60 ring-1 ring-brand-500/40'
-                        : 'glass-card border-slate-800 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center space-x-2">
-                        <span className="px-2 py-0.5 rounded font-mono font-bold text-brand-300 bg-brand-500/10 border border-brand-500/20 text-xs">
-                          {clause.clause_id}
-                        </span>
-                        <span className="font-semibold text-white text-sm">{clause.title}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {clause.maps_to_outcome && (
-                          <span className="px-2 py-0.5 rounded-full font-mono text-[10px] bg-slate-800 text-slate-300 border border-slate-700">
-                            Outcome: {clause.maps_to_outcome}
-                          </span>
-                        )}
-                        {clause.maps_to_action && (
-                          <span className="px-2 py-0.5 rounded-full font-mono text-[10px] bg-brand-900/40 text-brand-300 border border-brand-700/40">
-                            Action: {clause.maps_to_action}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-slate-300 leading-relaxed text-xs pl-0.5">
-                      {clause.summary}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {activeTab === 'protocol' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                    <span className="font-bold text-white text-sm">
-                      Frozen Trigger Protocol Verification
-                    </span>
-                  </div>
-                  <button
-                    onClick={handleCopyHash}
-                    className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors text-xs font-mono"
-                  >
-                    <Copy className="h-3 w-3" />
-                    <span>{copied ? 'Copied!' : 'Copy Hash: 0371cad'}</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-3">
-                  <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                    <span className="text-slate-400 block text-[11px] mb-1">Git Commit Hash</span>
-                    <span className="font-mono text-emerald-400 font-bold text-sm">
-                      0371cad (parent: feca4ae)
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                    <span className="text-slate-400 block text-[11px] mb-1">Commit Timestamp (IST)</span>
-                    <span className="font-mono text-slate-200">
-                      2026-10-16T11:09:07+05:30
-                    </span>
-                  </div>
-                </div>
-
-                <p className="text-slate-300 text-xs leading-relaxed">
-                  To eliminate circularity or post-hoc threshold tuning, the trigger rule, NDVI anomaly cut-off, and observable sign rubric were committed to git and timestamped BEFORE evaluating any test plots in the Eyes on the Ground dataset.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-xs font-bold text-slate-300 block mb-2 uppercase tracking-wider">
-                  Frozen SQL Trigger Rule (protocol/frozen_trigger.sql)
-                </span>
-                <pre className="p-3 rounded-lg bg-slate-900 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed border border-slate-800">
-{`-- FROZEN TRIGGER RULE (FieldProof v2)
--- Committed: 2026-10-16T11:09:07+05:30 | Hash: feca4ae
+const RULE_SQL = `-- Payout rule, locked before evaluation
 SELECT
   p.plot_id,
   p.county,
@@ -200,29 +25,115 @@ SELECT
 FROM \`fieldproof.plot_evidence\` p
 JOIN \`fieldproof.county_season_triggers\` t
   ON p.county = t.county AND p.season = t.season
-WHERE t.trigger_percentile = 30;`}
-                </pre>
-              </div>
-            </div>
-          )}
+WHERE t.trigger_percentile = 30;`;
 
-          {activeTab === 'fulltext' && (
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-              <pre className="whitespace-pre-wrap font-sans text-xs text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto">
-                {fullText || "Loading illustrative policy text..."}
-              </pre>
-            </div>
-          )}
+export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selectedClauseId }) => {
+  const [tab, setTab] = useState<Tab>('clauses');
+  const [clauses, setClauses] = useState<PolicyClausesResponse | null>(null);
+  const [fullText, setFullText] = useState('');
+  const [lock, setLock] = useState<{ hash: string; at: string } | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setTab('clauses');
+    closeRef.current?.focus();
+    if (!clauses) api.getPolicyClauses().then(setClauses).catch(() => {});
+    if (!fullText) api.getPolicyText().then((r) => setFullText(r.full_text)).catch(() => {});
+    if (!lock) api.getValidationSummary()
+      .then((v) => setLock({ hash: v.frozen_protocol.frozen_commit_hash, at: v.frozen_protocol.frozen_commit_timestamp }))
+      .catch(() => {});
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (isOpen && selectedClauseId && clauses) {
+      document.getElementById(`clause-${selectedClauseId}`)?.scrollIntoView({ block: 'center' });
+    }
+  }, [isOpen, selectedClauseId, clauses]);
+
+  if (!isOpen) return null;
+
+  const TABS: { id: Tab; label: string }[] = [
+    { id: 'clauses', label: 'Clauses' },
+    { id: 'rule', label: 'Payout rule' },
+    { id: 'text', label: 'Full policy' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="policy-title">
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-ink/40" tabIndex={-1} />
+      <div className="settle relative flex h-full w-full max-w-2xl flex-col bg-surface shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-line p-5">
+          <div>
+            <h2 id="policy-title" className="text-xl font-semibold">Demo policy and payout rule</h2>
+            <p className="mt-1 text-sm text-muted">
+              An illustrative policy written for this prototype{clauses?.policy_ref ? ` (${clauses.policy_ref})` : ''}. Briefs may only cite clauses listed here.
+            </p>
+          </div>
+          <button ref={closeRef} onClick={onClose} className="rounded p-1.5 text-muted hover:bg-canvas hover:text-ink" aria-label="Close">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        {/* Footer */}
-        <div className="p-3.5 px-5 bg-slate-950 border-t border-slate-800 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs transition-colors"
-          >
-            Close
-          </button>
+        <div role="tablist" className="flex gap-1 border-b border-line px-5">
+          {TABS.map((t) => (
+            <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
+              className={`relative px-3 py-3 text-sm font-medium ${tab === t.id ? 'text-ink' : 'text-muted hover:text-ink'}`}>
+              {t.label}
+              {tab === t.id && <span className="absolute inset-x-3 bottom-0 h-[3px] rounded-t bg-field" />}
+            </button>
+          ))}
+        </div>
+
+        <div className="scroll-thin flex-1 overflow-y-auto p-5">
+          {tab === 'clauses' && (
+            <ol className="space-y-3">
+              {!clauses && <li className="text-muted">Loading clauses…</li>}
+              {clauses?.clauses.map((c) => {
+                const on = c.clause_id === selectedClauseId;
+                return (
+                  <li key={c.clause_id} id={`clause-${c.clause_id}`}
+                    className={`rounded-lg border p-4 ${on ? 'border-field bg-field-soft' : 'border-line'}`}>
+                    <p className="font-semibold">
+                      <span className="text-field">{c.clause_id}</span> {c.title}
+                    </p>
+                    <p className="mt-1 text-sm leading-6">{c.summary}</p>
+                    {(c.maps_to_outcome || c.maps_to_action) && (
+                      <p className="mt-2 text-sm text-muted">
+                        Used for: {c.maps_to_outcome ? outcomeInfo(c.maps_to_outcome).label.toLowerCase() : ''}
+                        {c.maps_to_outcome && c.maps_to_action ? '. ' : ''}
+                        {c.maps_to_action ? (ACTIONS[c.maps_to_action] ?? c.maps_to_action) : ''}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+
+          {tab === 'rule' && (
+            <div className="space-y-5">
+              <p className="leading-7">
+                The index pays when a plot's season rain is below the 30th percentile of its own history for the same window.
+                This rule and its thresholds were saved in version control before any test claim was scored, and have not
+                changed since.
+              </p>
+              {lock && (
+                <p className="text-sm">
+                  Version <span className="font-mono">{lock.hash}</span>, locked {fmtStamp(lock.at)}.
+                </p>
+              )}
+              <pre className="scroll-thin overflow-x-auto rounded-lg bg-ink p-4 font-mono text-xs leading-6 text-white">{RULE_SQL}</pre>
+            </div>
+          )}
+
+          {tab === 'text' && (
+            <div className="whitespace-pre-wrap leading-7">{fullText || 'Loading the policy text…'}</div>
+          )}
         </div>
       </div>
     </div>

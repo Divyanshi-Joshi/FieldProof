@@ -88,6 +88,28 @@ export interface PolicyClausesResponse {
   }>;
 }
 
+export interface UploadResult {
+  claim_id: string;
+  integrity_passed: boolean;
+  rejected_photo_indices: number[];
+  integrity_flags: string[];
+  farmer_messages: { en?: string; hi?: string; sw?: string } | null;
+}
+
+/** Accepts either a full ClaimBundle or a flat upload response. */
+function normalizeUpload(r: any): UploadResult {
+  const g = r?.grading ?? r ?? {};
+  const d = r?.decision ?? r ?? {};
+  const passed = g.integrity_passed ?? (d.outcome_class ? d.outcome_class !== 'INTEGRITY_HOLD' : true);
+  return {
+    claim_id: g.claim_id ?? r?.claim_id ?? '',
+    integrity_passed: Boolean(passed),
+    rejected_photo_indices: g.rejected_photo_indices ?? [],
+    integrity_flags: g.integrity_flags ?? [],
+    farmer_messages: d.farmer_messages ?? (r?.user_explanation ? { en: r.user_explanation } : null),
+  };
+}
+
 const API_BASE = '/api';
 
 export const api = {
@@ -119,13 +141,19 @@ export const api = {
     return await res.json();
   },
 
-  async uploadClaim(formData: FormData): Promise<any> {
-    const res = await fetch(`${API_BASE}/claims/upload`, {
-      method: 'POST',
-      body: formData,
-    });
+  /**
+   * Sends the plot details and the three photos as multipart form data.
+   * The photo part name is "photos" (repeated). If your Spring controller uses a different
+   * @RequestParam name, change PHOTO_FIELD below.
+   */
+  async uploadClaim(fields: Record<string, string>, photos: Blob[], names: string[] = []): Promise<UploadResult> {
+    const PHOTO_FIELD = 'photos';
+    const formData = new FormData();
+    Object.entries(fields).forEach(([k, v]) => formData.append(k, v));
+    photos.forEach((p, i) => formData.append(PHOTO_FIELD, p, names[i] || `photo_${i + 1}.jpg`));
+    const res = await fetch(`${API_BASE}/claims/upload`, { method: 'POST', body: formData });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    return normalizeUpload(await res.json());
   },
 
   async simulateIndexDoctor(percentile: number): Promise<IndexDoctorSimulation> {

@@ -3,175 +3,52 @@
 @tailwind utilities;
 
 @layer base {
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    @apply bg-slate-950 text-slate-100 font-sans;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.06) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-feature-settings: 'tnum' 1;
+  }
+  h1, h2, h3 { @apply font-display text-ink; letter-spacing: -0.015em; }
+  ::selection { background: #F2DD8C; color: #16231C; }
+
+  :focus-visible {
+    outline: 2px solid #1F5E3B;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  input[type='range'] { accent-color: #1F5E3B; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-field text-white hover:bg-field-hover; }
+  .btn-quiet { @apply btn border border-line bg-surface text-ink hover:border-faint; }
+  .btn-text { @apply inline-flex items-center gap-1.5 text-sm font-semibold text-field underline-offset-4 hover:underline; }
+
+  .panel { @apply rounded-lg border border-line bg-surface; }
+  .label { @apply text-xs font-medium text-muted; }
+  .field-input {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2.5 text-base text-ink placeholder:text-faint focus:border-field focus:outline-none focus:ring-2 focus:ring-field/20;
   }
 }
 
-/* Glassmorphism utilities */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* The one orchestrated moment: the season chart draws in on the landing page */
+@keyframes grow-up { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.bar-grow { transform-origin: bottom; transform-box: fill-box; animation: grow-up 500ms cubic-bezier(.2,.7,.2,1) both; }
+.reveal-late { animation: fade-in 500ms ease-out 1300ms both; }
+
+/* Panels that answer an action (opening a claim, a result arriving) */
+@keyframes settle { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.settle { animation: settle 220ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-grow, .reveal-late, .settle { animation: none !important; }
+  * { scroll-behavior: auto !important; }
 }
 
-.glass-card {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.glass-card:hover {
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 8px 30px -10px rgba(16, 185, 129, 0.15);
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.4);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.6);
-}
-
-/* Pulse animation for live indicators */
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Page transition animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-in {
-  animation: fadeInUp 0.4s ease-out forwards;
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.slide-in-from-bottom-4 {
-  animation: slideInFromBottom 0.45s ease-out forwards;
-}
-
-/* Glow effects for interactive cards */
-.glow-emerald:hover {
-  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.25), 0 8px 30px -10px rgba(16, 185, 129, 0.15);
-}
-
-.glow-brand:hover {
-  box-shadow: 0 0 20px -5px rgba(5, 150, 105, 0.25), 0 8px 30px -10px rgba(5, 150, 105, 0.15);
-}
-
-.glow-cyan:hover {
-  box-shadow: 0 0 20px -5px rgba(14, 165, 233, 0.25), 0 8px 30px -10px rgba(14, 165, 233, 0.15);
-}
-
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, #ffffff, #a7f3d0, #6ee7b7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Custom range slider for Index Doctor */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 8px;
-  border-radius: 4px;
-  background: linear-gradient(to right, rgba(16, 185, 129, 0.3), rgba(14, 165, 233, 0.3));
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
-  cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-  transition: box-shadow 0.2s;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
-  cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-}
-
-/* Smooth select/input focus glow */
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
-}
-
-/* Animated floating orbs background */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
+.scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #D8DDD4; border-radius: 8px; }
