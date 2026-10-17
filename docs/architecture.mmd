@@ -1,0 +1,44 @@
+flowchart TD
+    %% Styling and Classes
+    classDef gemini fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0369a1;
+    classDef deterministic fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46;
+    classDef human fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e;
+    classDef storage fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,stroke-dasharray: 5 5,color:#374151;
+
+    subgraph INGESTION ["1. Photo & Claim Ingestion"]
+        A["Farmer Mobile Upload (3 Photos + Plot ID)"] --> B["Image Integrity Check (pHash & EXIF Extraction)"]:::deterministic
+    end
+
+    subgraph FORENSICS ["2. Multi-Pass Vision Perception"]
+        B -- "Integrity Passed" --> C["Gemini 3 Flash Vision Perception (2 Passes with Shuffled Anchors)"]:::gemini
+        B -- "Recapture / Duplicates" --> HOLD["INTEGRITY_HOLD (Hard Override)"]:::deterministic
+        C --> D["Deterministic Severity Mapper (Code Decides Bands)"]:::deterministic
+        D --> E["Two-Pass Agreement Gate (Abstain if Passes Disagree)"]:::deterministic
+    end
+
+    subgraph RECONCILIATION ["3. Three-Signal Reconciliation"]
+        F["Satellite Stress Anomaly (Sentinel-2 NDVI Anomaly)"]:::storage
+        G["Frozen Weather Index Trigger (Rainfall Percentile Query)"]:::storage
+        H["Phenological Calendar (Dry Spell vs Flowering Stage)"]:::storage
+
+        E --> I["Three-Signal Concordance Decision Table (Pure Java)"]:::deterministic
+        F --> I
+        G --> I
+        H --> I
+    end
+
+    subgraph POLICY_TRIAGE ["4. Policy Verification & Adjuster Triage"]
+        I --> J["Policy Brief Generation (Clause Grounding & Fact Checking)"]:::gemini
+        J --> K["BriefGuard (Verifies Citations & Excludes Payment Promises)"]:::deterministic
+        K --> L["Priority Triage Queue (Gaps > Conflicts > Review)"]:::deterministic
+        L --> M["Certified Human Claims Adjuster (Sign-off: Approve / Reject / Escalate)"]:::human
+    end
+
+    subgraph AUDIT_LEDGER ["5. Append-Only Audit Trail"]
+        M --> N["BigQuery Append-Only Audit Log (Required for Decision Sign-off)"]:::storage
+    end
+
+    class A,M human;
+    class C,J gemini;
+    class B,D,E,I,K,L,HOLD deterministic;
+    class F,G,H,N storage;
