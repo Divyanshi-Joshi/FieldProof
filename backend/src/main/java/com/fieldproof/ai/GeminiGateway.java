@@ -57,10 +57,19 @@ public class GeminiGateway {
                 ? props.gemini().maxConcurrency()
                 : 4;
         this.semaphore = new Semaphore(maxConcurrency);
-        this.clientSupplier = () -> Client.builder()
-                .project(props.gcp().projectId())
-                .location(props.gcp().vertexLocation())
-                .build();
+        this.clientSupplier = () -> {
+            String apiKey = System.getenv("GEMINI_API_KEY");
+            if (apiKey != null && !apiKey.isBlank()) {
+                log.info("Connecting to Gemini via GEMINI_API_KEY");
+                return Client.builder().apiKey(apiKey.trim()).build();
+            }
+            log.info("Connecting to Gemini via Vertex AI mode (project={}, location={})",
+                    props.gcp().projectId(), props.gcp().vertexLocation());
+            return Client.builder()
+                    .project(props.gcp().projectId())
+                    .location(props.gcp().vertexLocation())
+                    .build();
+        };
     }
 
     /**

@@ -370,7 +370,7 @@ public class ClaimService {
         Contracts.AuditRecord audit = new Contracts.AuditRecord(
                 "AUD-" + UUID.randomUUID().toString().substring(0, 8),
                 claimId, safePlotId, Instant.now(),
-                "gemini-2.0-flash-001", "v2.1.0",
+                "gemini-3-flash-preview", "grading_signs_v1",
                 List.of("anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"),
                 getFrozenCommitHash(), Instant.now(), false,
                 outcomeClass, action,

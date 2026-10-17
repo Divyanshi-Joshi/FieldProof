@@ -69,4 +69,9 @@ class GeminiGatewayTest {
         assertEquals(150L, result.inputTokens());
         assertEquals(60L, result.outputTokens());
     }
+
+    @Test
+    void testClientBuilderWithApiKey() {
+        assertNotNull(com.google.genai.Client.builder().apiKey("test-key"));
+    }
 }
