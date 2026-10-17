@@ -26,40 +26,67 @@ FieldProof is an AI-assisted parametric crop insurance reconciliation platform. 
 ## ⚡ Quick Start (Run Locally)
 
 ### 1. Prerequisites
+Ensure you have the following installed on your machine:
 - **Java 21 LTS** (`java -version`)
-- **Node.js 18+** (`node -v`)
+- **Node.js 18+ & npm** (`node -v` and `npm -v`)
+- **Google Cloud CLI (`gcloud`)** (`gcloud --version`)
+- **Docker** (optional, for local container testing and Cloud Run: `docker --version`)
 
-### 2. Configure Gemini API Key (Simplest & Recommended)
-FieldProof supports both **Google AI Studio (`GEMINI_API_KEY`)** for rapid local development and **Google Cloud Vertex AI (ADC)** for production.
+### 2. Authentication & Environment Configuration
+FieldProof connects to Gemini using the Google GenAI SDK and supports two authentication pathways:
 
-**To run with your Gemini API Key:**
-1. Copy `.env.example` to `.env` in the repository root (or edit `.env` directly):
+#### Pathway A: Google Cloud Vertex AI via ADC (Standard Production Setup)
+Use this when developing against your Google Cloud Project or deploying to Cloud Run:
+1. **Authenticate with Google Cloud Application Default Credentials (ADC)**:
+   ```bash
+   gcloud auth login
+   gcloud auth application-default login
+   gcloud auth application-default set-quota-project <your-gcp-project-id>
+   ```
+2. **Export the required environment variables**:
+   - **Linux / macOS**:
+     ```bash
+     export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
+     export FIELDPROOF_VERTEX_LOCATION="global"              # or asia-south1
+     export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+     export CR_REGION="asia-south1"                          # Mumbai
+     ```
+   - **Windows (PowerShell)**:
+     ```powershell
+     $env:FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
+     $env:FIELDPROOF_VERTEX_LOCATION="global"
+     $env:FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
+     $env:CR_REGION="asia-south1"
+     ```
+
+#### Pathway B: Google AI Studio API Key (Fast Local Development)
+Use this to run and evaluate Gemini vision models immediately without configuring Google Cloud project billing:
+1. Copy `.env.example` to `.env` in the repository root:
    ```bash
    cp .env.example .env
    ```
-2. Insert your Gemini API key (from [Google AI Studio](https://aistudio.google.com/app/apikey)):
+2. Insert your Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey):
    ```env
-   GEMINI_API_KEY="your-gemini-api-key-here"
+   GEMINI_API_KEY="your-gemini-api-key"
    ```
 3. Load the environment variables:
    - **Windows (PowerShell)**:
      ```powershell
      . .\setup-env.ps1
      ```
-   - **macOS / Linux**:
+   - **Linux / macOS**:
      ```bash
      source setup-env.sh
      ```
-
-*(Alternative for Google Cloud Vertex AI mode: run `gcloud auth application-default login` and set `export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"`).*
 
 ### 3. Start the Backend (Port 8080)
 ```bash
 ./mvnw spring-boot:run -pl backend
 ```
 - Health check: `http://localhost:8080/api/health`
+- Gemini ping: `http://localhost:8080/api/gemini/ping`
 - Terminal logs will confirm live AI vision connections:
-  `INFO ... Connecting to Gemini via GEMINI_API_KEY`
+  `INFO ... Connecting to Gemini via GEMINI_API_KEY` (or Vertex AI mode)
   `INFO ... Dispatching Gemini vision grading for claim ...`
 
 ### 4. Start the Frontend (Port 5173)
