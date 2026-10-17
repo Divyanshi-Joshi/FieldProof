@@ -10,6 +10,7 @@ import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class GeminiGateway {
     private final AtomicLong parseFailureCount = new AtomicLong(0);
     private final Random random = new Random();
 
+    @Autowired
     public GeminiGateway(FieldProofProperties props, ResponseCache responseCache, ObjectMapper objectMapper) {
         this.props = props;
         this.responseCache = responseCache;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fieldproof.config.FieldProofProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class ResponseCache {
     private final Path cacheDir;
     private final ObjectMapper objectMapper;
 
+    @Autowired
     public ResponseCache(FieldProofProperties props, ObjectMapper objectMapper) {
         String dir = (props.cache() != null && props.cache().dir() != null && !props.cache().dir().isBlank())
                 ? props.cache().dir()
