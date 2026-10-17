@@ -1,4 +1,4 @@
-# 🌾 FieldProof — Automated Crop Insurance Forensic Reconciliation Engine
+# 🌾 FieldProof : An Automated Crop Insurance Forensic Reconciliation Engine
 
 [![Java 21](https://img.shields.io/badge/Java-21%20LTS-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
