@@ -1,0 +1,640 @@
+[
+  {
+    "_case": 1,
+    "_label": "PHENOLOGICAL_BASIS_RISK_GAP — Wanjiru's headline case",
+    "_description": "Index doesn't pay (341mm > 290mm trigger), but 21-day dry spell during flowering caused severe drought damage confirmed by satellite stress (NDVI z = -1.9).",
+    "grading": {
+      "claim_id": "CLM-2026-001",
+      "plot_id": "P-0142",
+      "uploaded_at": "2026-10-16T07:23:00Z",
+      "photo_urls": [
+        "/images/L429F00196C01S01028Rp12846.jpg",
+        "/images/L429F00196C01S01028Rp13485.jpg",
+        "/images/L429F00196C01S01028Rp14607.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false,
+      "duplicate_across_claims": true,
+      "matched_earlier_claim_id": "CLM-2025-987",
+      "rejected_photo_indices": [0],
+      "exif_timestamp_present": true,
+      "exif_gps_present": false,
+      "integrity_flags": ["photo_0_duplicate_of_CLM-2025-987", "no_exif_gps"],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "flowering",
+        "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": true },
+        "damage_type": "drought", "confidence": 0.85,
+        "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
+        "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "flowering",
+        "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": true },
+        "damage_type": "drought", "confidence": 0.82,
+        "visible_evidence": ["tightly rolled leaves", "premature yellowing", "visible soil cracks"],
+        "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "flowering",
+      "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": true },
+      "damage_type": "drought", "confidence": 0.84,
+      "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
+      "photo_quality_flags": [],
+      "pass_1_band": "SEVERE", "pass_2_band": "SEVERE",
+      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0142", "county": "Makueni", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 341, "trigger_rain_mm": 290, "trigger_percentile": 30,
+      "index_pays": false, "low_local_rain": true,
+      "max_dry_spell_days": 21, "dry_spell_window_start": "2025-03-12", "dry_spell_window_end": "2025-04-01",
+      "dry_spell_overlaps_critical_stage": true,
+      "ndvi_observed": 0.31, "ndvi_baseline_mean": 0.52, "ndvi_anomaly_z": -1.9,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": true,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T07:25:12Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-001", "plot_id": "P-0142",
+      "outcome_class": "PHENOLOGICAL_BASIS_RISK_GAP", "recommended_action": "ESCALATE",
+      "failure_mode": "Seasonal total (341 mm) above trigger (290 mm), but a 21-day dry spell overlapped flowering. NDVI z = −1.9 confirms satellite stress. Phenological basis-risk gap.",
+      "cited_clause_ids": ["4.2.1", "5.3", "7.1.4"], "citations_validated_by_code": true,
+      "adjuster_brief": "Severe drought damage during flowering, masked by adequate seasonal total. Escalate under §7.1.4.",
+      "farmer_messages": {
+        "en": "Your claim CLM-2026-001 for plot P-0142 has been escalated for review. We detected significant drought damage during the flowering stage. You will hear from us within 5 working days.",
+        "hi": "आपका दावा CLM-2026-001 प्लॉट P-0142 के लिए समीक्षा हेतु भेजा गया है। फूल आने के चरण में सूखे का नुकसान पाया गया।",
+        "sw": "Dai lako CLM-2026-001 kwa shamba P-0142 limeongezwa kwa ukaguzi. Uharibifu wa ukame uligunduliwa wakati wa kutoa maua."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-001", "claim_id": "CLM-2026-001", "plot_id": "P-0142",
+      "timestamp_utc": "2026-10-16T07:30:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T07:25:12Z",
+      "cache_hit": false,
+      "system_outcome_class": "PHENOLOGICAL_BASIS_RISK_GAP", "system_recommended_action": "ESCALATE",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 2,
+    "_label": "SPATIAL_BASIS_RISK_GAP",
+    "_description": "Index doesn't pay, photo shows moderate drought, satellite confirms stress, but no dry-spell overlap with critical stage — plot-level rain is low.",
+    "grading": {
+      "claim_id": "CLM-2026-002",
+      "plot_id": "P-0217",
+      "uploaded_at": "2026-10-16T08:10:00Z",
+      "photo_urls": [
+        "/images/L341F02966C01S08093Rp29091.jpg",
+        "/images/L341F02966C01S08093Rp31014.jpg",
+        "/images/L341F02966C01S08093Rp31779.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false, "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null, "rejected_photo_indices": [],
+      "exif_timestamp_present": true, "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.73,
+        "visible_evidence": ["moderate leaf curling", "early yellowing"], "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.70,
+        "visible_evidence": ["curled leaves", "canopy thinning"], "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "vegetative",
+      "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 2, "stunting_0_3": 1, "soil_cracking_visible": false },
+      "damage_type": "drought", "confidence": 0.72,
+      "visible_evidence": ["moderate leaf curling", "early yellowing"],
+      "photo_quality_flags": [],
+      "pass_1_band": "MODERATE", "pass_2_band": "MODERATE",
+      "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0217", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 305, "trigger_rain_mm": 280, "trigger_percentile": 30,
+      "index_pays": false, "low_local_rain": true,
+      "max_dry_spell_days": 14, "dry_spell_window_start": "2025-02-20", "dry_spell_window_end": "2025-03-05",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.35, "ndvi_baseline_mean": 0.54, "ndvi_anomaly_z": -1.7,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": true,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T08:12:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-002", "plot_id": "P-0217",
+      "outcome_class": "SPATIAL_BASIS_RISK_GAP", "recommended_action": "ESCALATE",
+      "failure_mode": "Plot-level rain (305 mm) is above trigger (280 mm) but below median. Dry spell did not overlap flowering, yet moderate drought damage and satellite stress are confirmed. Spatial basis-risk gap: the area index missed localized low rainfall.",
+      "cited_clause_ids": ["4.2.1", "5.4"], "citations_validated_by_code": true,
+      "adjuster_brief": "Moderate drought confirmed by photos and satellite, but index did not trigger. Localized low rainfall pattern. Escalate under §5.4.",
+      "farmer_messages": {
+        "en": "Your claim CLM-2026-002 has been escalated for review. We found drought damage on your plot that was not captured by the area rainfall index.",
+        "hi": "आपका दावा CLM-2026-002 समीक्षा के लिए भेजा गया है।",
+        "sw": "Dai lako CLM-2026-002 limeongezwa kwa ukaguzi."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-002", "claim_id": "CLM-2026-002", "plot_id": "P-0217",
+      "timestamp_utc": "2026-10-16T08:15:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T08:12:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "SPATIAL_BASIS_RISK_GAP", "system_recommended_action": "ESCALATE",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 3,
+    "_label": "EVIDENCE_CONFLICT — Photo shows drought, satellite is healthy",
+    "_description": "No index payout, photo shows moderate drought damage, but satellite NDVI is healthy. Conflict — request more photos.",
+    "grading": {
+      "claim_id": "CLM-2026-003",
+      "plot_id": "P-0089",
+      "uploaded_at": "2026-10-16T09:00:00Z",
+      "photo_urls": [
+        "/images/L1093F01350C01S00984Rp00152.jpg",
+        "/images/L1093F01350C01S00984Rp01472.jpg",
+        "/images/L1093F01350C01S00984Rp02541.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false, "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null, "rejected_photo_indices": [],
+      "exif_timestamp_present": true, "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 1, "stunting_0_3": 2, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.65,
+        "visible_evidence": ["moderate leaf curl", "stunted plants"], "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 1, "stunting_0_3": 2, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.63,
+        "visible_evidence": ["leaf rolling", "short stand height"], "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "vegetative",
+      "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 1, "stunting_0_3": 2, "soil_cracking_visible": false },
+      "damage_type": "drought", "confidence": 0.64,
+      "visible_evidence": ["moderate leaf curl", "stunted plants"],
+      "photo_quality_flags": [],
+      "pass_1_band": "MODERATE", "pass_2_band": "MODERATE",
+      "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0089", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 380, "trigger_rain_mm": 295, "trigger_percentile": 30,
+      "index_pays": false, "low_local_rain": false,
+      "max_dry_spell_days": 8, "dry_spell_window_start": "2025-03-01", "dry_spell_window_end": "2025-03-08",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.49, "ndvi_baseline_mean": 0.51, "ndvi_anomaly_z": -0.4,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T09:02:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-003", "plot_id": "P-0089",
+      "outcome_class": "EVIDENCE_CONFLICT", "recommended_action": "ASK_MORE_PHOTOS_HUMAN_REVIEW",
+      "failure_mode": "Photo shows moderate drought (leaf rolling 2/3, stunting 2/3) but NDVI anomaly z = −0.4 shows healthy vegetation. The photo and satellite evidence conflict. Not counted as a basis-risk gap.",
+      "cited_clause_ids": ["4.2.1", "6.1"], "citations_validated_by_code": true,
+      "adjuster_brief": "Photo and satellite disagree. Request additional photos from different angles. Manual review required under §6.1.",
+      "farmer_messages": {
+        "en": "We have reviewed your photos for plot P-0089. We need more photos from different angles to complete the assessment. Please upload 3 more photos. Reference: CLM-2026-003.",
+        "hi": "हमने प्लॉट P-0089 की तस्वीरों की समीक्षा की है। कृपया अतिरिक्त तस्वीरें भेजें।",
+        "sw": "Tumekagua picha za shamba P-0089. Tunahitaji picha zaidi. Tafadhali pakia picha 3 zaidi."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-003", "claim_id": "CLM-2026-003", "plot_id": "P-0089",
+      "timestamp_utc": "2026-10-16T09:05:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T09:02:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "EVIDENCE_CONFLICT", "system_recommended_action": "ASK_MORE_PHOTOS_HUMAN_REVIEW",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 4,
+    "_label": "NON_WEATHER_LOSS — Pest/disease damage",
+    "_description": "No index payout. Photo shows pest damage, not drought. Routed to advisory, not a weather-based gap.",
+    "grading": {
+      "claim_id": "CLM-2026-004",
+      "plot_id": "P-0331",
+      "uploaded_at": "2026-10-16T09:30:00Z",
+      "photo_urls": [
+        "/images/227_repeat_2_1787_4697_3071.JPG",
+        "/images/227_repeat_2_1787_5658_4033.JPG",
+        "/images/227_repeat_2_1787_6199_4563.JPG"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false, "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null, "rejected_photo_indices": [],
+      "exif_timestamp_present": true, "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "grain_filling",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 1, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "pest", "confidence": 0.78,
+        "visible_evidence": ["stem borer holes", "frass on leaf axils", "broken tassels"],
+        "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "grain_filling",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 1, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "pest", "confidence": 0.76,
+        "visible_evidence": ["entry holes in stems", "frass deposits", "damaged cobs"],
+        "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "grain_filling",
+      "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 1, "stunting_0_3": 0, "soil_cracking_visible": false },
+      "damage_type": "pest", "confidence": 0.77,
+      "visible_evidence": ["stem borer holes", "frass on leaf axils", "broken tassels"],
+      "photo_quality_flags": [],
+      "pass_1_band": "NONE", "pass_2_band": "NONE",
+      "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0331", "county": "Makueni", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 410, "trigger_rain_mm": 290, "trigger_percentile": 30,
+      "index_pays": false, "low_local_rain": false,
+      "max_dry_spell_days": 5, "dry_spell_window_start": "2025-04-10", "dry_spell_window_end": "2025-04-14",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.48, "ndvi_baseline_mean": 0.53, "ndvi_anomaly_z": -0.6,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T09:32:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-004", "plot_id": "P-0331",
+      "outcome_class": "NON_WEATHER_LOSS", "recommended_action": "ROUTE_TO_ADVISORY",
+      "failure_mode": "Damage type is pest (stem borer), not drought. Rainfall and NDVI are both healthy. This loss falls outside the weather index cover.",
+      "cited_clause_ids": ["3.1", "8.2"], "citations_validated_by_code": true,
+      "adjuster_brief": "Pest damage (stem borer) identified, not a weather event. Route to agricultural advisory per §8.2.",
+      "farmer_messages": {
+        "en": "Your photos for plot P-0331 show pest damage, not weather-related damage. This is not covered by your weather index insurance. We are routing your case to our agricultural advisory service for assistance.",
+        "hi": "प्लॉट P-0331 की तस्वीरें कीट क्षति दर्शाती हैं। यह मौसम बीमा के दायरे में नहीं है।",
+        "sw": "Picha za shamba P-0331 zinaonyesha uharibifu wa wadudu. Hii haifunikiwi na bima ya hali ya hewa."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-004", "claim_id": "CLM-2026-004", "plot_id": "P-0331",
+      "timestamp_utc": "2026-10-16T09:35:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T09:32:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "NON_WEATHER_LOSS", "system_recommended_action": "ROUTE_TO_ADVISORY",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 5,
+    "_label": "INTEGRITY_HOLD — All photos duplicate / screen recapture",
+    "_description": "All 3 photos fail integrity: two are duplicates within the claim, one is a screen recapture. Entire claim is held.",
+    "grading": {
+      "claim_id": "CLM-2026-005",
+      "plot_id": "P-0055",
+      "uploaded_at": "2026-10-16T10:00:00Z",
+      "photo_urls": [
+        "/images/L354F03993C01S01042Rp09436.jpg",
+        "/images/L354F03993C01S01042Rp09436.jpg",
+        "/images/L354F03993C01S01042Rp12141.jpg"
+      ],
+      "integrity_passed": false,
+      "duplicate_within_claim": true, "duplicate_across_claims": true,
+      "matched_earlier_claim_id": "CLM-2025-412",
+      "rejected_photo_indices": [0, 1, 2],
+      "exif_timestamp_present": false, "exif_gps_present": false,
+      "integrity_flags": [
+        "photo_0_duplicate_within_claim_photo_1",
+        "photo_2_screen_recapture_detected",
+        "photo_0_duplicate_of_CLM-2025-412",
+        "no_exif_metadata"
+      ],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": true,
+        "crop": "maize", "growth_stage": "unknown",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.30,
+        "visible_evidence": [], "photo_quality_flags": ["photo_2_screen_recapture"]
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": true,
+        "crop": "maize", "growth_stage": "unknown",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.28,
+        "visible_evidence": [], "photo_quality_flags": ["photo_2_screen_recapture"]
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": true,
+      "crop": "maize", "growth_stage": "unknown",
+      "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+      "damage_type": "none", "confidence": 0.29,
+      "visible_evidence": [],
+      "photo_quality_flags": ["photo_2_screen_recapture"],
+      "pass_1_band": "NONE", "pass_2_band": "NONE",
+      "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0055", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 260, "trigger_rain_mm": 275, "trigger_percentile": 30,
+      "index_pays": true, "low_local_rain": false,
+      "max_dry_spell_days": 12, "dry_spell_window_start": "2025-03-05", "dry_spell_window_end": "2025-03-16",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.38, "ndvi_baseline_mean": 0.50, "ndvi_anomaly_z": -1.2,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T10:02:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-005", "plot_id": "P-0055",
+      "outcome_class": "INTEGRITY_HOLD", "recommended_action": "HOLD_NO_RECOMMENDATION",
+      "failure_mode": "All photos failed integrity checks. Photos 0 and 1 are near-duplicates within the claim. Photo 2 is a screen recapture. Photo 0 also matches an earlier claim CLM-2025-412. No usable evidence.",
+      "cited_clause_ids": ["9.1", "9.2"], "citations_validated_by_code": true,
+      "adjuster_brief": "Integrity hold — all 3 photos failed checks (intra-claim duplicate, cross-claim duplicate, screen recapture). No recommendation per §9.1.",
+      "farmer_messages": {
+        "en": "We could not process your claim CLM-2026-005 for plot P-0055. The photos you submitted did not pass our verification checks. Please take new, original photos of your field and resubmit.",
+        "hi": "हम आपके दावे CLM-2026-005 को संसाधित नहीं कर सके। कृपया नई तस्वीरें लेकर पुनः जमा करें।",
+        "sw": "Hatukuweza kushughulikia dai lako CLM-2026-005. Picha ulizotuma hazikupita ukaguzi. Tafadhali piga picha mpya."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-005", "claim_id": "CLM-2026-005", "plot_id": "P-0055",
+      "timestamp_utc": "2026-10-16T10:05:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T10:02:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "INTEGRITY_HOLD", "system_recommended_action": "HOLD_NO_RECOMMENDATION",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 6,
+    "_label": "ABSTAIN — Blurry photo + two-pass disagreement",
+    "_description": "One photo is flagged as blurry. Pass 1 says MODERATE, Pass 2 says MILD — agreement gate fails, routed to human.",
+    "grading": {
+      "claim_id": "CLM-2026-006",
+      "plot_id": "P-0198",
+      "uploaded_at": "2026-10-16T10:30:00Z",
+      "photo_urls": [
+        "/images/L1084F01368C01S07954Rp28334.jpg",
+        "/images/L1084F01368C01S07954Rp29722.jpg",
+        "/images/L1084F01368C01S07954Rp26285.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false, "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null, "rejected_photo_indices": [],
+      "exif_timestamp_present": true, "exif_gps_present": false,
+      "integrity_flags": ["no_exif_gps"],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 2, "canopy_senescence_0_3": 2, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.55,
+        "visible_evidence": ["moderate leaf curl", "partial yellowing"],
+        "photo_quality_flags": ["photo_1_blurry"]
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 1, "canopy_senescence_0_3": 1, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "drought", "confidence": 0.48,
+        "visible_evidence": ["slight leaf curl"],
+        "photo_quality_flags": ["photo_1_blurry"]
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "vegetative",
+      "signs": { "leaf_rolling_0_3": 1, "canopy_senescence_0_3": 1, "stunting_0_3": 0, "soil_cracking_visible": false },
+      "damage_type": "drought", "confidence": 0.52,
+      "visible_evidence": ["moderate leaf curl", "partial yellowing"],
+      "photo_quality_flags": ["photo_1_blurry"],
+      "pass_1_band": "MODERATE", "pass_2_band": "MILD",
+      "passes_agreed": false, "final_severity_band": "ABSTAIN", "abstain_to_human": true
+    },
+    "evidence": {
+      "plot_id": "P-0198", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 330, "trigger_rain_mm": 295, "trigger_percentile": 30,
+      "index_pays": false, "low_local_rain": true,
+      "max_dry_spell_days": 10, "dry_spell_window_start": "2025-03-20", "dry_spell_window_end": "2025-03-29",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.40, "ndvi_baseline_mean": 0.51, "ndvi_anomaly_z": -1.1,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T10:32:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-006", "plot_id": "P-0198",
+      "outcome_class": "ABSTAIN", "recommended_action": "ABSTAIN_TO_HUMAN",
+      "failure_mode": "Two-pass agreement gate failed. Pass 1 scored MODERATE, Pass 2 scored MILD. Photo 1 is blurry, which likely caused grading inconsistency. Routed to human adjuster for manual grading.",
+      "cited_clause_ids": ["5.1", "6.2"], "citations_validated_by_code": true,
+      "adjuster_brief": "Agreement gate failed (MODERATE vs MILD). Photo 1 is blurry. Manual grading required per §6.2.",
+      "farmer_messages": {
+        "en": "Your claim CLM-2026-006 for plot P-0198 requires additional review. One of your photos was blurry. A claims officer will review your case. Reference: CLM-2026-006.",
+        "hi": "आपके दावे CLM-2026-006 को अतिरिक्त समीक्षा की आवश्यकता है। एक तस्वीर धुंधली थी।",
+        "sw": "Dai lako CLM-2026-006 linahitaji ukaguzi zaidi. Picha moja ilikuwa na ukungu."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-006", "claim_id": "CLM-2026-006", "plot_id": "P-0198",
+      "timestamp_utc": "2026-10-16T10:35:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T10:32:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "ABSTAIN", "system_recommended_action": "ABSTAIN_TO_HUMAN",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  },
+
+  {
+    "_case": 7,
+    "_label": "CONFIRMED_PAYOUT — Index pays + photo confirms damage",
+    "_description": "Index triggers (rain below threshold), photo confirms severe drought, satellite confirms stress. Fast-track payout.",
+    "grading": {
+      "claim_id": "CLM-2026-007",
+      "plot_id": "P-0403",
+      "uploaded_at": "2026-10-16T11:00:00Z",
+      "photo_urls": [
+        "/images/L1084F01969C01S07500Rp23425.jpg",
+        "/images/L1084F01969C01S07500Rp24580.jpg",
+        "/images/L1084F01969C01S07500Rp26539.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false, "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null, "rejected_photo_indices": [],
+      "exif_timestamp_present": true, "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "flowering",
+        "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 3, "stunting_0_3": 2, "soil_cracking_visible": true },
+        "damage_type": "drought", "confidence": 0.92,
+        "visible_evidence": ["severe rolling", "extensive yellowing and necrosis", "deep soil cracks", "wilted tassels"],
+        "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "flowering",
+        "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 3, "stunting_0_3": 2, "soil_cracking_visible": true },
+        "damage_type": "drought", "confidence": 0.90,
+        "visible_evidence": ["tightly rolled leaves", "brown canopy", "cracked earth", "stunted growth"],
+        "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "flowering",
+      "signs": { "leaf_rolling_0_3": 3, "canopy_senescence_0_3": 3, "stunting_0_3": 2, "soil_cracking_visible": true },
+      "damage_type": "drought", "confidence": 0.91,
+      "visible_evidence": ["severe rolling", "extensive yellowing and necrosis", "deep soil cracks", "wilted tassels"],
+      "photo_quality_flags": [],
+      "pass_1_band": "SEVERE", "pass_2_band": "SEVERE",
+      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0403", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "flowering",
+      "season_rain_mm": 215, "trigger_rain_mm": 275, "trigger_percentile": 30,
+      "index_pays": true, "low_local_rain": false,
+      "max_dry_spell_days": 28, "dry_spell_window_start": "2025-03-01", "dry_spell_window_end": "2025-03-28",
+      "dry_spell_overlaps_critical_stage": true,
+      "ndvi_observed": 0.22, "ndvi_baseline_mean": 0.53, "ndvi_anomaly_z": -2.8,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": true,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T11:02:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-007", "plot_id": "P-0403",
+      "outcome_class": "CONFIRMED_PAYOUT", "recommended_action": "FAST_TRACK",
+      "failure_mode": null,
+      "cited_clause_ids": ["4.1", "4.2.1"], "citations_validated_by_code": true,
+      "adjuster_brief": "All three signals agree: index triggers (215 mm < 275 mm), photos show severe drought (3/3 leaf rolling, 3/3 senescence), satellite NDVI z = −2.8 confirms severe stress. Fast-track under §4.1.",
+      "farmer_messages": {
+        "en": "Good news — your claim CLM-2026-007 for plot P-0403 has been confirmed. The rainfall index triggered for your area, and your photos confirm the damage. Your payout is being processed. Reference: CLM-2026-007.",
+        "hi": "अच्छी खबर — आपका दावा CLM-2026-007 प्लॉट P-0403 के लिए पुष्टि हो गया है। भुगतान प्रक्रियाधीन है।",
+        "sw": "Habari njema — dai lako CLM-2026-007 kwa shamba P-0403 limethibitishwa. Malipo yako yanashughulikiwa."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-007", "claim_id": "CLM-2026-007", "plot_id": "P-0403",
+      "timestamp_utc": "2026-10-16T11:05:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T11:02:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "CONFIRMED_PAYOUT", "system_recommended_action": "FAST_TRACK",
+      "adjuster_id": "ADJ-KE-001", "adjuster_action": "APPROVED",
+      "adjuster_notes": "All signals aligned. Approved for fast-track payout.",
+      "decided_at_utc": "2026-10-16T11:20:00Z"
+    }
+  },
+
+  {
+    "_case": 8,
+    "_label": "POSSIBLE_OVERPAYMENT — Index pays + photo shows healthy crop",
+    "_description": "Rainfall index triggers (240 mm < 280 mm trigger), but photos show healthy green crop with no drought signs (band NONE), confirmed by healthy satellite NDVI (z = +0.6). Flagged for overpayment review.",
+    "grading": {
+      "claim_id": "CLM-2026-008",
+      "plot_id": "P-0519",
+      "uploaded_at": "2026-10-16T11:30:00Z",
+      "photo_urls": [
+        "/images/L326F01983C01S00085Rp13198.jpg",
+        "/images/L326F01983C01S00085Rp14835.jpg",
+        "/images/L326F01983C01S00085Rp14965.jpg"
+      ],
+      "integrity_passed": true,
+      "duplicate_within_claim": false,
+      "duplicate_across_claims": false,
+      "matched_earlier_claim_id": null,
+      "rejected_photo_indices": [],
+      "exif_timestamp_present": true,
+      "exif_gps_present": true,
+      "integrity_flags": [],
+      "pass_1": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.95,
+        "visible_evidence": ["vigorous green canopy", "no leaf rolling", "moist dark soil"],
+        "photo_quality_flags": []
+      },
+      "pass_2": {
+        "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+        "crop": "maize", "growth_stage": "vegetative",
+        "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+        "damage_type": "none", "confidence": 0.94,
+        "visible_evidence": ["uniform green stand", "healthy vegetative growth"],
+        "photo_quality_flags": []
+      },
+      "is_crop_field": true, "same_field_across_photos": true, "screen_recapture_suspected": false,
+      "crop": "maize", "growth_stage": "vegetative",
+      "signs": { "leaf_rolling_0_3": 0, "canopy_senescence_0_3": 0, "stunting_0_3": 0, "soil_cracking_visible": false },
+      "damage_type": "none", "confidence": 0.95,
+      "visible_evidence": ["vigorous green canopy", "no leaf rolling", "moist dark soil"],
+      "photo_quality_flags": [],
+      "pass_1_band": "NONE", "pass_2_band": "NONE",
+      "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
+    },
+    "evidence": {
+      "plot_id": "P-0519", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "critical_growth_stage": "vegetative",
+      "season_rain_mm": 240, "trigger_rain_mm": 280, "trigger_percentile": 30,
+      "index_pays": true, "low_local_rain": true,
+      "max_dry_spell_days": 8, "dry_spell_window_start": "2025-03-10", "dry_spell_window_end": "2025-03-18",
+      "dry_spell_overlaps_critical_stage": false,
+      "ndvi_observed": 0.62, "ndvi_baseline_mean": 0.58, "ndvi_anomaly_z": 0.6,
+      "ndvi_stress_cutoff_z": -1.5, "satellite_stress": false,
+      "evidence_source": "BIGQUERY_DATASET", "evidence_timestamp_utc": "2026-10-16T11:32:00Z"
+    },
+    "decision": {
+      "claim_id": "CLM-2026-008", "plot_id": "P-0519",
+      "outcome_class": "POSSIBLE_OVERPAYMENT", "recommended_action": "REVIEW",
+      "failure_mode": "Rainfall index triggered payout (240 mm < 280 mm), but ground photo shows healthy crop (band NONE) and Sentinel-2 NDVI z = +0.6 shows no vegetation stress. Possible overpayment review.",
+      "cited_clause_ids": ["CL-2.2"], "citations_validated_by_code": true,
+      "adjuster_brief": "Area-level rainfall index triggered, but farmer photo and satellite evidence both indicate a healthy, undamaged crop. Hold automated payout for adjuster review under CL-2.2.",
+      "farmer_messages": {
+        "en": "Your claim CLM-2026-008 for plot P-0519 is currently under review by our claims team. Reference: CLM-2026-008.",
+        "hi": "आपका दावा CLM-2026-008 प्लॉट P-0519 के लिए समीक्षाधीन है।",
+        "sw": "Dai lako CLM-2026-008 kwa shamba P-0519 linakaguliwa na timu yetu ya bima."
+      }
+    },
+    "audit": {
+      "audit_id": "AUD-2026-008", "claim_id": "CLM-2026-008", "plot_id": "P-0519",
+      "timestamp_utc": "2026-10-16T11:35:00Z",
+      "model_version": "gemini-2.0-flash-001", "prompt_version": "v2.1.0",
+      "anchor_image_ids": ["anchor-healthy-001", "anchor-moderate-002", "anchor-severe-003"],
+      "frozen_protocol_commit_hash": "0371cad", "evidence_timestamp_utc": "2026-10-16T11:32:00Z",
+      "cache_hit": false,
+      "system_outcome_class": "POSSIBLE_OVERPAYMENT", "system_recommended_action": "REVIEW",
+      "adjuster_id": null, "adjuster_action": "PENDING",
+      "adjuster_notes": null, "decided_at_utc": null
+    }
+  }
+]

@@ -3,9 +3,9 @@
   "plot_id": "P-0142",
   "uploaded_at": "2026-10-16T07:23:00Z",
   "photo_urls": [
-    "gs://fieldproof-uploads/abc123def456.jpg",
-    "gs://fieldproof-uploads/789ghi012jkl.jpg",
-    "gs://fieldproof-uploads/mno345pqr678.jpg"
+    "/images/L429F00196C01S01028Rp12846.jpg",
+    "/images/L429F00196C01S01028Rp13485.jpg",
+    "/images/L429F00196C01S01028Rp14607.jpg"
   ],
 
   "integrity_passed": true,

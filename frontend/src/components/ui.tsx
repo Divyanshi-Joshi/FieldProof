@@ -25,6 +25,11 @@ export const OutcomeDot: React.FC<{ group: OutcomeGroup; className?: string }> =
 
 export const Photo: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className = '' }) => {
   const [broken, setBroken] = useState(false);
+
+  React.useEffect(() => {
+    setBroken(false);
+  }, [src]);
+
   if (broken || !src) {
     return (
       <div className={`flex flex-col items-center justify-center gap-1 bg-sunk text-xs text-faint ${className}`}>

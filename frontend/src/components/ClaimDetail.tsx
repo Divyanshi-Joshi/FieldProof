@@ -106,8 +106,10 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
           <OutcomeDot group={o.group} className="mt-2.5 h-3 w-3" />
           {o.label}
         </h2>
-        {o.summary && <p className="mt-2 max-w-prose">{o.summary}</p>}
-        {d.failure_mode && <p className="mt-2 max-w-prose text-sm text-muted">{d.failure_mode}</p>}
+        {/* Single clear conclusion — removes redundancy */}
+        <p className="mt-2 text-base text-ink leading-relaxed max-w-prose">
+          {d.failure_mode || o.summary}
+        </p>
         <p className="mt-4 text-sm">
           <span className="text-muted">System suggestion: </span>
           <strong>{ACTIONS[d.recommended_action] ?? d.recommended_action}</strong>
@@ -217,9 +219,13 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
               {g.photo_urls.map((url, i) => {
                 const rejected = g.rejected_photo_indices.includes(i);
                 return (
-                  <figure key={i}>
-                    <Photo src={photoSrc(url)} alt={`Field photo ${i + 1} for plot ${g.plot_id}`}
-                      className={`aspect-[4/3] w-full rounded-md ${rejected ? 'ring-[3px] ring-hold' : ''}`} />
+                  <figure key={`${g.claim_id}-slot-${i}`}>
+                    <Photo
+                      key={`${g.claim_id}-photo-${i}-${url}`}
+                      src={photoSrc(url)}
+                      alt={`Field photo ${i + 1} for plot ${g.plot_id}`}
+                      className={`aspect-[4/3] w-full rounded-md ${rejected ? 'ring-[3px] ring-hold' : ''}`}
+                    />
                     <figcaption className="mt-1.5 text-xs text-muted">
                       {['Whole field', 'Leaves', 'Soil'][i] ?? `Photo ${i + 1}`}
                       {rejected && <span className="font-semibold text-hold">, rejected</span>}

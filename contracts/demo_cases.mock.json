@@ -8,9 +8,9 @@
       "plot_id": "P-0142",
       "uploaded_at": "2026-10-16T07:23:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/abc123def456.jpg",
-        "gs://fieldproof-uploads/789ghi012jkl.jpg",
-        "gs://fieldproof-uploads/mno345pqr678.jpg"
+        "/images/L429F00196C01S01028Rp12846.jpg",
+        "/images/L429F00196C01S01028Rp13485.jpg",
+        "/images/L429F00196C01S01028Rp14607.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false,
@@ -90,9 +90,9 @@
       "plot_id": "P-0217",
       "uploaded_at": "2026-10-16T08:10:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/sp1aaa111.jpg",
-        "gs://fieldproof-uploads/sp1bbb222.jpg",
-        "gs://fieldproof-uploads/sp1ccc333.jpg"
+        "/images/L341F02966C01S08093Rp29091.jpg",
+        "/images/L341F02966C01S08093Rp31014.jpg",
+        "/images/L341F02966C01S08093Rp31779.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false, "duplicate_across_claims": false,
@@ -167,9 +167,9 @@
       "plot_id": "P-0089",
       "uploaded_at": "2026-10-16T09:00:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/ec1aaa111.jpg",
-        "gs://fieldproof-uploads/ec1bbb222.jpg",
-        "gs://fieldproof-uploads/ec1ccc333.jpg"
+        "/images/L1093F01350C01S00984Rp00152.jpg",
+        "/images/L1093F01350C01S00984Rp01472.jpg",
+        "/images/L1093F01350C01S00984Rp02541.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false, "duplicate_across_claims": false,
@@ -244,9 +244,9 @@
       "plot_id": "P-0331",
       "uploaded_at": "2026-10-16T09:30:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/nw1aaa111.jpg",
-        "gs://fieldproof-uploads/nw1bbb222.jpg",
-        "gs://fieldproof-uploads/nw1ccc333.jpg"
+        "/images/227_repeat_2_1787_4697_3071.JPG",
+        "/images/227_repeat_2_1787_5658_4033.JPG",
+        "/images/227_repeat_2_1787_6199_4563.JPG"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false, "duplicate_across_claims": false,
@@ -323,9 +323,9 @@
       "plot_id": "P-0055",
       "uploaded_at": "2026-10-16T10:00:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/ih1aaa111.jpg",
-        "gs://fieldproof-uploads/ih1bbb222.jpg",
-        "gs://fieldproof-uploads/ih1ccc333.jpg"
+        "/images/L354F03993C01S01042Rp09436.jpg",
+        "/images/L354F03993C01S01042Rp09436.jpg",
+        "/images/L354F03993C01S01042Rp12141.jpg"
       ],
       "integrity_passed": false,
       "duplicate_within_claim": true, "duplicate_across_claims": true,
@@ -406,9 +406,9 @@
       "plot_id": "P-0198",
       "uploaded_at": "2026-10-16T10:30:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/ab1aaa111.jpg",
-        "gs://fieldproof-uploads/ab1bbb222.jpg",
-        "gs://fieldproof-uploads/ab1ccc333.jpg"
+        "/images/L1084F01368C01S07954Rp28334.jpg",
+        "/images/L1084F01368C01S07954Rp29722.jpg",
+        "/images/L1084F01368C01S07954Rp26285.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false, "duplicate_across_claims": false,
@@ -485,9 +485,9 @@
       "plot_id": "P-0403",
       "uploaded_at": "2026-10-16T11:00:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/cp1aaa111.jpg",
-        "gs://fieldproof-uploads/cp1bbb222.jpg",
-        "gs://fieldproof-uploads/cp1ccc333.jpg"
+        "/images/L1084F01969C01S07500Rp23425.jpg",
+        "/images/L1084F01969C01S07500Rp24580.jpg",
+        "/images/L1084F01969C01S07500Rp26539.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false, "duplicate_across_claims": false,
@@ -565,9 +565,9 @@
       "plot_id": "P-0519",
       "uploaded_at": "2026-10-16T11:30:00Z",
       "photo_urls": [
-        "gs://fieldproof-uploads/op1aaa111.jpg",
-        "gs://fieldproof-uploads/op1bbb222.jpg",
-        "gs://fieldproof-uploads/op1ccc333.jpg"
+        "/images/L326F01983C01S00085Rp13198.jpg",
+        "/images/L326F01983C01S00085Rp14835.jpg",
+        "/images/L326F01983C01S00085Rp14965.jpg"
       ],
       "integrity_passed": true,
       "duplicate_within_claim": false,
