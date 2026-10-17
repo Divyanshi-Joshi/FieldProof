@@ -27,10 +27,13 @@ const PRIORITY: Record<OutcomeGroup, number> = { missed: 0, hold: 1, review: 2, 
 
 const isDecided = (c: ClaimBundle) => Boolean(c.audit?.adjuster_action && c.audit.adjuster_action !== 'PENDING');
 
+type SortBy = 'latest' | 'oldest' | 'id_desc' | 'id_asc' | 'priority';
+
 export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSelectClaim, onOpenClause, onNavigate }) => {
   const [claims, setClaims] = useState<ClaimBundle[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filter, setFilter] = useState<Filter>('all');
+  const [sortBy, setSortBy] = useState<SortBy>('latest');
   const [query, setQuery] = useState('');
 
   const load = () => {
@@ -41,11 +44,47 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
   };
   useEffect(load, []);
 
-  const sorted = useMemo(() => [...claims].sort((a, b) => {
-    const da = isDecided(a) ? 1 : 0, db = isDecided(b) ? 1 : 0;
-    if (da !== db) return da - db;
-    return PRIORITY[outcomeInfo(a.decision.outcome_class).group] - PRIORITY[outcomeInfo(b.decision.outcome_class).group];
-  }), [claims]);
+  const sorted = useMemo(() => {
+    const parseId = (id: string) => {
+      const match = id?.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : 0;
+    };
+
+    const getTime = (c: ClaimBundle) => {
+      const ts = c.grading.uploaded_at || c.audit?.timestamp_utc;
+      return ts ? new Date(ts).getTime() : 0;
+    };
+
+    return [...claims].sort((a, b) => {
+      if (sortBy === 'priority') {
+        const da = isDecided(a) ? 1 : 0, db = isDecided(b) ? 1 : 0;
+        if (da !== db) return da - db;
+        return PRIORITY[outcomeInfo(a.decision.outcome_class).group] - PRIORITY[outcomeInfo(b.decision.outcome_class).group];
+      }
+
+      if (sortBy === 'latest') {
+        const tDiff = getTime(b) - getTime(a);
+        if (tDiff !== 0) return tDiff;
+        return parseId(b.grading.claim_id) - parseId(a.grading.claim_id);
+      }
+
+      if (sortBy === 'oldest') {
+        const tDiff = getTime(a) - getTime(b);
+        if (tDiff !== 0) return tDiff;
+        return parseId(a.grading.claim_id) - parseId(b.grading.claim_id);
+      }
+
+      if (sortBy === 'id_desc') {
+        return parseId(b.grading.claim_id) - parseId(a.grading.claim_id);
+      }
+
+      if (sortBy === 'id_asc') {
+        return parseId(a.grading.claim_id) - parseId(b.grading.claim_id);
+      }
+
+      return 0;
+    });
+  }, [claims, sortBy]);
 
   const counts = useMemo(() => {
     const m: Record<string, number> = { all: claims.length };
@@ -83,7 +122,7 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
         <div>
           <h1 className="text-2xl font-semibold sm:text-3xl">Claims</h1>
           <p className="mt-1 text-muted">
-            {waiting} waiting for a decision. Claims the index missed are at the top.
+            {waiting} waiting for a decision. Latest claims appear first.
           </p>
         </div>
         <button onClick={() => onNavigate('doctor')} className="btn-text">See where the index misses losses</button>
@@ -92,16 +131,33 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
         {/* Queue */}
         <section aria-label="Claim queue" className={`${explicit ? 'hidden lg:block' : ''} lg:col-span-4`}>
-          <label className="relative block">
-            <span className="sr-only">Search claims</span>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" aria-hidden />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search plot, county or claim"
-              className="field-input pl-9 text-sm"
-            />
-          </label>
+          <div className="space-y-2">
+            <label className="relative block">
+              <span className="sr-only">Search claims</span>
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" aria-hidden />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search plot, county or claim"
+                className="field-input pl-9 text-sm"
+              />
+            </label>
+
+            <div className="flex items-center justify-between gap-2 px-1 text-xs">
+              <span className="text-muted font-medium">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortBy)}
+                className="rounded-md border border-line bg-surface px-2 py-1 text-xs font-medium text-ink shadow-sm focus:border-field focus:outline-none"
+              >
+                <option value="latest">Latest first (Date / ID)</option>
+                <option value="id_desc">Claim ID (High to Low)</option>
+                <option value="id_asc">Claim ID (01, 02...)</option>
+                <option value="priority">Priority (Missed losses)</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </div>
+          </div>
 
           <div className="scroll-thin -mx-1 mt-3 flex gap-1.5 overflow-x-auto px-1 pb-1 lg:flex-wrap">
             {FILTERS.filter((f) => f.id === 'all' || counts[f.id]).map((f) => (

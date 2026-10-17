@@ -34,9 +34,9 @@ const SAMPLES: Sample[] = [
     expect: 'Three photos of her maize plot after a dry spell. Expect it to reach the adjuster as a loss the index missed.',
     farmer: 'Wanjiru', plot: 'P-0142', crop: 'maize', county: 'Makueni', season: '2025-LR',
     photos: [
-      { url: '/images/L429F00196C01S01028Rp12846.jpg', name: 'field.jpg' },
-      { url: '/images/L429F00196C01S01028Rp13485.jpg', name: 'leaves.jpg' },
-      { url: '/images/L429F00196C01S01028Rp14607.jpg', name: 'soil.jpg' },
+      { url: '/images/L429F00196C01S01028Rp12846.jpg', name: 'L429F00196C01S01028Rp12846.jpg' },
+      { url: '/images/L429F00196C01S01028Rp13485.jpg', name: 'L429F00196C01S01028Rp13485.jpg' },
+      { url: '/images/L429F00196C01S01028Rp14607.jpg', name: 'L429F00196C01S01028Rp14607.jpg' },
     ],
   },
   {
@@ -45,9 +45,9 @@ const SAMPLES: Sample[] = [
     expect: 'The same picture is sent twice. Expect the photo check to catch it and ask for a new one.',
     farmer: 'Mutua', plot: 'P-0389', crop: 'maize', county: 'Kitui', season: '2025-LR',
     photos: [
-      { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'field.jpg' },
-      { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'leaves.jpg' },
-      { url: '/images/L354F03993C01S01042Rp12141.jpg', name: 'soil.jpg' },
+      { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
+      { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
+      { url: '/images/L354F03993C01S01042Rp12141.jpg', name: 'L354F03993C01S01042Rp12141.jpg' },
     ],
   },
   {
@@ -56,9 +56,9 @@ const SAMPLES: Sample[] = [
     expect: 'Three pictures from three different plots. Expect the claim to be held with no recommendation.',
     farmer: 'Kamau', plot: 'P-0891', crop: 'maize', county: 'Machakos', season: '2025-LR',
     photos: [
-      { url: '/images/L341F02966C01S08093Rp29091.jpg', name: 'field.jpg' },
-      { url: '/images/L1089F02180C01S07348Rp18597.jpg', name: 'leaves.jpg' },
-      { url: '/images/L1084F01969C01S07500Rp23425.jpg', name: 'soil.jpg' },
+      { url: '/images/L341F02966C01S08093Rp29091.jpg', name: 'L341F02966C01S08093Rp29091.jpg' },
+      { url: '/images/L1089F02180C01S07348Rp18597.jpg', name: 'L1089F02180C01S07348Rp18597.jpg' },
+      { url: '/images/L1084F01969C01S07500Rp23425.jpg', name: 'L1084F01969C01S07500Rp23425.jpg' },
     ],
   },
 ];
@@ -273,6 +273,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ language, setLanguage, o
                 message={message}
                 onRetake={retakeRejected}
                 onStartOver={() => loadSample(sample)}
+                onNavigate={onNavigate}
               />
             )}
           </div>
@@ -289,7 +290,8 @@ const ResultScreen: React.FC<{
   message: string | null;
   onRetake: () => void;
   onStartOver: () => void;
-}> = ({ result, t, photos, message, onRetake, onStartOver }) => {
+  onNavigate: (tab: ActiveTab, claimId?: string) => void;
+}> = ({ result, t, photos, message, onRetake, onStartOver, onNavigate }) => {
   const ok = result.integrity_passed;
   const steps = [
     { label: t.steps.photos, state: ok ? 'done' : 'fail' },
@@ -302,9 +304,17 @@ const ResultScreen: React.FC<{
     <div className="settle p-5" role="status">
       <p className="font-display text-xl font-semibold">{ok ? t.received : t.photoProblemTitle}</p>
       {result.claim_id && (
-        <p className="mt-1 text-sm text-muted">
-          {t.ref}: <span className="font-semibold text-ink">{result.claim_id}</span>
-        </p>
+        <div className="mt-1">
+          <p className="text-sm text-muted">
+            {t.ref}: <span className="font-semibold text-ink">{result.claim_id}</span>
+          </p>
+          <button
+            onClick={() => onNavigate('insurer', result.claim_id)}
+            className="btn-primary mt-3 flex w-full items-center justify-center gap-1.5 py-2.5 text-sm font-semibold"
+          >
+            Open in Claims Queue →
+          </button>
+        </div>
       )}
 
       {!ok && (

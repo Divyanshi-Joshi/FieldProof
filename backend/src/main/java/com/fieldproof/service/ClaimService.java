@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import com.fieldproof.ai.GradingService;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -30,12 +31,18 @@ public class ClaimService {
     private static final Logger log = LoggerFactory.getLogger(ClaimService.class);
 
     private final ObjectMapper objectMapper;
+    private final GradingService gradingService;
     private final Map<String, ClaimBundle> claimStore = new ConcurrentHashMap<>();
     private final List<String> orderedClaimIds = new CopyOnWriteArrayList<>();
 
     public ClaimService() {
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
+        this(new ObjectMapper().registerModule(new JavaTimeModule()), null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ClaimService(ObjectMapper objectMapper, @org.springframework.beans.factory.annotation.Autowired(required = false) GradingService gradingService) {
+        this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper().registerModule(new JavaTimeModule());
+        this.gradingService = gradingService;
     }
 
     @PostConstruct
@@ -159,22 +166,46 @@ public class ClaimService {
 
         List<Path> tempPaths = new ArrayList<>();
         List<String> integrityFlags = new ArrayList<>();
+        List<Integer> rejectedIndices = new ArrayList<>();
+        List<String> photoUrls = new ArrayList<>();
+        List<GradingService.PhotoInput> photoInputs = new ArrayList<>();
         boolean integrityPassed = true;
+        ImageIntegrityTools.BundleIntegrityResult report = null;
 
         try {
             if (files != null && !files.isEmpty()) {
                 Path tempDir = Files.createTempDirectory("fp_upload_");
                 for (int i = 0; i < files.size(); i++) {
                     MultipartFile file = files.get(i);
-                    Path dest = tempDir.resolve("photo_" + i + "_" + file.getOriginalFilename());
+                    String origName = file.getOriginalFilename();
+                    if (origName == null || origName.isBlank()) {
+                        origName = "photo_" + (i + 1) + ".jpg";
+                    }
+                    Path dest = tempDir.resolve("photo_" + i + "_" + origName);
                     file.transferTo(dest);
                     tempPaths.add(dest);
+
+                    byte[] bytes = Files.readAllBytes(dest);
+                    String mimeType = file.getContentType() != null && !file.getContentType().isBlank()
+                            ? file.getContentType() : "image/jpeg";
+                    photoInputs.add(new GradingService.PhotoInput(origName, bytes, mimeType));
+
+                    // Check if file corresponds to an authentic dataset image or custom upload
+                    if (origName.startsWith("L") || origName.contains("_repeat_") || origName.contains("_initial_")) {
+                        photoUrls.add("/images/" + origName);
+                    } else if (bytes.length > 0) {
+                        photoUrls.add("data:" + mimeType + ";base64," + Base64.getEncoder().encodeToString(bytes));
+                    } else {
+                        photoUrls.add("/images/" + origName);
+                    }
                 }
 
-                ImageIntegrityTools.BundleIntegrityResult report =
-                        ImageIntegrityTools.evaluateBundleIntegrity(claimId, tempPaths);
+                report = ImageIntegrityTools.evaluateBundleIntegrity(claimId, tempPaths);
                 integrityPassed = report.integrityPassed();
                 integrityFlags.addAll(report.integrityFlags());
+                if (report.rejectedPhotoIndices() != null) {
+                    rejectedIndices.addAll(report.rejectedPhotoIndices());
+                }
             } else {
                 integrityFlags.add("demo_mode_no_raw_files");
             }
@@ -184,14 +215,74 @@ public class ClaimService {
             integrityFlags.add("integrity_check_error: " + e.getMessage());
         }
 
-        // Evaluate signs using deterministic pure Java core
-        Contracts.Signs signs = new Contracts.Signs(2, 2, 1, true);
-        Contracts.SeverityBand band = SeverityBand.fromSigns(
-                signs.leafRolling(),
-                signs.canopySenescence(),
-                signs.stunting(),
-                signs.soilCrackingVisible()
-        );
+        if (photoUrls.isEmpty()) {
+            photoUrls = List.of("/images/L429F00196C01S01028Rp12846.jpg", "/images/L429F00196C01S01028Rp13485.jpg", "/images/L429F00196C01S01028Rp14607.jpg");
+        }
+
+        Contracts.Signs signs = null;
+        Contracts.SeverityBand band = null;
+        Contracts.DamageType damageType = Contracts.DamageType.drought;
+        Contracts.GrowthStage growthStage = Contracts.GrowthStage.flowering;
+        List<String> visibleEvidence = new ArrayList<>();
+        double confidence = 0.88;
+
+        // Use Gemini AI perception if integrity passed and gradingService is available
+        if (integrityPassed && gradingService != null && !photoInputs.isEmpty()) {
+            try {
+                log.info("Dispatching Gemini vision grading for claim {} ({} photos)", claimId, photoInputs.size());
+                GradingService.GradingExecution exec = gradingService.grade(photoInputs, true, 1);
+                if (exec != null && exec.gradingResult() != null) {
+                    com.fieldproof.core.GradingResult r = exec.gradingResult();
+                    if (r.signs() != null) {
+                        signs = new Contracts.Signs(
+                                r.signs().leafRolling0to3(),
+                                r.signs().canopySenescence0to3(),
+                                r.signs().stunting0to3(),
+                                r.signs().soilCrackingVisible()
+                        );
+                    }
+                    if (r.damageType() != null) {
+                        try {
+                            damageType = Contracts.DamageType.valueOf(r.damageType().toLowerCase());
+                        } catch (Exception ignored) {
+                            damageType = Contracts.DamageType.drought;
+                        }
+                    }
+                    if (r.growthStage() != null) {
+                        try {
+                            growthStage = Contracts.GrowthStage.valueOf(r.growthStage().toLowerCase());
+                        } catch (Exception ignored) {
+                            growthStage = Contracts.GrowthStage.flowering;
+                        }
+                    }
+                    if (r.visibleEvidence() != null && !r.visibleEvidence().isEmpty()) {
+                        visibleEvidence.addAll(r.visibleEvidence());
+                    }
+                    confidence = r.confidence() > 0 ? r.confidence() : 0.85;
+                    band = exec.severityBand();
+                    log.info("Gemini vision analysis completed for claim {}: signs={}, band={}, damageType={}", claimId, signs, band, damageType);
+                }
+            } catch (Exception e) {
+                log.warn("Gemini call for claim {} failed or offline: {}. Falling back to deterministic baseline.", claimId, e.getMessage());
+            }
+        }
+
+        if (signs == null) {
+            signs = integrityPassed ? new Contracts.Signs(2, 2, 1, true) : new Contracts.Signs(0, 0, 0, false);
+        }
+        if (band == null) {
+            band = SeverityBand.fromSigns(
+                    signs.leafRolling(),
+                    signs.canopySenescence(),
+                    signs.stunting(),
+                    signs.soilCrackingVisible()
+            );
+        }
+        if (visibleEvidence.isEmpty()) {
+            visibleEvidence = integrityPassed
+                    ? List.of("leaf rolling", "senescence", "visible soil cracks")
+                    : List.of("integrity hold - photos not graded");
+        }
 
         Contracts.EvidenceRecord evidence = new Contracts.EvidenceRecord(
                 safePlotId,
@@ -221,7 +312,7 @@ public class ClaimService {
                 integrityPassed,
                 false,
                 band,
-                Contracts.DamageType.drought,
+                damageType,
                 evidence.indexPays(),
                 evidence.satelliteStress(),
                 evidence.drySpellOverlapsCriticalStage(),
@@ -235,29 +326,40 @@ public class ClaimService {
 
         Contracts.GradingPass pass = new Contracts.GradingPass(
                 true, true, false, crop != null ? crop : "maize",
-                Contracts.GrowthStage.flowering,
-                signs, Contracts.DamageType.drought, 0.88,
-                List.of("leaf rolling", "senescence", "visible soil cracks"),
+                growthStage,
+                signs, damageType, confidence,
+                visibleEvidence,
                 Collections.emptyList()
         );
 
         Contracts.GradingResult grading = new Contracts.GradingResult(
                 claimId, safePlotId, Instant.now(),
-                List.of("uploads/photo_1.jpg", "uploads/photo_2.jpg", "uploads/photo_3.jpg"),
-                integrityPassed, false, false, null, Collections.emptyList(),
-                true, false, integrityFlags,
+                photoUrls,
+                integrityPassed,
+                report != null && report.duplicateWithinClaim(),
+                report != null && report.duplicateAcrossClaims(),
+                report != null ? report.matchedEarlierClaimId() : null,
+                rejectedIndices,
+                report != null && report.exifTimestampPresent(),
+                report != null && report.exifGpsPresent(),
+                integrityFlags,
                 pass, pass,
                 true, true, false, crop != null ? crop : "maize",
-                Contracts.GrowthStage.flowering,
-                signs, Contracts.DamageType.drought, 0.88,
-                List.of("leaf rolling", "canopy senescence"),
+                growthStage,
+                signs, damageType, confidence,
+                visibleEvidence,
                 Collections.emptyList(),
                 band, band, true, band, false
         );
 
+        String brief = "Newly submitted claim " + claimId + " for plot " + safePlotId + " (" + (county != null ? county : "Makueni") + "). "
+                + (integrityPassed ? "Photos passed authenticity checks. " : "Photos raised authenticity flags. ")
+                + "Model perceived " + damageType + " damage at stage " + growthStage + " (" + band + "). "
+                + "Concordance table outcome: " + outcomeClass + " (" + action + "). Cited clause(s): " + String.join(", ", clauseIds) + ".";
+
         Contracts.ClaimDecision decision = new Contracts.ClaimDecision(
                 claimId, safePlotId, outcomeClass, action, failureMode, clauseIds, true,
-                "Claim processed under illustrative policy clause " + String.join(", ", clauseIds),
+                brief,
                 new Contracts.FarmerMessages(
                         "Your claim " + claimId + " for plot " + safePlotId + " has been received and evaluated. Outcome: " + outcomeClass,
                         "आपका दावा " + claimId + " प्लॉट " + safePlotId + " के लिए दर्ज कर लिया गया है।",
@@ -277,13 +379,13 @@ public class ClaimService {
 
         ClaimBundle bundle = new ClaimBundle(
                 claimStore.size() + 1,
-                outcomeClass.name() + " — Newly Uploaded Claim",
+                outcomeClass.name() + " — Newly Uploaded Claim (" + claimId + ")",
                 failureMode,
                 grading, evidence, decision, audit
         );
 
         claimStore.put(claimId, bundle);
-        orderedClaimIds.add(claimId);
+        orderedClaimIds.add(0, claimId);
 
         return new ClaimBundle.ClaimUploadResponse(
                 claimId, safePlotId, integrityPassed, integrityFlags,
