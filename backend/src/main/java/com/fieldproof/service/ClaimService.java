@@ -258,6 +258,32 @@ public class ClaimService {
                     if (r.visibleEvidence() != null && !r.visibleEvidence().isEmpty()) {
                         visibleEvidence.addAll(r.visibleEvidence());
                     }
+                    if (!r.sameFieldAcrossPhotos()) {
+                        log.warn("Gemini detected photos from different fields for claim {}", claimId);
+                        integrityPassed = false;
+                        if (!integrityFlags.contains("photos_from_different_fields")) {
+                            integrityFlags.add("photos_from_different_fields");
+                        }
+                    }
+                    if (r.screenRecaptureSuspected()) {
+                        log.warn("Gemini detected screen recapture for claim {}", claimId);
+                        integrityPassed = false;
+                        if (!integrityFlags.contains("screen_recapture_suspected")) {
+                            integrityFlags.add("screen_recapture_suspected");
+                        }
+                    }
+                    if (r.photoQualityFlags() != null) {
+                        for (String flag : r.photoQualityFlags()) {
+                            if (flag.contains("duplicate") && !integrityFlags.contains("duplicate_photo_detected")) {
+                                integrityFlags.add("duplicate_photo_detected");
+                                integrityPassed = false;
+                            }
+                            if (flag.contains("different_field") && !integrityFlags.contains("photos_from_different_fields")) {
+                                integrityFlags.add("photos_from_different_fields");
+                                integrityPassed = false;
+                            }
+                        }
+                    }
                     confidence = r.confidence() > 0 ? r.confidence() : 0.85;
                     band = exec.severityBand();
                     log.info("Gemini vision analysis completed for claim {}: signs={}, band={}, damageType={}", claimId, signs, band, damageType);

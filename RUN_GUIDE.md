@@ -16,35 +16,36 @@ Ensure you have the following installed on your machine:
 
 ## 2. Environment Configuration
 
-FieldProof uses Google Cloud Vertex AI via **Application Default Credentials (ADC)**.
+FieldProof supports both **Google AI Studio (`GEMINI_API_KEY`)** for rapid local runs and **Google Cloud Vertex AI (ADC)** for production.
 
-### Step 2.1: Authenticate with Google Cloud
+### Option A: Local Run with Gemini API Key (Recommended)
+1. In the repository root, create or edit `.env` (copied from `.env.example`):
+   ```env
+   GEMINI_API_KEY="your-gemini-api-key"
+   ```
+2. Run the environment loader script:
+   - **Windows PowerShell**:
+     ```powershell
+     . .\setup-env.ps1
+     ```
+   - **Linux / macOS**:
+     ```bash
+     source setup-env.sh
+     ```
+
+### Option B: Google Cloud Vertex AI (ADC Mode)
+If running against Vertex AI in your Google Cloud Project:
 ```bash
 gcloud auth login
 gcloud auth application-default login
 gcloud auth application-default set-quota-project <your-gcp-project-id>
-```
 
-### Step 2.2: Load Environment Variables
-Export the required variables in your shell (or maintain them in `~/fieldproof.env`):
-
-```bash
 export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
 export FIELDPROOF_VERTEX_LOCATION="global"              # or asia-south1
-export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview" # or your chosen model
-export CR_REGION="asia-south1"                          # Mumbai
-
-# Optional fine-tuning parameters
-export FIELDPROOF_GEMINI_TEMPERATURE=""
-export FIELDPROOF_GEMINI_THINKING=""
-export FIELDPROOF_GEMINI_MEDIA_RES=""
+export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview" # or chosen model
+export CR_REGION="asia-south1"
 export PORT=8080
 ```
-
-> **Tip:** If you maintain `~/fieldproof.env`, simply run:
-> ```bash
-> source ~/fieldproof.env
-> ```
 
 ---
 

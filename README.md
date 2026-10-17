@@ -28,30 +28,44 @@ FieldProof is an AI-assisted parametric crop insurance reconciliation platform. 
 ### 1. Prerequisites
 - **Java 21 LTS** (`java -version`)
 - **Node.js 18+** (`node -v`)
-- **Google Cloud CLI** authenticated via Application Default Credentials (ADC):
-  ```bash
-  gcloud auth application-default login
-  gcloud auth application-default set-quota-project <your-gcp-project-id>
-  ```
 
-### 2. Set Environment Variables
-```bash
-export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"
-export FIELDPROOF_VERTEX_LOCATION="global"
-export FIELDPROOF_GEMINI_MODEL="gemini-3-flash-preview"
-export CR_REGION="asia-south1"
-```
+### 2. Configure Gemini API Key (Simplest & Recommended)
+FieldProof supports both **Google AI Studio (`GEMINI_API_KEY`)** for rapid local development and **Google Cloud Vertex AI (ADC)** for production.
+
+**To run with your Gemini API Key:**
+1. Copy `.env.example` to `.env` in the repository root (or edit `.env` directly):
+   ```bash
+   cp .env.example .env
+   ```
+2. Insert your Gemini API key (from [Google AI Studio](https://aistudio.google.com/app/apikey)):
+   ```env
+   GEMINI_API_KEY="your-gemini-api-key-here"
+   ```
+3. Load the environment variables:
+   - **Windows (PowerShell)**:
+     ```powershell
+     . .\setup-env.ps1
+     ```
+   - **macOS / Linux**:
+     ```bash
+     source setup-env.sh
+     ```
+
+*(Alternative for Google Cloud Vertex AI mode: run `gcloud auth application-default login` and set `export FIELDPROOF_GCP_PROJECT="<your-gcp-project-id>"`).*
 
 ### 3. Start the Backend (Port 8080)
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run -pl backend
 ```
 - Health check: `http://localhost:8080/api/health`
-- Gemini ping: `http://localhost:8080/api/gemini/ping`
+- Terminal logs will confirm live AI vision connections:
+  `INFO ... Connecting to Gemini via GEMINI_API_KEY`
+  `INFO ... Dispatching Gemini vision grading for claim ...`
 
 ### 4. Start the Frontend (Port 5173)
 ```bash
 # In another terminal window:
+cd frontend
 npm run dev
 ```
 Open **`http://localhost:5173`** in your browser.

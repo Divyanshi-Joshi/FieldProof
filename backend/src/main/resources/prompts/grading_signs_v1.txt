@@ -10,9 +10,10 @@ Signs:
 - soil cracking visible: true or false.
 
 Other fields:
-- Set is_crop_field to false if the photo is not a crop field, and then score every sign 0.
-- Set same_field_across_photos by comparing crop, growth stage and background across the claim photos (true when there is a single photo).
-- Set screen_recapture_suspected to true if any photo appears to show a screen or a printed photo.
+- Set is_crop_field to false if the photo is not an agricultural crop field, and then score every sign 0.
+- Check for duplicate or copied photos: Compare the claim photos with each other. If two or more uploaded photos are the exact same picture, duplicate re-uploads, or slight crops of each other, add "duplicate_photo_detected" to photo_quality_flags and note "duplicate photo attached" in visible_evidence.
+- Check for photos from different fields: Compare crop variety, row spacing, growth stage, soil color/texture, and background horizon across the claim photos. If photos clearly appear to originate from different fields or different plots, set same_field_across_photos to false, add "photos_from_different_fields" to photo_quality_flags, and note "photos from different fields" in visible_evidence. (True when all photos match the same field, or when there is only a single photo).
+- Set screen_recapture_suspected to true if any photo appears to show a computer/phone screen, monitor bezel, moire pattern, or a printed photograph.
 - Choose damage_type only from the allowed list: %s.
 - Add photo_quality_flags such as photo_1_blurry for any unusable photo.
 - List up to three short phrases of visible_evidence.
