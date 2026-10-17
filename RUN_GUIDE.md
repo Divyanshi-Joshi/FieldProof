@@ -153,6 +153,24 @@ Open **`http://localhost:5173`** in your browser:
    - Basis-risk false negatives reduced.
    - Payout budget vs. basis-risk coverage equilibrium dynamically plotted.
 
+### Journey 4: Google Earth Engine (Orbit-to-Field) Inspector & Live Sync
+1. In the **Insurer / Adjuster Cockpit**, open claim **CLM-2026-001** (or any claim).
+2. Look at the **Satellite** summary card at the top right:
+   - Notice the **"Orbit Deep-Dive"** button with the satellite icon.
+3. Click **"Orbit Deep-Dive"** to open the **Google Earth Engine & Vertex Geospatial** inspection modal:
+   - **Sentinel-2 L2A 10m**: Observed NDVI vs 3-year baseline mean ($Z = -1.90\text{ std dev}$).
+   - **CHIRPS Daily Rainfall**: Consecutive dry spell (21 days) hitting the flowering stage.
+   - **3-Year Historical Trajectory**: Visual comparison bars comparing 2023, 2024, 2025 against the 2026 observed drop.
+   - **Provenance & Tile ID**: Exact plot centroid coordinates and Sentinel-2 granule tile ID with cloud mask verification.
+4. Click **"⚡ Sync Orbit Data with Claim"**:
+   - Triggers dynamic Earth Engine re-calculation on the backend.
+   - Updates the claim evidence with `EvidenceSource.GOOGLE_EARTH_ENGINE`.
+   - The Satellite card displays the green **`GEE Orbit`** badge and the Audit Record displays `Google Earth Engine (Sentinel-2 L2A + CHIRPS)`.
+5. You can also run the standalone GEE CLI verification script anytime:
+   ```bash
+   python scripts/orbit_to_field_gee.py --plot-id P-0142 --lat -1.8021 --lon 37.6253
+   ```
+
 ---
 
 ## 6. Running the Day 1 Smoke Evaluation Suite

@@ -124,6 +124,19 @@ public class ClaimController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{claimId}/sync-earth-engine")
+    public ResponseEntity<ClaimBundle> syncEarthEngine(
+            @PathVariable("claimId") String claimId,
+            @RequestParam(value = "lat", required = false) Double lat,
+            @RequestParam(value = "lon", required = false) Double lon) {
+        try {
+            ClaimBundle updated = claimService.syncClaimWithEarthEngine(claimId, lat, lon);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/reset")
     public ResponseEntity<Void> resetDemoCases() {
         claimService.loadDemoCases();

@@ -58,7 +58,7 @@ export type RecommendedAction =
 
 export type AdjusterAction = "PENDING" | "APPROVED" | "REJECTED" | "ESCALATED";
 
-export type EvidenceSource = "BIGQUERY_DATASET" | "OPEN_METEO_FALLBACK";
+export type EvidenceSource = "BIGQUERY_DATASET" | "OPEN_METEO_FALLBACK" | "GOOGLE_EARTH_ENGINE";
 
 // ─── Shared Sub-Types ────────────────────────────────────────────────────────
 
@@ -276,3 +276,39 @@ export interface DemoCase {
   decision: ClaimDecision;
   audit: AuditRecord;
 }
+
+// ─── Google Earth Engine & Geospatial Analysis ─────────────────────────────
+
+export interface HistoricalNdviPoint {
+  year: number;
+  season: string;
+  ndvi_mean: number;
+  rainfall_mm: number;
+}
+
+export interface EarthEngineAnalysis {
+  plot_id: string;
+  latitude: number;
+  longitude: number;
+  collection_sensor: string;
+  rainfall_sensor: string;
+  target_window_start: string;
+  target_window_end: string;
+  ndvi_observed: number;
+  ndvi_baseline_mean: number;
+  ndvi_baseline_std: number;
+  ndvi_anomaly_z: number;
+  satellite_stress: boolean;
+  chirps_seasonal_rain_mm: number;
+  chirps_historical_mean_mm: number;
+  moisture_deficit_pct: number;
+  max_dry_spell_days: number;
+  dry_spell_overlaps_critical_stage: boolean;
+  cloud_cover_pct: number;
+  granule_id: string;
+  baseline_years: number[];
+  historical_ndvi_series: HistoricalNdviPoint[];
+  computed_at_utc: string;
+  is_live_gee_authenticated: boolean;
+}
+

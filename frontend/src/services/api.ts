@@ -1,4 +1,4 @@
-import { ClaimDecision, AuditRecord, EvidenceRecord, GradingResult, IndexDoctorSimulation } from '../types/contracts';
+import { ClaimDecision, AuditRecord, EvidenceRecord, GradingResult, IndexDoctorSimulation, EarthEngineAnalysis } from '../types/contracts';
 
 export interface ClaimBundle {
   _case: number;
@@ -199,6 +199,33 @@ export const api = {
 
   async getPolicyText(): Promise<{ policy_ref: string; title: string; full_text: string }> {
     const res = await fetch(`${API_BASE}/policy/text`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async analyzeEarthEngine(plotId?: string, lat?: number, lon?: number): Promise<EarthEngineAnalysis> {
+    const params = new URLSearchParams();
+    if (plotId) params.append('plot_id', plotId);
+    if (lat !== undefined && lat !== null) params.append('lat', String(lat));
+    if (lon !== undefined && lon !== null) params.append('lon', String(lon));
+    const res = await fetch(`${API_BASE}/geospatial/orbit-to-field?${params.toString()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async getGeospatialStatus(): Promise<any> {
+    const res = await fetch(`${API_BASE}/geospatial/status`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async syncClaimWithEarthEngine(claimId: string, lat?: number, lon?: number): Promise<ClaimBundle> {
+    const params = new URLSearchParams();
+    if (lat !== undefined && lat !== null) params.append('lat', String(lat));
+    if (lon !== undefined && lon !== null) params.append('lon', String(lon));
+    const res = await fetch(`${API_BASE}/claims/${claimId}/sync-earth-engine?${params.toString()}`, {
+      method: 'POST',
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   }

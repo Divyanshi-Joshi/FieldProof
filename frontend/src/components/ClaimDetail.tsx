@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Check, ChevronDown, ShieldAlert } from 'lucide-react';
+import { Check, ChevronDown, ShieldAlert, Satellite, Globe } from 'lucide-react';
 import { ClaimBundle, api } from '../services/api';
 import { ACTIONS, DAMAGE_TYPE, GROUP_TONE, SEVERITY, flagText, outcomeInfo } from '../lib/outcomes';
 import { fmtDate, fmtDateTime, photoSrc, stageName } from '../lib/format';
 import { readSources } from '../lib/signals';
 import { OutcomeDot, Photo, Score, VerdictChip } from './ui';
 import { decidedLabel } from './InsurerView';
+import { EarthEngineInspector } from './EarthEngineInspector';
 
 interface Props {
   claim: ClaimBundle;
@@ -60,6 +61,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showGeeInspector, setShowGeeInspector] = useState(false);
 
   const notesRequired = choice === 'REJECTED';
   const canSave = Boolean(choice) && (!notesRequired || notes.trim().length > 0) && !saving;
@@ -180,7 +182,14 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
           {/* Satellite */}
           <div className="p-5">
             <div className="flex items-center justify-between gap-2">
-              <p className="font-semibold">Satellite</p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold">Satellite</p>
+                {e.evidence_source === 'GOOGLE_EARTH_ENGINE' && (
+                  <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    GEE Orbit
+                  </span>
+                )}
+              </div>
               <VerdictChip verdict={s.satellite.verdict}>{s.satellite.short}</VerdictChip>
             </div>
             <p className="mt-4 font-display text-2xl font-semibold">{e.ndvi_anomaly_z > 0 ? '+' : ''}{e.ndvi_anomaly_z.toFixed(1)}</p>
@@ -190,9 +199,21 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 ? <>Well below what this plot usually shows now. Counts as stress below {e.ndvi_stress_cutoff_z}.</>
                 : <>Within the normal range for this plot. Stress starts below {e.ndvi_stress_cutoff_z}.</>}
             </p>
-            <p className="mt-4 border-t border-line pt-3 text-sm text-muted">
-              Vegetation index {e.ndvi_observed.toFixed(2)} against a usual {e.ndvi_baseline_mean.toFixed(2)}, from Sentinel-2.
-            </p>
+            <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-xs">
+              <span className="text-muted">
+                {e.evidence_source === 'GOOGLE_EARTH_ENGINE'
+                  ? 'Dynamic Sentinel-2 L2A via Google Earth Engine'
+                  : `Vegetation index ${e.ndvi_observed.toFixed(2)} vs normal ${e.ndvi_baseline_mean.toFixed(2)}`}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowGeeInspector(true)}
+                className="inline-flex items-center gap-1 font-semibold text-field hover:underline"
+              >
+                <Satellite className="h-3.5 w-3.5" />
+                Orbit Deep-Dive
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -330,7 +351,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 ['Prompt version', a?.prompt_version],
                 ['Reference photos', a?.anchor_image_ids?.join(', ')],
                 ['Payout rule version', a?.frozen_protocol_commit_hash],
-                ['Evidence from', e.evidence_source === 'OPEN_METEO_FALLBACK' ? 'Open-Meteo (live)' : 'Dataset records in BigQuery'],
+                ['Evidence from', e.evidence_source === 'GOOGLE_EARTH_ENGINE' ? 'Google Earth Engine (Sentinel-2 L2A + CHIRPS)' : e.evidence_source === 'OPEN_METEO_FALLBACK' ? 'Open-Meteo (live)' : 'Dataset records in BigQuery'],
                 ['Evidence time', fmtDateTime(a?.evidence_timestamp_utc || e.evidence_timestamp_utc)],
                 ['Reused a saved AI answer', a?.cache_hit ? 'Yes' : 'No'],
               ].map(([k, v]) => (
@@ -343,6 +364,16 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
           </details>
         </aside>
       </div>
+
+      {/* Earth Engine Orbit-to-Field Inspector Modal */}
+      <EarthEngineInspector
+        claim={claim}
+        isOpen={showGeeInspector}
+        onClose={() => setShowGeeInspector(false)}
+        onSyncSuccess={(updatedClaim) => {
+          onDecisionSaved(updatedClaim);
+        }}
+      />
     </article>
   );
 };

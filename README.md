@@ -16,6 +16,7 @@ FieldProof is an AI-assisted parametric crop insurance reconciliation platform. 
 
 | Document | Purpose |
 |---|---|
+| **[`FEATURES.md`](FEATURES.md)** | **Exhaustive Feature & Architecture Guide.** Complete breakdown of Orbit-to-Field (GEE), Gemini Vision, Concordance Engine, Image Forensics, and Index Doctor. |
 | **[`RUN_GUIDE.md`](RUN_GUIDE.md)** | **Start here to run the app.** Step-by-step instructions for running Backend, Frontend, Smoke Evaluation, and Cloud Run deployment. |
 | **[`TECHNICAL_ARCHITECTURE.md`](TECHNICAL_ARCHITECTURE.md)** | **Deep-dive technical architecture.** Component breakdown, data flows, concordance matrix, and decision core specifications. |
 | **[`USER_CHECKLIST.md`](USER_CHECKLIST.md)** | **Human operator checklist.** GCP project setup, ADC authentication, budget alerts, and dataset coordination with Person B. |
@@ -107,46 +108,60 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 🏛️ Architecture at a Glance
+## 🏛️ Architecture: The Orbit-to-Field Decision Core
 
 ```
-  Farmer Smartphone Photos (1-3 images)
-                 │
-                 ▼
-  ┌──────────────────────────────┐
-  │ 1. Image Forensics Screen    │ ──► [Duplicate pHash/dHash, EXIF, Screen Recapture]
-  │   (ImageIntegrityTools)      │
-  └──────────────────────────────┘
-                 │
-                 ▼
-  ┌──────────────────────────────┐
-  │ 2. Calibrated Vision Grading │ ◄── [AnchorLibrary: Healthy, Moderate, Severe]
-  │     (GradingService)         │ ◄── [Vertex AI Gemini 3 Flash via ADC]
-  └──────────────────────────────┘
-                 │
-                 ▼
-     Observable Signs Vector (0-3 scale)
-  {leaf_rolling, canopy_senescence, stunting, soil_cracking}
-                 │
-                 ▼
-  ┌──────────────────────────────┐
-  │ 3. Deterministic Decision    │ ◄── [Weather Index: Rainfall vs Trigger]
-  │ (SeverityMapper, Concordance)│ ◄── [Sentinel-2: Satellite NDVI Anomaly]
-  └──────────────────────────────┘
-                 │
-                 ▼
-   1 of 8 Concordance Outcomes
-  ┌──────────────────────────────┬──────────────────────────────┐
-  ▼                              ▼                              ▼
-CONFIRMED_PAYOUT          BASIS_RISK_GAP               POSSIBLE_OVERPAYMENT
- (Fast-Track)              (Escalate)                    (Manual Review)
+  Farmer Smartphone Photos (1-3 images)          Farmer Plot Coordinates / GPS Polygon
+                 │                                                │
+                 ▼                                                ▼
+  ┌──────────────────────────────┐              ┌──────────────────────────────────┐
+  │ 1. Image Forensics Screen    │              │ Google Earth Engine & Geospatial │
+  │   (ImageIntegrityTools)      │              │  • Sentinel-2 L2A 10m (B8/B4)    │
+  └──────────────┬───────────────┘              │  • CHIRPS Daily Rainfall (0.05°) │
+                 │                              │  • 3-Year Historical Baseline    │
+                 ▼                              └─────────────────┬────────────────┘
+  ┌──────────────────────────────┐                                │
+  │ 2. Calibrated Vision Grading │                                │
+  │     (GradingService)         │                                │
+  │   Gemini 3 Flash via ADC     │                                │
+  └──────────────┬───────────────┘                                │
+                 │                                                │
+                 ▼                                                ▼
+     Observable Signs Vector                       Orbit Multi-Spectral Stress
+  {leaf_rolling, canopy_senescence,               {ndvi_observed, baseline_mean,
+   stunting, soil_cracking_visible}                ndvi_anomaly_z <= -1.5, dry_spell}
+                 │                                                │
+                 └───────────────────────┬────────────────────────┘
+                                         ▼
+                          ┌──────────────────────────────┐
+                          │ 3. Deterministic Concordance │
+                          │ (com.fieldproof.core Java 21)│
+                          └──────────────┬───────────────┘
+                                         ▼
+                           1 of 8 Concordance Outcomes
+  ┌──────────────────────────────┬──────────────────────────────┬──────────────────────────────┐
+  ▼                              ▼                              ▼                              ▼
+CONFIRMED_PAYOUT       PHENOLOGICAL_GAP               SPATIAL_GAP            POSSIBLE_OVERPAYMENT
+ (Fast-Track)         (Escalate via §7.1.4)         (Escalate via §7.1.3)        (Manual Review)
 ```
 
 ### Core Invariants:
-1. **Zero Hallucination Payouts:** Gemini only perceives observable physical signs on a 0–3 integer scale. Deterministic pure Java code decides severity bands and payout actions.
-2. **Calibrated Reference Anchors:** Gemini is always provided calibrated reference photos (healthy, moderate, severe) to anchor visual perception against camera and lighting drift.
-3. **Two-Pass Agreement Gate:** Two passes with shuffled anchor orders must agree on the severity band; disagreements route to human adjusters (`ABSTAIN`).
-4. **Reproducible SHA-256 Caching:** Model calls are cached by SHA-256 hash under `cache/`, enabling instant, zero-cost evaluation replays.
+1. **Orbit-to-Field Corroboration:** Gemini perceives ground reality, while Google Earth Engine (`COPERNICUS/S2_SR_HARMONIZED` + `UCSB-CHG/CHIRPS/DAILY`) dynamically verifies orbit-level multi-spectral vegetation indices and dry-spell timing for the farmer's GPS coordinates.
+2. **Zero Hallucination Payouts:** Gemini only perceives observable physical signs on a 0–3 integer scale. Deterministic pure Java code decides severity bands and payout actions.
+3. **Calibrated Reference Anchors:** Gemini is always provided calibrated reference photos (healthy, moderate, severe) to anchor visual perception against camera and lighting drift.
+4. **Two-Pass Agreement Gate:** Two passes with shuffled anchor orders must agree on the severity band; disagreements route to human adjusters (`ABSTAIN`).
+5. **Reproducible SHA-256 Caching:** Model calls are cached by SHA-256 hash under `cache/`, enabling instant, zero-cost evaluation replays.
+
+### 🛰️ Orbit-to-Field GEE Demonstration Command:
+Test dynamic Google Earth Engine computation on the fly:
+```bash
+# Run standalone Earth Engine multi-spectral analysis for headline plot P-0142:
+python scripts/orbit_to_field_gee.py --plot-id P-0142 --lat -1.8021 --lon 37.6253
+
+# Or via 1-click script runner:
+./scripts/run_gee_demo.ps1    # Windows PowerShell
+./scripts/run_gee_demo.sh     # Linux / macOS
+```
 
 ---
 

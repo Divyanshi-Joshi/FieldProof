@@ -65,7 +65,7 @@ public final class Contracts {
     }
 
     public enum EvidenceSource {
-        BIGQUERY_DATASET, OPEN_METEO_FALLBACK
+        BIGQUERY_DATASET, OPEN_METEO_FALLBACK, GOOGLE_EARTH_ENGINE
     }
 
     // ─── Shared Sub-Types ────────────────────────────────────────────────────
@@ -284,5 +284,40 @@ public final class Contracts {
         @JsonProperty("county_breakdown")             List<CountyStats> countyBreakdown,
         @JsonProperty("season_breakdown")             List<SeasonStats> seasonBreakdown,
         @JsonProperty("computed_at_utc")              Instant computedAtUtc
+    ) {}
+
+    // ─── Google Earth Engine / Vertex Geospatial ──────────────────────────────
+
+    public record HistoricalNdviPoint(
+        @JsonProperty("year") int year,
+        @JsonProperty("season") String season,
+        @JsonProperty("ndvi_mean") double ndviMean,
+        @JsonProperty("rainfall_mm") double rainfallMm
+    ) {}
+
+    public record EarthEngineAnalysis(
+        @JsonProperty("plot_id") String plotId,
+        @JsonProperty("latitude") double latitude,
+        @JsonProperty("longitude") double longitude,
+        @JsonProperty("collection_sensor") String collectionSensor,
+        @JsonProperty("rainfall_sensor") String rainfallSensor,
+        @JsonProperty("target_window_start") LocalDate targetWindowStart,
+        @JsonProperty("target_window_end") LocalDate targetWindowEnd,
+        @JsonProperty("ndvi_observed") double ndviObserved,
+        @JsonProperty("ndvi_baseline_mean") double ndviBaselineMean,
+        @JsonProperty("ndvi_baseline_std") double ndviBaselineStd,
+        @JsonProperty("ndvi_anomaly_z") double ndviAnomalyZ,
+        @JsonProperty("satellite_stress") boolean satelliteStress,
+        @JsonProperty("chirps_seasonal_rain_mm") double chirpsSeasonalRainMm,
+        @JsonProperty("chirps_historical_mean_mm") double chirpsHistoricalMeanMm,
+        @JsonProperty("moisture_deficit_pct") double moistureDeficitPct,
+        @JsonProperty("max_dry_spell_days") int maxDrySpellDays,
+        @JsonProperty("dry_spell_overlaps_critical_stage") boolean drySpellOverlapsCriticalStage,
+        @JsonProperty("cloud_cover_pct") double cloudCoverPct,
+        @JsonProperty("granule_id") String granuleId,
+        @JsonProperty("baseline_years") List<Integer> baselineYears,
+        @JsonProperty("historical_ndvi_series") List<HistoricalNdviPoint> historicalNdviSeries,
+        @JsonProperty("computed_at_utc") Instant computedAtUtc,
+        @JsonProperty("is_live_gee_authenticated") boolean isLiveGeeAuthenticated
     ) {}
 }

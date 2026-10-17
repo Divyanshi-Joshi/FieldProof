@@ -36,9 +36,10 @@ public class ClaimService {
     private final com.fieldproof.policy.BriefGuard briefGuard;
     private final FarmerMessageService farmerMessageService;
     private final com.fieldproof.tools.bq.BigQueryAuditWriter auditWriter;
+    private final com.fieldproof.tools.gee.EarthEngineService earthEngineService;
 
     public ClaimService() {
-        this(new ObjectMapper().registerModule(new JavaTimeModule()), null, null, null, null, null);
+        this(new ObjectMapper().registerModule(new JavaTimeModule()), null, null, null, null, null, null);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -48,7 +49,8 @@ public class ClaimService {
             @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.store.ClaimStore claimStore,
             @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.policy.BriefGuard briefGuard,
             @org.springframework.beans.factory.annotation.Autowired(required = false) FarmerMessageService farmerMessageService,
-            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.tools.bq.BigQueryAuditWriter auditWriter
+            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.tools.bq.BigQueryAuditWriter auditWriter,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.tools.gee.EarthEngineService earthEngineService
     ) {
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper().registerModule(new JavaTimeModule());
         this.gradingService = gradingService;
@@ -56,6 +58,7 @@ public class ClaimService {
         this.briefGuard = briefGuard != null ? briefGuard : new com.fieldproof.policy.BriefGuard(new com.fieldproof.policy.PolicyIndex(this.objectMapper));
         this.farmerMessageService = farmerMessageService != null ? farmerMessageService : new FarmerMessageService();
         this.auditWriter = auditWriter != null ? auditWriter : new com.fieldproof.tools.bq.BigQueryAuditWriter();
+        this.earthEngineService = earthEngineService != null ? earthEngineService : new com.fieldproof.tools.gee.EarthEngineService();
     }
 
     @PostConstruct
@@ -318,28 +321,13 @@ public class ClaimService {
                     : List.of("integrity hold - photos not graded");
         }
 
-        Contracts.EvidenceRecord evidence = new Contracts.EvidenceRecord(
+        Contracts.EvidenceRecord evidence = earthEngineService.createEvidenceRecord(
                 safePlotId,
+                null,
+                null,
                 county != null ? county : "Makueni",
                 "2026-LR",
-                crop != null ? crop : "maize",
-                Contracts.CriticalGrowthStage.flowering,
-                310.0,
-                290.0,
-                30,
-                false, // seasonal rain > trigger rain
-                true,
-                18,
-                LocalDate.now().minusDays(30),
-                LocalDate.now().minusDays(12),
-                true, // dry spell overlaps flowering
-                0.32,
-                0.54,
-                -1.85,
-                -1.5,
-                true, // satellite stress confirmed
-                Contracts.EvidenceSource.BIGQUERY_DATASET,
-                Instant.now()
+                crop != null ? crop : "maize"
         );
 
         ConcordanceTable.ConcordanceResult conc = ConcordanceTable.evaluate(
@@ -429,5 +417,79 @@ public class ClaimService {
                 decision.farmerMessages().en(),
                 bundle
         );
+    }
+
+    public synchronized ClaimBundle syncClaimWithEarthEngine(String claimId, Double customLat, Double customLon) {
+        ClaimBundle existing = claimStore.get(claimId)
+                .orElseThrow(() -> new IllegalArgumentException("Claim not found: " + claimId));
+
+        String plotId = existing.grading().plotId();
+        String crop = existing.grading().crop();
+        String county = existing.evidence() != null ? existing.evidence().county() : "Makueni";
+        String season = existing.evidence() != null ? existing.evidence().season() : "2026-LR";
+
+        Contracts.EvidenceRecord newEvidence = earthEngineService.createEvidenceRecord(
+                plotId,
+                customLat,
+                customLon,
+                county,
+                season,
+                crop
+        );
+
+        Contracts.SeverityBand band = existing.grading().finalSeverityBand();
+        Contracts.DamageType damageType = existing.grading().damageType();
+        boolean integrityPassed = existing.grading().integrityPassed();
+
+        ConcordanceTable.ConcordanceResult conc = ConcordanceTable.evaluate(
+                integrityPassed,
+                false,
+                band,
+                damageType,
+                newEvidence.indexPays(),
+                newEvidence.satelliteStress(),
+                newEvidence.drySpellOverlapsCriticalStage(),
+                newEvidence.lowLocalRain()
+        );
+
+        String failureMode = conc.failureMode();
+        List<String> clauseIds = conc.citedClauseIds();
+        String adjusterBrief = "Dynamically reconciled via Google Earth Engine Sentinel-2 & CHIRPS orbit evidence. " + failureMode;
+
+        List<String> integrityFlags = existing.grading() != null ? existing.grading().integrityFlags() : List.of();
+        String enMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "en");
+        String hiMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "hi");
+        String swMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "sw");
+        Contracts.FarmerMessages farmerMessages = new Contracts.FarmerMessages(enMsg, hiMsg, swMsg);
+
+        Contracts.ClaimDecision newDecision = new Contracts.ClaimDecision(
+                claimId,
+                plotId,
+                conc.outcomeClass(),
+                conc.recommendedAction(),
+                failureMode,
+                clauseIds,
+                true,
+                adjusterBrief,
+                farmerMessages
+        );
+
+        ClaimBundle updated = new ClaimBundle(
+                existing.caseNumber(),
+                existing.label() + " (GEE Synced)",
+                existing.description(),
+                existing.grading(),
+                newEvidence,
+                newDecision,
+                existing.audit()
+        );
+
+        claimStore.update(updated);
+        log.info("Claim {} synchronized with Google Earth Engine orbit data. New outcome: {}", claimId, conc.outcomeClass());
+        return updated;
+    }
+
+    public com.fieldproof.tools.gee.EarthEngineService getEarthEngineService() {
+        return earthEngineService;
     }
 }
