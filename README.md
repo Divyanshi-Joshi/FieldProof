@@ -1,10 +1,16 @@
 # 🌾 FieldProof : An Automated Crop Insurance Forensic Reconciliation Engine
 
-[![Java 21](https://img.shields.io/badge/Java-21%20LTS-blue.svg)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Vertex AI](https://img.shields.io/badge/Google%20Cloud-Vertex%20AI%20(ADC)-orange.svg)](https://cloud.google.com/vertex-ai)
-[![React 18](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind-61dafb.svg)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21%20LTS-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Vertex AI](https://img.shields.io/badge/Google%20Cloud-Vertex%20AI%20%7C%20Gemini%203%20Flash-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Google Earth Engine](https://img.shields.io/badge/Google%20Earth%20Engine-Sentinel--2%20%26%20CHIRPS-0F9D58?logo=google&logoColor=white)](https://earthengine.google.com/)
+[![BigQuery](https://img.shields.io/badge/Google%20Cloud-BigQuery%20Audit%20Ledger-669DF6?logo=googlebigquery&logoColor=white)](https://cloud.google.com/bigquery)
+[![Cloud Run](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
+[![React 18](https://img.shields.io/badge/Frontend-React%2018-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B%20(GEE)-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 > **Mantra:** *"Gemini perceives and explains; deterministic Java decides; a human signs off."*
 
@@ -22,6 +28,21 @@ FieldProof is an AI-assisted parametric crop insurance reconciliation platform. 
 | **[`TECHNICAL_ARCHITECTURE.md`](TECHNICAL_ARCHITECTURE.md)** | **Deep-dive technical architecture.** Component breakdown, data flows, concordance matrix, and decision core specifications. |
 | **[`USER_CHECKLIST.md`](USER_CHECKLIST.md)** | **Human operator checklist.** GCP project setup, ADC authentication, budget alerts, and dataset coordination with Person B. |
 | **[`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md)** | **AI context handoff.** Complete record of implemented tasks, invariants, and directory mappings. |
+
+---
+
+## 🧰 Technology & Cloud Ecosystem
+
+| Component / Layer | Technology | Role in FieldProof |
+|---|---|---|
+| **Multimodal Perception AI** | **Google Cloud Vertex AI / Gemini 3 Flash** | Calibrated concept-bottleneck vision grading of farmer smartphone photos with reference anchors. |
+| **Orbit-to-Field Geospatial** | **Google Earth Engine (GEE)** | Dynamic 3-year baseline Sentinel-2 L2A (10m) NDVI anomaly calculation and CHIRPS rainfall verification. |
+| **Immutable Audit Ledger** | **Google Cloud BigQuery** | Append-only audit trail logging every consensus decision, token spend, and human sign-off. |
+| **Serverless Deployment** | **Google Cloud Run** | Scalable, containerized deployment of the Spring Boot reconciliation backend and static frontend. |
+| **Deterministic Decision Core** | **Java 21 LTS & Spring Boot 3.4.4** | Pure Java rule engine, zero-hallucination payouts, SHA-256 caching, two-pass agreement gate. |
+| **Image Forensics** | **Java 21 (ImageIntegrityTools)** | Intra-bundle duplicate detection (pHash/dHash), screen recapture moiré detection, EXIF GPS fences. |
+| **Interactive Dashboard** | **React 18, TypeScript, Tailwind CSS** | High-density adjuster cockpit, visual claim inspection, Orbit Deep-Dive GEE modal, Index Doctor. |
+| **Geospatial Connector** | **Python 3.10+ (`earthengine-api`)** | Standalone Python CLI and connector script for batch Earth Engine polygon analysis. |
 
 ---
 
