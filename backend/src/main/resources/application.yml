@@ -20,7 +20,7 @@ fieldproof:
     project-id: ${FIELDPROOF_GCP_PROJECT:fieldproof-prod}
     vertex-location: ${FIELDPROOF_VERTEX_LOCATION:global}
   gemini:
-    model: ${FIELDPROOF_GEMINI_MODEL:gemini-3-flash-preview}
+    model: ${FIELDPROOF_GEMINI_MODEL:gemini-2.0-flash-001}
     temperature: ${FIELDPROOF_GEMINI_TEMPERATURE:}
     thinking-level: ${FIELDPROOF_GEMINI_THINKING:}
     media-resolution: ${FIELDPROOF_GEMINI_MEDIA_RES:}
