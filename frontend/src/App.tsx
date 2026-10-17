@@ -6,7 +6,6 @@ import { InsurerView } from './components/InsurerView';
 import { IndexDoctorView } from './components/IndexDoctorView';
 import { ValidationView } from './components/ValidationView';
 import { PolicyModal } from './components/PolicyModal';
-import { Language } from './i18n/translations';
 
 export type ActiveTab = 'landing' | 'farmer' | 'insurer' | 'doctor' | 'validation';
 
@@ -28,7 +27,6 @@ function readRoute(): { tab: ActiveTab; claimId: string | null } {
 
 export const App: React.FC = () => {
   const [route, setRoute] = useState(readRoute);
-  const [language, setLanguage] = useState<Language>('en');
   const [policyOpen, setPolicyOpen] = useState(false);
   const [clauseId, setClauseId] = useState<string | null>(null);
 
@@ -61,7 +59,7 @@ export const App: React.FC = () => {
       <main id="main" className="flex-1">
         {route.tab === 'landing' && <HeroLanding onNavigate={navigate} />}
         {route.tab === 'farmer' && (
-          <FarmerView language={language} setLanguage={setLanguage} onNavigate={navigate} />
+          <FarmerView onNavigate={navigate} />
         )}
         {route.tab === 'insurer' && (
           <InsurerView

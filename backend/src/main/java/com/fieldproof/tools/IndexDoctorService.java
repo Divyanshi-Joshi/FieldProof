@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * <p>
  * The engine is seeded with realistic multi-county Kenyan test plot
  * distributions (Embu, Machakos, Kirinyaga, Nakuru, Bungoma across
- * Long Rains and Short Rains), including Wanjiru's P-0142 plot in Embu.
+ * Long Rains and Short Rains), including Ramesh's P-0142 plot in Embu.
  * <p>
  * Runs in &lt;5 ms offline or in Cloud Run — no BigQuery required.
  * <p>
@@ -428,7 +428,7 @@ public final class IndexDoctorService {
     /**
      * Builds the default 24-plot Kenyan test dataset.
      * <p>
-     * Includes Wanjiru's P-0142 in Embu (Long Rains, 341mm, SEVERE drought,
+     * Includes Ramesh's P-0142 in Embu (Long Rains, 341mm, SEVERE drought,
      * NDVI z = -1.9, 21-day flowering dry spell) — the headline plot.
      * <p>
      * Distribution:
@@ -444,7 +444,7 @@ public final class IndexDoctorService {
         List<TestPlot> plots = new ArrayList<>();
 
         // ── EMBU — Long Rains ────────────────────────────────────────────────
-        //  P-0142 (Wanjiru): 341mm, SEVERE drought, sat stressed, 21-day flowering dry spell
+        //  P-0142 (Ramesh): 341mm, SEVERE drought, sat stressed, 21-day flowering dry spell
         //  At p30 (trigger=290mm): index does NOT pay → PHENOLOGICAL_BASIS_RISK_GAP
         plots.add(new TestPlot("P-0142", "Embu", "Long Rains", 341.0,
             Contracts.SeverityBand.SEVERE, true, DamageType.drought,
