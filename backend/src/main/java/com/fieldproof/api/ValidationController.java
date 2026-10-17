@@ -20,4 +20,9 @@ public class ValidationController {
     public ResponseEntity<Map<String, Object>> getValidationSummary() {
         return ResponseEntity.ok(validationService.getValidationSummary());
     }
+
+    @GetMapping("/metrics")
+    public ResponseEntity<Map<String, Object>> getValidationMetrics() {
+        return ResponseEntity.ok(validationService.getValidationSummary());
+    }
 }

@@ -32,17 +32,30 @@ public class ClaimService {
 
     private final ObjectMapper objectMapper;
     private final GradingService gradingService;
-    private final Map<String, ClaimBundle> claimStore = new ConcurrentHashMap<>();
-    private final List<String> orderedClaimIds = new CopyOnWriteArrayList<>();
+    private final com.fieldproof.store.ClaimStore claimStore;
+    private final com.fieldproof.policy.BriefGuard briefGuard;
+    private final FarmerMessageService farmerMessageService;
+    private final com.fieldproof.tools.bq.BigQueryAuditWriter auditWriter;
 
     public ClaimService() {
-        this(new ObjectMapper().registerModule(new JavaTimeModule()), null);
+        this(new ObjectMapper().registerModule(new JavaTimeModule()), null, null, null, null, null);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ClaimService(ObjectMapper objectMapper, @org.springframework.beans.factory.annotation.Autowired(required = false) GradingService gradingService) {
+    public ClaimService(
+            ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) GradingService gradingService,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.store.ClaimStore claimStore,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.policy.BriefGuard briefGuard,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) FarmerMessageService farmerMessageService,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) com.fieldproof.tools.bq.BigQueryAuditWriter auditWriter
+    ) {
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper().registerModule(new JavaTimeModule());
         this.gradingService = gradingService;
+        this.claimStore = claimStore != null ? claimStore : new com.fieldproof.store.LocalClaimStore(this.objectMapper);
+        this.briefGuard = briefGuard != null ? briefGuard : new com.fieldproof.policy.BriefGuard(new com.fieldproof.policy.PolicyIndex(this.objectMapper));
+        this.farmerMessageService = farmerMessageService != null ? farmerMessageService : new FarmerMessageService();
+        this.auditWriter = auditWriter != null ? auditWriter : new com.fieldproof.tools.bq.BigQueryAuditWriter();
     }
 
     @PostConstruct
@@ -71,33 +84,24 @@ public class ClaimService {
             }
 
             claimStore.clear();
-            orderedClaimIds.clear();
 
             for (ClaimBundle bundle : cases) {
                 if (bundle.grading() != null && bundle.grading().claimId() != null) {
-                    claimStore.put(bundle.grading().claimId(), bundle);
-                    orderedClaimIds.add(bundle.grading().claimId());
+                    claimStore.create(bundle);
                 }
             }
-            log.info("Loaded {} demo claim bundles successfully", claimStore.size());
+            log.info("Loaded {} demo claim bundles successfully", claimStore.listAll().size());
         } catch (Exception e) {
             log.error("Failed to load demo_cases.mock.json", e);
         }
     }
 
     public List<ClaimBundle> getAllClaims() {
-        List<ClaimBundle> list = new ArrayList<>();
-        for (String id : orderedClaimIds) {
-            ClaimBundle bundle = claimStore.get(id);
-            if (bundle != null) {
-                list.add(bundle);
-            }
-        }
-        return Collections.unmodifiableList(list);
+        return claimStore.listAll();
     }
 
     public Optional<ClaimBundle> getClaim(String claimId) {
-        return Optional.ofNullable(claimStore.get(claimId));
+        return claimStore.get(claimId);
     }
 
     public String getFrozenCommitHash() {
@@ -115,10 +119,8 @@ public class ClaimService {
     }
 
     public synchronized ClaimBundle updateAdjusterDecision(String claimId, ClaimBundle.AdjusterDecisionRequest req) {
-        ClaimBundle existing = claimStore.get(claimId);
-        if (existing == null) {
-            throw new IllegalArgumentException("Claim not found: " + claimId);
-        }
+        ClaimBundle existing = claimStore.get(claimId)
+                .orElseThrow(() -> new IllegalArgumentException("Claim not found: " + claimId));
 
         Contracts.AuditRecord oldAudit = existing.audit();
         Contracts.AuditRecord newAudit = new Contracts.AuditRecord(
@@ -150,7 +152,13 @@ public class ClaimService {
                 newAudit
         );
 
-        claimStore.put(claimId, updated);
+        // Day 3 §T3.7: Adjuster action requires successful audit write, otherwise fail (HTTP 503)
+        boolean auditSuccess = auditWriter.writeAuditRecord(newAudit);
+        if (!auditSuccess) {
+            throw new IllegalStateException("Audit write failed for adjuster action on claim " + claimId + ". Decision not accepted.");
+        }
+
+        claimStore.update(updated);
         log.info("Updated claim {} with adjuster decision {}", claimId, req.action());
         return updated;
     }
@@ -161,7 +169,7 @@ public class ClaimService {
             String county,
             List<MultipartFile> files
     ) {
-        String claimId = "CLM-2026-" + String.format("%03d", claimStore.size() + 1);
+        String claimId = "CLM-2026-" + String.format("%03d", claimStore.listAll().size() + 1);
         String safePlotId = (plotId != null && !plotId.isBlank()) ? plotId : "P-" + UUID.randomUUID().toString().substring(0, 4);
 
         List<Path> tempPaths = new ArrayList<>();
@@ -378,19 +386,22 @@ public class ClaimService {
                 band, band, true, band, false
         );
 
-        String brief = "Newly submitted claim " + claimId + " for plot " + safePlotId + " (" + (county != null ? county : "Makueni") + "). "
+        String rawBrief = "Newly submitted claim " + claimId + " for plot " + safePlotId + " (" + (county != null ? county : "Makueni") + "). "
                 + (integrityPassed ? "Photos passed authenticity checks. " : "Photos raised authenticity flags. ")
                 + "Model perceived " + damageType + " damage at stage " + growthStage + " (" + band + "). "
                 + "Concordance table outcome: " + outcomeClass + " (" + action + "). Cited clause(s): " + String.join(", ", clauseIds) + ".";
 
+        com.fieldproof.policy.BriefGuard.BriefValidationResult briefValidation =
+                briefGuard.validateBrief(rawBrief, clauseIds, evidence);
+
+        String enMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "en");
+        String hiMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "hi");
+        String swMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "sw");
+
         Contracts.ClaimDecision decision = new Contracts.ClaimDecision(
-                claimId, safePlotId, outcomeClass, action, failureMode, clauseIds, true,
-                brief,
-                new Contracts.FarmerMessages(
-                        "Your claim " + claimId + " for plot " + safePlotId + " has been received and evaluated. Outcome: " + outcomeClass,
-                        "आपका दावा " + claimId + " प्लॉट " + safePlotId + " के लिए दर्ज कर लिया गया है।",
-                        "Dai lako " + claimId + " kwa shamba " + safePlotId + " limepokelewa na kutathminiwa."
-                )
+                claimId, safePlotId, outcomeClass, action, failureMode, clauseIds, briefValidation.valid(),
+                briefValidation.sanitizedBrief(),
+                new Contracts.FarmerMessages(enMsg, hiMsg, swMsg)
         );
 
         Contracts.AuditRecord audit = new Contracts.AuditRecord(
@@ -404,14 +415,13 @@ public class ClaimService {
         );
 
         ClaimBundle bundle = new ClaimBundle(
-                claimStore.size() + 1,
+                claimStore.listAll().size() + 1,
                 outcomeClass.name() + " — Newly Uploaded Claim (" + claimId + ")",
                 failureMode,
                 grading, evidence, decision, audit
         );
 
-        claimStore.put(claimId, bundle);
-        orderedClaimIds.add(0, claimId);
+        claimStore.create(bundle);
 
         return new ClaimBundle.ClaimUploadResponse(
                 claimId, safePlotId, integrityPassed, integrityFlags,

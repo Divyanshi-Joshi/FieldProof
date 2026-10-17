@@ -152,8 +152,30 @@ export const api = {
     Object.entries(fields).forEach(([k, v]) => formData.append(k, v));
     photos.forEach((p, i) => formData.append(PHOTO_FIELD, p, names[i] || `photo_${i + 1}.jpg`));
     const res = await fetch(`${API_BASE}/claims/upload`, { method: 'POST', body: formData });
+    
+    if (res.status === 503) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || "Live uploads temporarily disabled");
+    }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return normalizeUpload(await res.json());
+
+    const data = await res.json();
+    if (res.status === 202 && data.claimId) {
+      // Async claim accepted: poll status endpoint until ready
+      const claimId = data.claimId;
+      for (let attempt = 0; attempt < 30; attempt++) {
+        await new Promise(r => setTimeout(r, 1000));
+        const statusRes = await fetch(`${API_BASE}/claims/${claimId}/status`);
+        if (statusRes.ok) {
+          const s = await statusRes.json();
+          if (s.status !== 'PROCESSING') {
+            const fullClaim = await this.getClaim(claimId);
+            return normalizeUpload(fullClaim);
+          }
+        }
+      }
+    }
+    return normalizeUpload(data);
   },
 
   async simulateIndexDoctor(percentile: number): Promise<IndexDoctorSimulation> {

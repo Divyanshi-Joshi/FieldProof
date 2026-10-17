@@ -1,0 +1,19 @@
+messages:
+  CONFIRMED_PAYOUT: "Your claim has been fast-tracked for payout based on matching index trigger and visible damage."
+  POSSIBLE_OVERPAYMENT: "The weather index triggered, but field photos require secondary adjuster review before any payment."
+  PHENOLOGICAL_BASIS_RISK_GAP: "The seasonal rainfall total did not trigger the index, but severe dry spell during flowering was verified. Your claim has been escalated for adjuster sign-off."
+  SPATIAL_BASIS_RISK_GAP: "The county weather index did not trigger, but localized plot rainfall deficit was verified. Your claim has been escalated."
+  EVIDENCE_CONFLICT: "Photo damage and satellite vegetation indicators require manual adjuster reconciliation. A loss adjuster will review your case."
+  NON_WEATHER_LOSS: "Damage was attributed to non-weather peril (pest, disease, or weed), which is excluded from drought-index cover."
+  CONSISTENT: "Your field photos and seasonal rainfall indicate no significant loss event."
+  INTEGRITY_HOLD: "Claim held due to duplicate photos or verification irregularities. A human adjuster has been assigned."
+  ABSTAIN: "Independent grading passes require loss adjuster review."
+
+photo_rejections:
+  DUPLICATE_WITHIN_CLAIM: "A duplicate or near-identical photo was submitted in this bundle."
+  DUPLICATE_OF_EARLIER_CLAIM: "This photo matches a photo submitted in an earlier claim."
+  NOT_A_CROP_FIELD: "The submitted photo does not depict an agricultural crop field."
+  SCREEN_RECAPTURE: "The photo appears to be a picture of a computer or mobile screen."
+  DIFFERENT_FIELD: "Uploaded photos appear to be taken from different fields."
+
+disclaimer: "Status notification only. Final claim approval is determined exclusively by a certified human insurance loss adjuster."
