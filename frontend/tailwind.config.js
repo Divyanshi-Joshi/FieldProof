@@ -13,14 +13,18 @@ export default {
         muted: 'var(--color-muted)',
         faint: 'var(--color-faint)',
         line: 'var(--color-line)',
-        // Brand: field green
-        field: { DEFAULT: '#10B981', hover: '#059669', soft: 'var(--color-field-soft)' },
-        // Evidence states
-        loss: { DEFAULT: '#F59E0B', soft: 'var(--color-loss-soft)', ink: '#D97706' },
-        calm: { DEFAULT: '#6EE7B7', soft: 'var(--color-calm-soft)' },
+        // Brand: field green (dynamic via CSS variables for dark/light contrast)
+        field: { 
+          DEFAULT: 'var(--color-field)', 
+          hover: 'var(--color-field-hover)', 
+          soft: 'var(--color-field-soft)' 
+        },
+        // Evidence states: what each source says about the plot
+        loss: { DEFAULT: '#B45309', soft: '#FBEBD7', ink: '#7A3A06' },
+        calm: { DEFAULT: '#5E7466', soft: '#E7ECE8' },
         // Outcome tones
-        hold: { DEFAULT: '#EF4444', soft: 'var(--color-hold-soft)' },
-        review: { DEFAULT: '#8B5CF6', soft: 'var(--color-review-soft)' },
+        hold: { DEFAULT: '#B42318', soft: '#FBE4E1' },
+        review: { DEFAULT: '#5B4BA0', soft: '#ECE9F7' },
         // Data colours
         rain: '#38BDF8',
         bloom: '#FDE047',

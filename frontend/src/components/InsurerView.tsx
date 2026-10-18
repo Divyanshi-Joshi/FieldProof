@@ -130,7 +130,7 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
         </div>
         <button
           onClick={() => onNavigate('doctor')}
-          className="btn-quiet text-xs self-start sm:self-auto py-2 px-3 font-semibold text-field"
+          className="btn-quiet text-xs self-start sm:self-auto py-2 px-3 font-semibold text-field dark:text-emerald-300 dark:hover:text-emerald-200 dark:border-emerald-800/60 dark:bg-emerald-950/30 transition-colors"
         >
           View Actuarial Risk & Triggers →
         </button>
