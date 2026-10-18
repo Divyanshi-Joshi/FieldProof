@@ -310,5 +310,134 @@ export interface EarthEngineAnalysis {
   historical_ndvi_series: HistoricalNdviPoint[];
   computed_at_utc: string;
   is_live_gee_authenticated: boolean;
+  deepmind_alu_parcel_acres?: number;
+  sar_soil_moisture_index?: number;
+  agristack_parcel_id?: string;
+  basis_risk_conclusion?: string;
 }
+
+// ─── Pillar 1: Orbit-to-Field Multimodal Fusion ────────────────────────────
+
+export interface OrbitToFieldSynthesis {
+  claim_id: string;
+  plot_id: string;
+  optical_stress_confirmed: boolean;
+  phenological_coincidence: boolean;
+  sentinel2_ndvi_observed: number;
+  sentinel2_z_score: number;
+  chirps_dry_spell_days: number;
+  cross_modal_synthesis: string;
+  concordance_classification: string;
+  model_used: string;
+  telemetry_citations: string[];
+  generated_at_utc: string;
+  basis_risk_summary?: string;
+  macro_station_rain_mm?: number;
+  macro_trigger_rain_mm?: number;
+  alu_field_boundary?: string;
+  resolution_contrast?: string;
+}
+
+// ─── Pillar 2: Policy Grounding (Zero Hallucination) ───────────────────────
+
+export interface PolicyGroundingCitation {
+  clause_id: string;
+  section: number;
+  title: string;
+  page_reference: string;
+  quoted_rule: string;
+  application_to_claim: string;
+  is_clause_verified: boolean;
+}
+
+export interface PolicyGroundingResult {
+  claim_id: string;
+  policy_ref: string;
+  recommended_action: string;
+  outcome_class: string;
+  primary_cited_clause: string;
+  citations: PolicyGroundingCitation[];
+  legal_rationale: string;
+  zero_hallucination_verified: boolean;
+  binder_context_tokens_used: number;
+  grounded_at_utc: string;
+}
+
+export interface PolicyQueryResponse {
+  query: string;
+  grounded_answer: string;
+  cited_clauses: PolicyGroundingCitation[];
+  zero_hallucination_score: number;
+  context_binder_ref: string;
+}
+
+// ─── Pillar 3: Actuarial Forecasting (Gemini Code Execution) ───────────────
+
+export interface RainfallForecastPoint {
+  date: string;
+  expected_rain_mm: number;
+  confidence_lower_90_mm: number;
+  confidence_upper_90_mm: number;
+  cumulative_projected_mm: number;
+}
+
+export interface ActuarialForecastResult {
+  plot_id: string;
+  county: string;
+  season: string;
+  current_cumulative_rain_mm: number;
+  trigger_rain_mm: number;
+  forward_14d_payout_probability: number;
+  drought_escalation_risk: "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+  projected_portfolio_outlay_usd: number;
+  forecast_time_series: RainfallForecastPoint[];
+  executed_python_code: string;
+  sandbox_execution_output: string;
+  code_execution_engine: string;
+  mathematical_model_type: string;
+  computed_at_utc: string;
+}
+
+export interface ActuarialCounty {
+  id: string;
+  name: string;
+  trigger_p30_mm: number;
+  historical_payout_rate_pct: number;
+  sample_plot: string;
+}
+
+// ─── Pillar 4: Google Responsible AI Framework ─────────────────────────────
+
+export interface TwoPassComparison {
+  claim_id: string;
+  pass_1_band: SeverityBand;
+  pass_2_band: SeverityBand;
+  passes_agreed: boolean;
+  pass_1_anchor_order: string;
+  pass_2_anchor_order: string;
+  system_action: string;
+  human_intervention_required: boolean;
+  confidence_spread: number;
+}
+
+export interface GeographicFairnessRecord {
+  region: string;
+  county: string;
+  sample_size: number;
+  false_escalation_rate_pct: number;
+  basis_risk_caught_rate_pct: number;
+  parity_status: string;
+}
+
+export interface ResponsibleAiAudit {
+  framework_version: string;
+  two_pass_coverage_pct: number;
+  model_abstain_rate_pct: number;
+  hallucination_prevention_architecture: string;
+  frozen_git_commit_hash: string;
+  audit_ledger_status: string;
+  geographic_fairness: GeographicFairnessRecord[];
+  compliance_principles: string[];
+}
+
 

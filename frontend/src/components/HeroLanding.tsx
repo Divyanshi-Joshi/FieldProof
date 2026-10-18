@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react';
 import { ActiveTab } from '../App';
 import { SeasonChart } from './SeasonChart';
 
@@ -152,6 +153,108 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
           </li>
         ))}
       </ol>
+    </section>
+
+    {/* Enterprise Platform Capabilities */}
+    <section className="border-t border-line bg-canvas">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 space-y-8">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-field-soft px-3 py-1 text-xs font-semibold text-field">
+            <span>Enterprise Insurance Infrastructure</span>
+            <span>•</span>
+            <span>PMFBY & WBCIS Compatible</span>
+          </div>
+          <h2 className="mt-3 text-2xl font-semibold sm:text-3xl text-ink">
+            Sovereign Multi-Sensor Parametric Reconciliation
+          </h2>
+          <p className="mt-2 text-muted max-w-2xl text-sm leading-relaxed">
+            Eliminating basis risk for micro-insurance portfolios by cross-correlating high-resolution satellite telemetry,
+            statutory policy binders, and verifiable on-field crop evidence.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Capability 1 */}
+          <div className="panel p-6 flex flex-col justify-between space-y-4">
+            <div className="space-y-2.5">
+              <span className="rounded bg-canvas border border-line px-2 py-0.5 text-xs font-semibold text-ink">
+                Multi-Source Telemetry
+              </span>
+              <h3 className="font-semibold text-base">Satellite & Field Telemetry</h3>
+              <p className="text-xs text-muted leading-relaxed">
+                Dynamic Sentinel-2 10m vegetative anomaly mapping and CHIRPS precipitation tracking correlated with
+                geotagged field photos.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('insurer')}
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+            >
+              Explore Claims Desk <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Capability 2 */}
+          <div className="panel p-6 flex flex-col justify-between space-y-4">
+            <div className="space-y-2.5">
+              <span className="rounded bg-canvas border border-line px-2 py-0.5 text-xs font-semibold text-ink">
+                Statutory Compliance
+              </span>
+              <h3 className="font-semibold text-base">Policy Adjudication</h3>
+              <p className="text-xs text-muted leading-relaxed">
+                Every claim determination is verified against official PMFBY / WBCIS statutory clauses with exact legal citations
+                and zero hallucination.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('insurer')}
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+            >
+              Review Grounded Claims <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Capability 3 */}
+          <div className="panel p-6 flex flex-col justify-between space-y-4">
+            <div className="space-y-2.5">
+              <span className="rounded bg-canvas border border-line px-2 py-0.5 text-xs font-semibold text-ink">
+                Predictive Analytics
+              </span>
+              <h3 className="font-semibold text-base">Forward Actuarial Risk</h3>
+              <p className="text-xs text-muted leading-relaxed">
+                14-day predictive weather trajectory simulation to model forward payout probability, drought escalation,
+                and capital reserves.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('doctor')}
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+            >
+              Open Index Doctor <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Capability 4 */}
+          <div className="panel p-6 flex flex-col justify-between space-y-4">
+            <div className="space-y-2.5">
+              <span className="rounded bg-canvas border border-line px-2 py-0.5 text-xs font-semibold text-ink">
+                Model Oversight
+              </span>
+              <h3 className="font-semibold text-base">Governance & Audit</h3>
+              <p className="text-xs text-muted leading-relaxed">
+                Dual-check consistency verification, selective prediction risk controls, and immutable cryptographic
+                audit logs for regulatory compliance.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('validation')}
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+            >
+              Inspect Validation Results <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
     {/* Who it's for */}

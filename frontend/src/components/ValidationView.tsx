@@ -4,6 +4,7 @@ import { Check, Copy } from 'lucide-react';
 import { ValidationSummary, api } from '../services/api';
 import { fmtStamp, fmtUsd, toPct } from '../lib/format';
 import { ErrorNote, Loading } from './ui';
+import { ResponsibleAiView } from './ResponsibleAiView';
 
 interface Props { onOpenPolicy: () => void }
 
@@ -275,6 +276,11 @@ export const ValidationView: React.FC<Props> = ({ onOpenPolicy }) => {
           </p>
         </div>
       </section>
+
+      {/* Algorithmic Governance & Safety Section */}
+      <div className="mt-14 border-t border-line pt-10">
+        <ResponsibleAiView />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,18 @@
-import { ClaimDecision, AuditRecord, EvidenceRecord, GradingResult, IndexDoctorSimulation, EarthEngineAnalysis } from '../types/contracts';
+import {
+  ClaimDecision,
+  AuditRecord,
+  EvidenceRecord,
+  GradingResult,
+  IndexDoctorSimulation,
+  EarthEngineAnalysis,
+  OrbitToFieldSynthesis,
+  PolicyGroundingResult,
+  PolicyQueryResponse,
+  ActuarialForecastResult,
+  ActuarialCounty,
+  ResponsibleAiAudit,
+  TwoPassComparison
+} from '../types/contracts';
 
 export interface ClaimBundle {
   _case: number;
@@ -226,6 +240,64 @@ export const api = {
     const res = await fetch(`${API_BASE}/claims/${claimId}/sync-earth-engine?${params.toString()}`, {
       method: 'POST',
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  // ─── Pillar 1: Orbit-to-Field Multimodal Synthesis ─────────────────────────
+  async synthesizeOrbitToField(claimId?: string, plotId?: string, lat?: number, lon?: number): Promise<OrbitToFieldSynthesis> {
+    const url = claimId
+      ? `${API_BASE}/geospatial/synthesize/${encodeURIComponent(claimId)}`
+      : `${API_BASE}/geospatial/synthesize?plot_id=${encodeURIComponent(plotId || 'P-0142')}${lat ? `&lat=${lat}` : ''}${lon ? `&lon=${lon}` : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  // ─── Pillar 2: Policy Grounding (Zero Hallucination) ───────────────────────
+  async groundClaimWithPolicy(claimId: string): Promise<PolicyGroundingResult> {
+    const res = await fetch(`${API_BASE}/policy/ground/${encodeURIComponent(claimId)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async queryPolicyGrounding(query: string): Promise<PolicyQueryResponse> {
+    const res = await fetch(`${API_BASE}/policy/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  // ─── Pillar 3: Actuarial Forecasting (Gemini Code Execution) ───────────────
+  async getActuarialForecast(plotId?: string, county?: string, currentRain?: number, triggerRain?: number): Promise<ActuarialForecastResult> {
+    const params = new URLSearchParams();
+    if (plotId) params.append('plot_id', plotId);
+    if (county) params.append('county', county);
+    if (currentRain !== undefined) params.append('current_rain_mm', String(currentRain));
+    if (triggerRain !== undefined) params.append('trigger_rain_mm', String(triggerRain));
+    const res = await fetch(`${API_BASE}/actuarial/forecast?${params.toString()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async getActuarialCounties(): Promise<ActuarialCounty[]> {
+    const res = await fetch(`${API_BASE}/actuarial/counties`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  // ─── Pillar 4: Google Responsible AI Framework ─────────────────────────────
+  async getResponsibleAiAudit(): Promise<ResponsibleAiAudit> {
+    const res = await fetch(`${API_BASE}/responsible-ai/audit`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  },
+
+  async getTwoPassComparison(claimId: string): Promise<TwoPassComparison> {
+    const res = await fetch(`${API_BASE}/responsible-ai/two-pass/${encodeURIComponent(claimId)}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   }

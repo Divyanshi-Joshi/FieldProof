@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Search, ShieldCheck, BookOpen, Send, Sparkles } from 'lucide-react';
 import { api, PolicyClausesResponse } from '../services/api';
+import { PolicyQueryResponse } from '../types/contracts';
 import { outcomeInfo, ACTIONS } from '../lib/outcomes';
 import { fmtStamp } from '../lib/format';
 
@@ -10,7 +11,7 @@ interface PolicyModalProps {
   selectedClauseId?: string | null;
 }
 
-type Tab = 'clauses' | 'rule' | 'text';
+type Tab = 'clauses' | 'search' | 'rule' | 'text';
 
 const RULE_SQL = `-- Payout rule, locked before evaluation
 SELECT
@@ -32,6 +33,9 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selec
   const [clauses, setClauses] = useState<PolicyClausesResponse | null>(null);
   const [fullText, setFullText] = useState('');
   const [lock, setLock] = useState<{ hash: string; at: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState<PolicyQueryResponse | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -55,10 +59,24 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selec
     }
   }, [isOpen, selectedClauseId, clauses]);
 
+  const handleSearch = async (q = searchQuery) => {
+    if (!q.trim()) return;
+    setSearchLoading(true);
+    try {
+      const res = await api.queryPolicyGrounding(q);
+      setSearchResult(res);
+    } catch (err) {
+      console.error('Failed to query policy:', err);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   const TABS: { id: Tab; label: string }[] = [
     { id: 'clauses', label: 'Clauses' },
+    { id: 'search', label: 'Search binder' },
     { id: 'rule', label: 'Payout rule' },
     { id: 'text', label: 'Full policy' },
   ];
@@ -113,6 +131,100 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selec
                 );
               })}
             </ol>
+          )}
+
+          {tab === 'search' && (
+            <div className="space-y-5">
+              <div>
+                <p className="text-sm text-muted leading-relaxed">
+                  Search across the full 45-page statutory policy binder. Every answer is strictly grounded in contractual clauses with zero hallucination.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      placeholder="e.g., What dry spell length triggers a phenological review?"
+                      className="field-input pl-9 text-sm w-full"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleSearch()}
+                    disabled={searchLoading || !searchQuery.trim()}
+                    className="btn-primary flex items-center gap-1.5 px-4 text-sm"
+                  >
+                    <Send className={`h-3.5 w-3.5 ${searchLoading ? 'animate-spin' : ''}`} />
+                    {searchLoading ? 'Searching...' : 'Search'}
+                  </button>
+                </div>
+
+                {/* Quick suggestions */}
+                <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
+                  <span className="text-muted py-0.5">Try:</span>
+                  {[
+                    'What dry spell triggers phenological review?',
+                    'What is the excess rainfall deductible?',
+                    'How is vegetative stress measured?',
+                  ].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setSearchQuery(s);
+                        handleSearch(s);
+                      }}
+                      className="rounded-full border border-line bg-canvas px-2.5 py-0.5 text-muted hover:border-field hover:text-ink transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {searchResult && (
+                <div className="space-y-4 rounded-xl border border-line bg-canvas/40 p-5">
+                  <div className="flex items-center justify-between border-b border-line pb-3">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-field">
+                      <ShieldCheck className="h-4 w-4" />
+                      Statutory Grounding Confirmed
+                    </span>
+                    <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                      Zero-Hallucination: {(searchResult.zero_hallucination_score * 100).toFixed(0)}%
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted uppercase tracking-wider">Grounded Answer</h4>
+                    <p className="mt-1.5 text-sm leading-relaxed text-ink font-medium">
+                      {searchResult.grounded_answer}
+                    </p>
+                  </div>
+
+                  {searchResult.cited_clauses && searchResult.cited_clauses.length > 0 && (
+                    <div className="space-y-2 border-t border-line pt-3">
+                      <h4 className="text-xs font-semibold text-muted uppercase tracking-wider">Contractual Citations</h4>
+                      <div className="space-y-2">
+                        {searchResult.cited_clauses.map((c) => (
+                          <div key={c.clause_id} className="rounded-lg border border-line bg-surface p-3 space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-field font-mono">§{c.clause_id}</span>
+                              <span className="font-semibold text-ink">{c.title}</span>
+                            </div>
+                            <p className="text-xs text-muted italic">"{c.quoted_rule}"</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-faint">
+                    Binder reference: <span className="font-mono">{searchResult.context_binder_ref}</span>
+                  </p>
+                </div>
+              )}
+            </div>
           )}
 
           {tab === 'rule' && (

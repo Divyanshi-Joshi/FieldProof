@@ -32,7 +32,7 @@ const SAMPLES: Sample[] = [
     id: 'ramesh',
     title: "Ramesh's drought claim",
     expect: 'Three photos of his maize plot after a dry spell. Expect it to reach the adjuster as a loss the index missed.',
-    farmer: 'Ramesh', plot: 'P-0142', crop: 'maize', county: 'Makueni', season: '2025-LR',
+    farmer: 'Ramesh', plot: 'P-0142', crop: 'maize', county: 'Beed', season: 'Kharif 2025',
     photos: [
       { url: '/images/L429F00196C01S01028Rp12846.jpg', name: 'L429F00196C01S01028Rp12846.jpg' },
       { url: '/images/L429F00196C01S01028Rp13485.jpg', name: 'L429F00196C01S01028Rp13485.jpg' },
@@ -43,7 +43,7 @@ const SAMPLES: Sample[] = [
     id: 'duplicate',
     title: 'A copied photo',
     expect: 'The same picture is sent twice. Expect the photo check to catch it and ask for a new one.',
-    farmer: 'Suresh', plot: 'P-0389', crop: 'maize', county: 'Kitui', season: '2025-LR',
+    farmer: 'Suresh', plot: 'P-0389', crop: 'maize', county: 'Jalna', season: 'Kharif 2025',
     photos: [
       { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
       { url: '/images/L354F03993C01S01042Rp09436.jpg', name: 'L354F03993C01S01042Rp09436.jpg' },
@@ -54,7 +54,7 @@ const SAMPLES: Sample[] = [
     id: 'mismatch',
     title: 'Photos from different fields',
     expect: 'Three pictures from three different plots. Expect the claim to be held with no recommendation.',
-    farmer: 'Rajesh', plot: 'P-0891', crop: 'maize', county: 'Machakos', season: '2025-LR',
+    farmer: 'Rajesh', plot: 'P-0891', crop: 'maize', county: 'Latur', season: 'Kharif 2025',
     photos: [
       { url: '/images/L341F02966C01S08093Rp29091.jpg', name: 'L341F02966C01S08093Rp29091.jpg' },
       { url: '/images/L1089F02180C01S07348Rp18597.jpg', name: 'L1089F02180C01S07348Rp18597.jpg' },

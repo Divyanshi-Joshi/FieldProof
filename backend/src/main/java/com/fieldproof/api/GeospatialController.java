@@ -20,9 +20,12 @@ import java.util.Map;
 public class GeospatialController {
 
     private final EarthEngineService earthEngineService;
+    private final com.fieldproof.ai.OrbitToFieldService orbitToFieldService;
 
-    public GeospatialController(EarthEngineService earthEngineService) {
+    public GeospatialController(EarthEngineService earthEngineService,
+                                com.fieldproof.ai.OrbitToFieldService orbitToFieldService) {
         this.earthEngineService = earthEngineService;
+        this.orbitToFieldService = orbitToFieldService;
     }
 
     @GetMapping("/orbit-to-field")
@@ -35,6 +38,24 @@ public class GeospatialController {
     ) {
         Contracts.EarthEngineAnalysis analysis = earthEngineService.analyzePlot(plotId, lat, lon, season, crop);
         return ResponseEntity.ok(analysis);
+    }
+
+    @GetMapping("/synthesize/{claimId}")
+    public ResponseEntity<Contracts.OrbitToFieldSynthesis> synthesizeClaimOrbitToField(
+            @PathVariable("claimId") String claimId
+    ) {
+        Contracts.OrbitToFieldSynthesis synthesis = orbitToFieldService.synthesizeClaim(claimId);
+        return ResponseEntity.ok(synthesis);
+    }
+
+    @GetMapping("/synthesize")
+    public ResponseEntity<Contracts.OrbitToFieldSynthesis> synthesizePlotOrbitToField(
+            @RequestParam(value = "plot_id", required = false, defaultValue = "P-0142") String plotId,
+            @RequestParam(value = "lat", required = false) Double lat,
+            @RequestParam(value = "lon", required = false) Double lon
+    ) {
+        Contracts.OrbitToFieldSynthesis synthesis = orbitToFieldService.synthesizePlot(plotId, lat, lon);
+        return ResponseEntity.ok(synthesis);
     }
 
     @GetMapping("/status")

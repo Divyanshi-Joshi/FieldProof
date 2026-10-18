@@ -7,6 +7,7 @@ import { readSources } from '../lib/signals';
 import { OutcomeDot, Photo, Score, VerdictChip } from './ui';
 import { decidedLabel } from './InsurerView';
 import { EarthEngineInspector } from './EarthEngineInspector';
+import { OrbitToFieldCard } from './OrbitToFieldCard';
 
 interface Props {
   claim: ClaimBundle;
@@ -257,6 +258,13 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
               <p className="mt-3 text-sm text-muted">What the checks saw: {g.visible_evidence.join('; ')}.</p>
             )}
           </section>
+
+          {/* Pillar 1: Gemini Multimodal Orbit-to-Field Synthesis */}
+          <OrbitToFieldCard
+            claimId={g.claim_id}
+            plotId={g.plot_id}
+            onOpenPolicy={(id) => onOpenClause(id || 'CL-2.1')}
+          />
 
           {/* Brief */}
           <section aria-labelledby="brief-h" className="panel p-5">

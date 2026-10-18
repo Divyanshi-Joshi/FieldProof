@@ -12,7 +12,7 @@
   "flat_payout_per_plot_usd": 50,
   "county_breakdown": [
     {
-      "county": "Makueni",
+      "county": "Beed",
       "total_plots": 104,
       "gap_count": 22,
       "gap_rate": 0.212,
@@ -22,7 +22,7 @@
       "payout_frequency": 0.269
     },
     {
-      "county": "Kitui",
+      "county": "Jalna",
       "total_plots": 98,
       "gap_count": 15,
       "gap_rate": 0.153,
@@ -32,7 +32,7 @@
       "payout_frequency": 0.316
     },
     {
-      "county": "Machakos",
+      "county": "Latur",
       "total_plots": 110,
       "gap_count": 10,
       "gap_rate": 0.091,
@@ -44,7 +44,7 @@
   ],
   "season_breakdown": [
     {
-      "season": "2024-SR",
+      "season": "Rabi-2024",
       "total_plots": 156,
       "gap_count": 18,
       "gap_rate": 0.115,
@@ -54,7 +54,7 @@
       "payout_frequency": 0.333
     },
     {
-      "season": "2025-LR",
+      "season": "Kharif-2025",
       "total_plots": 156,
       "gap_count": 29,
       "gap_rate": 0.186,

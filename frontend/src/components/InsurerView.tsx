@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, Search } from 'lucide-react';
+import { ChevronDown, Search, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { ClaimBundle, api } from '../services/api';
 import { OutcomeGroup, outcomeInfo } from '../lib/outcomes';
 import { readSources } from '../lib/signals';
@@ -16,24 +16,24 @@ interface InsurerViewProps {
 
 type Filter = 'all' | OutcomeGroup;
 const FILTERS: { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'missed', label: 'Missed by the index' },
-  { id: 'hold', label: 'On hold' },
-  { id: 'review', label: 'Review' },
-  { id: 'paid', label: 'Index paid' },
-  { id: 'none', label: 'No loss' },
+  { id: 'all', label: 'All Claims' },
+  { id: 'missed', label: 'Missed by Index' },
+  { id: 'hold', label: 'On Hold' },
+  { id: 'review', label: 'Under Review' },
+  { id: 'paid', label: 'Index Paid' },
+  { id: 'none', label: 'No Loss' },
 ];
 const PRIORITY: Record<OutcomeGroup, number> = { missed: 0, hold: 1, review: 2, paid: 3, none: 4 };
 
 const isDecided = (c: ClaimBundle) => Boolean(c.audit?.adjuster_action && c.audit.adjuster_action !== 'PENDING');
 
-type SortBy = 'latest' | 'oldest' | 'id_desc' | 'id_asc' | 'priority';
+type SortBy = 'priority' | 'latest' | 'oldest' | 'id_desc' | 'id_asc';
 
 export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSelectClaim, onOpenClause, onNavigate }) => {
   const [claims, setClaims] = useState<ClaimBundle[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filter, setFilter] = useState<Filter>('all');
-  const [sortBy, setSortBy] = useState<SortBy>('latest');
+  const [sortBy, setSortBy] = useState<SortBy>('priority');
   const [query, setQuery] = useState('');
 
   const load = () => {
@@ -102,147 +102,189 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
 
   const waiting = claims.filter((c) => !isDecided(c)).length;
   const explicit = selectedClaimId ? claims.find((c) => c.grading.claim_id === selectedClaimId) : undefined;
-  const shown = explicit ?? visible[0];
+  const shown = explicit ?? visible[0] ?? claims[0];
 
   const updateClaim = (u: ClaimBundle) =>
     setClaims((prev) => prev.map((c) => (c.grading.claim_id === u.grading.claim_id ? u : c)));
 
-  if (state === 'loading') return <div className="mx-auto max-w-7xl px-5 lg:px-8"><Loading label="Loading claims" /></div>;
+  if (state === 'loading') return <div className="mx-auto max-w-7xl px-5 lg:px-8"><Loading label="Loading claims queue" /></div>;
   if (state === 'error') {
     return (
       <div className="mx-auto max-w-3xl px-5 py-10">
-        <ErrorNote title="Couldn't load the claims" body="The claims service did not respond. Check that the backend is running, then try again." onRetry={load} />
+        <ErrorNote title="Couldn't load claims" body="The claims service did not respond. Check that the backend is running, then try again." onRetry={load} />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
-      <div className={`${explicit ? 'hidden lg:flex' : 'flex'} flex-col gap-1 sm:flex-row sm:items-end sm:justify-between`}>
+    <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8 space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-4">
         <div>
-          <h1 className="text-2xl font-semibold sm:text-3xl">Claims</h1>
-          <p className="mt-1 text-muted">
-            {waiting} waiting for a decision. Latest claims appear first.
+          <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl text-ink">
+            Claims Adjudication Desk
+          </h1>
+          <p className="mt-1 text-sm text-muted">
+            {waiting} claims pending adjuster sign-off • {claims.length} total active claims across Maharashtra & Central zones.
           </p>
         </div>
-        <button onClick={() => onNavigate('doctor')} className="btn-text">See where the index misses losses</button>
+        <button
+          onClick={() => onNavigate('doctor')}
+          className="btn-quiet text-xs self-start sm:self-auto py-2 px-3 font-semibold text-field"
+        >
+          View Actuarial Risk & Triggers →
+        </button>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-12">
-        {/* Queue */}
-        <section aria-label="Claim queue" className={`${explicit ? 'hidden lg:block' : ''} lg:col-span-4`}>
-          <div className="space-y-2">
-            <label className="relative block">
-              <span className="sr-only">Search claims</span>
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" aria-hidden />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search plot, county or claim"
-                className="field-input pl-9 text-sm"
-              />
-            </label>
+      {/* Top Selector Ribbon: Search, Filter, Dropdown & Claim Switcher */}
+      <div className="rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-sm space-y-4">
+        {/* Controls row */}
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          {/* Search bar */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search claim ID, plot, district, or crop..."
+              className="field-input pl-9 text-xs sm:text-sm w-full py-2"
+            />
+          </div>
 
-            <div className="flex items-center justify-between gap-2 px-1 text-xs">
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            {/* Quick dropdown switcher */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted font-medium">Select Claim:</span>
+              <select
+                value={shown?.grading.claim_id || ''}
+                onChange={(e) => onSelectClaim(e.target.value)}
+                className="rounded-md border border-line bg-canvas px-3 py-1.5 text-xs font-semibold text-ink shadow-sm focus:border-field focus:outline-none"
+              >
+                {claims.map((c) => (
+                  <option key={c.grading.claim_id} value={c.grading.claim_id}>
+                    {c.grading.claim_id} — {c.evidence.county} (Plot {c.grading.plot_id})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-1.5">
               <span className="text-muted font-medium">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortBy)}
-                className="rounded-md border border-line bg-surface px-2 py-1 text-xs font-medium text-ink shadow-sm focus:border-field focus:outline-none"
+                className="rounded-md border border-line bg-canvas px-2.5 py-1.5 text-xs font-medium text-ink shadow-sm focus:border-field focus:outline-none"
               >
-                <option value="latest">Latest first (Date / ID)</option>
-                <option value="id_desc">Claim ID (High to Low)</option>
-                <option value="id_asc">Claim ID (01, 02...)</option>
-                <option value="priority">Priority (Missed losses)</option>
+                <option value="priority">Priority (Missed losses first)</option>
+                <option value="latest">Latest first</option>
+                <option value="id_asc">Claim ID (Ascending)</option>
                 <option value="oldest">Oldest first</option>
               </select>
             </div>
           </div>
+        </div>
 
-          <div className="scroll-thin -mx-1 mt-3 flex gap-1.5 overflow-x-auto px-1 pb-1 lg:flex-wrap">
-            {FILTERS.filter((f) => f.id === 'all' || counts[f.id]).map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setFilter(f.id)}
-                aria-pressed={filter === f.id}
-                className={`shrink-0 rounded-full border px-3 py-1 text-sm font-medium ${
-                  filter === f.id ? 'border-ink bg-ink text-white' : 'border-line bg-surface text-muted hover:text-ink'
-                }`}
-              >
-                {f.label} <span className="opacity-70">{counts[f.id] ?? 0}</span>
-              </button>
-            ))}
-          </div>
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scroll-thin">
+          {FILTERS.filter((f) => f.id === 'all' || counts[f.id]).map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+                filter === f.id
+                  ? 'border-ink bg-ink text-surface shadow-sm'
+                  : 'border-line bg-canvas text-muted hover:border-ink hover:text-ink'
+              }`}
+            >
+              {f.label} <span className="opacity-70 ml-1">({counts[f.id] ?? 0})</span>
+            </button>
+          ))}
+        </div>
 
+        {/* Horizontal Claim Cards Strip */}
+        <div className="border-t border-line pt-3">
           {visible.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-line p-6 text-sm text-muted">
-              No claims match. <button className="btn-text" onClick={() => { setFilter('all'); setQuery(''); }}>Show all claims</button>
+            <div className="py-4 text-center text-xs text-muted">
+              No claims match your search. <button className="btn-text ml-1" onClick={() => { setFilter('all'); setQuery(''); }}>Reset filters</button>
             </div>
           ) : (
-            <ul className="mt-3 overflow-hidden rounded-lg border border-line bg-surface lg:max-h-[calc(100vh-15rem)] lg:overflow-y-auto scroll-thin">
+            <div className="flex gap-3 overflow-x-auto pb-2 scroll-thin">
               {visible.map((c) => {
                 const o = outcomeInfo(c.decision.outcome_class);
                 const s = readSources(c);
                 const active = shown?.grading.claim_id === c.grading.claim_id;
                 const decided = isDecided(c);
                 return (
-                  <li key={c.grading.claim_id} className="border-b border-line last:border-b-0">
-                    <button
-                      onClick={() => onSelectClaim(c.grading.claim_id)}
-                      aria-current={active ? 'true' : undefined}
-                      className={`relative block w-full px-4 py-3.5 text-left transition-colors ${active ? 'bg-field-soft' : 'hover:bg-canvas'}`}
-                    >
-                      {active && <span className="absolute inset-y-0 left-0 w-1 bg-field" />}
-                      <div className="flex items-start gap-2.5">
-                        <OutcomeDot group={o.group} className="mt-1.5 h-2.5 w-2.5" />
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold leading-5">{o.label}</p>
-                          <p className="mt-0.5 text-sm text-muted">
-                            Plot {c.grading.plot_id}, {c.evidence.county}, {c.evidence.crop}
-                          </p>
-                          <div className="mt-2 flex items-center gap-3 text-xs text-muted">
-                            {(['index', 'photos', 'satellite'] as const).map((k) => (
-                              <span key={k} className="inline-flex items-center gap-1" title={`${k}: ${s[k].short}`}>
-                                <span className={`h-2 w-2 rounded-full ${VERDICT_STYLE[s[k].verdict].dot}`} aria-hidden />
-                                {k === 'index' ? 'Index' : k === 'photos' ? 'Photos' : 'Satellite'}
-                              </span>
-                            ))}
-                            <span className={`ml-auto font-medium ${decided ? 'text-field' : 'text-ink'}`}>
-                              {decided ? decidedLabel(c.audit.adjuster_action) : 'Waiting'}
-                            </span>
-                          </div>
-                        </div>
+                  <button
+                    key={c.grading.claim_id}
+                    onClick={() => onSelectClaim(c.grading.claim_id)}
+                    className={`w-64 shrink-0 rounded-lg border p-3 text-left transition-all ${
+                      active
+                        ? 'border-field bg-field-soft shadow-sm ring-1 ring-field'
+                        : 'border-line bg-canvas/70 hover:border-field/40 hover:bg-surface'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <OutcomeDot group={o.group} className="h-2 w-2 shrink-0" />
+                        <span className="font-mono text-xs font-bold text-ink truncate">
+                          {c.grading.claim_id}
+                        </span>
                       </div>
-                    </button>
-                  </li>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                        decided ? 'bg-field-soft text-field' : 'bg-sunk text-muted'
+                      }`}>
+                        {decided ? decidedLabel(c.audit.adjuster_action) : 'Pending'}
+                      </span>
+                    </div>
+
+                    <p className="mt-1 font-semibold text-xs text-ink truncate" title={o.label}>
+                      {o.label}
+                    </p>
+
+                    <p className="mt-0.5 text-[11px] text-muted truncate">
+                      Plot {c.grading.plot_id} • {c.evidence.county} ({c.evidence.crop})
+                    </p>
+
+                    {/* Mini Tri-Signal Verdicts */}
+                    <div className="mt-2.5 flex items-center justify-between border-t border-line/60 pt-2 text-[10px] text-muted">
+                      {(['index', 'photos', 'satellite'] as const).map((k) => (
+                        <span key={k} className="inline-flex items-center gap-1">
+                          <span className={`h-1.5 w-1.5 rounded-full ${VERDICT_STYLE[s[k].verdict].dot}`} />
+                          {k === 'index' ? 'Index' : k === 'photos' ? 'Photos' : 'Sat'}
+                        </span>
+                      ))}
+                    </div>
+                  </button>
                 );
               })}
-            </ul>
+            </div>
           )}
-          <p className="mt-3 flex items-center gap-2 text-xs text-muted">
-            <span className="h-2 w-2 rounded-full bg-loss" aria-hidden /> shows a loss
-            <span className="ml-2 h-2 w-2 rounded-full bg-calm" aria-hidden /> no loss
-          </p>
-        </section>
-
-        {/* Detail */}
-        <section aria-label="Claim detail" className={`${explicit ? '' : 'hidden lg:block'} lg:col-span-8`}>
-          {explicit && (
-            <button onClick={() => onSelectClaim(null)} className="btn-text mb-4 lg:hidden">
-              <ChevronLeft className="h-4 w-4" aria-hidden /> All claims
-            </button>
-          )}
-          {shown ? (
-            <ClaimDetail key={shown.grading.claim_id} claim={shown} onDecisionSaved={updateClaim} onOpenClause={onOpenClause} />
-          ) : (
-            <div className="rounded-lg border border-dashed border-line p-10 text-muted">Pick a claim from the list to see its evidence.</div>
-          )}
-        </section>
+        </div>
       </div>
+
+      {/* Main Full-Width Claim Investigation Workspace */}
+      <main aria-label="Selected claim details" className="w-full">
+        {shown ? (
+          <ClaimDetail
+            key={shown.grading.claim_id}
+            claim={shown}
+            onDecisionSaved={updateClaim}
+            onOpenClause={onOpenClause}
+          />
+        ) : (
+          <div className="panel p-12 text-center text-muted">
+            Select a claim from the top bar to review its evidence and make an adjudication.
+          </div>
+        )}
+      </main>
     </div>
   );
 };
 
 export function decidedLabel(a: string): string {
-  return a === 'APPROVED' ? 'Approved' : a === 'REJECTED' ? 'Rejected' : a === 'ESCALATED' ? 'Field visit' : 'Waiting';
+  return a === 'APPROVED' ? 'Approved' : a === 'REJECTED' ? 'Rejected' : a === 'ESCALATED' ? 'Field Visit' : 'Pending';
 }
+
+export default InsurerView;

@@ -91,12 +91,36 @@
       "maps_to_action": "ABSTAIN_TO_HUMAN"
     },
     {
+      "clause_id": "CL-7.2",
+      "section": 7,
+      "title": "Two-Pass Agreement Safety Gate & Abstention",
+      "summary": "Permuted visual anchor passes must agree on severity band, or system abstains to human review.",
+      "maps_to_outcome": "ABSTAIN",
+      "maps_to_action": "ABSTAIN_TO_HUMAN"
+    },
+    {
       "clause_id": "CL-8.1",
       "section": 8,
       "title": "Image Integrity Hold",
       "summary": "Photos fail integrity checks (duplicate, screen recapture, mismatched fields, EXIF issues). Claim held; no recommendation; referred to fraud team.",
       "maps_to_outcome": "INTEGRITY_HOLD",
       "maps_to_action": "HOLD_NO_RECOMMENDATION"
+    },
+    {
+      "clause_id": "CL-9.1",
+      "section": 9,
+      "title": "Sentinel-2 Multi-Spectral Surface Reflectance Verification",
+      "summary": "Orbital optical verification using Copernicus Sentinel-2 L2A 10m NDVI standardized against 3-year seasonal baseline.",
+      "maps_to_outcome": null,
+      "maps_to_action": null
+    },
+    {
+      "clause_id": "CL-10.1",
+      "section": 10,
+      "title": "Immutable Audit Record and Reproducibility",
+      "summary": "Every claim determination must append an unalterable audit row in BigQuery with model ID, prompt hash, and frozen Git rules.",
+      "maps_to_outcome": null,
+      "maps_to_action": null
     }
   ]
 }

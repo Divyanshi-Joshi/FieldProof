@@ -58,7 +58,7 @@ public class PolicyIndex {
             }
 
             // Always ensure the core frozen trigger clause IDs exist
-            validClauseIds.addAll(List.of("CL-1.1", "CL-2.1", "CL-2.2", "CL-4.2", "CL-4.3", "CL-5.1", "CL-6.1", "CL-7.1", "CL-8.1", "4.2.1", "5.3", "7.1.4"));
+            validClauseIds.addAll(List.of("CL-1.1", "CL-2.1", "CL-2.2", "CL-4.2", "CL-4.3", "CL-5.1", "CL-6.1", "CL-7.1", "CL-7.2", "CL-8.1", "CL-9.1", "CL-9.2", "CL-10.1", "4.2.1", "5.3", "7.1.4"));
 
             log.info("PolicyIndex initialized with {} clause IDs", validClauseIds.size());
         } catch (Exception e) {
