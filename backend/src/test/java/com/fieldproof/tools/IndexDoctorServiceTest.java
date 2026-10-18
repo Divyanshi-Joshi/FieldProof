@@ -451,6 +451,39 @@ class IndexDoctorServiceTest {
         }
     }
 
+    // ═════════════════════════════════════════════════════════════════════════
+    // 6. BigQuery ML Actuarial Forecasting Tests
+    // ═════════════════════════════════════════════════════════════════════════
+
+    @Nested
+    @DisplayName("BigQuery ML Actuarial Forecasting")
+    class ForecastTests {
+
+        @Test
+        @DisplayName("Returns 14-day daily forecast and probability envelope for Embu at p30")
+        void getCountyForecast_returnsValidStructure() {
+            CountyActuarialForecast forecast = service.getCountyForecast("Embu", 30);
+            assertNotNull(forecast);
+            assertEquals("Embu", forecast.county());
+            assertEquals(30, forecast.triggerPercentile());
+            assertEquals(290.0, forecast.triggerThresholdMm());
+            assertTrue(forecast.isSimulatedFallback());
+            assertEquals(IndexDoctorService.FORECAST_DISCLAIMER, forecast.disclaimer());
+            assertEquals(14, forecast.dailyForecasts().size());
+
+            assertTrue(forecast.cumulativeDeficitRisk() >= 0.0 && forecast.cumulativeDeficitRisk() <= 1.0);
+
+            for (DailyRiskForecast day : forecast.dailyForecasts()) {
+                assertNotNull(day.date());
+                assertTrue(day.expectedRainMm() >= 0.0);
+                assertTrue(day.lowerBoundMm() <= day.expectedRainMm());
+                assertTrue(day.upperBoundMm() >= day.expectedRainMm());
+                assertTrue(day.payoutProbability() >= 0.0 && day.payoutProbability() <= 1.0);
+            }
+        }
+    }
+
+
     // ── Helper ───────────────────────────────────────────────────────────────
 
     private static PlotEvaluation findPlot(List<PlotEvaluation> evals, String plotId) {

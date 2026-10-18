@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { IndexDoctorSimulation } from '../types/contracts';
+import { Area, Bar, CartesianGrid, ComposedChart, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { IndexDoctorSimulation, CountyActuarialForecast } from '../types/contracts';
 import { api } from '../services/api';
 import { fmtUsd, toPct } from '../lib/format';
 import { ErrorNote, Loading } from './ui';
@@ -30,6 +30,10 @@ export const IndexDoctorView: React.FC = () => {
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [busy, setBusy] = useState(false);
 
+  const [selectedCounty, setSelectedCounty] = useState('Embu');
+  const [forecast, setForecast] = useState<CountyActuarialForecast | null>(null);
+  const [forecastBusy, setForecastBusy] = useState(false);
+
   const loadBase = () => {
     setState('loading');
     api.simulateIndexDoctor(CURRENT_RULE)
@@ -50,6 +54,16 @@ export const IndexDoctorView: React.FC = () => {
       .finally(() => live && setBusy(false));
     return () => { live = false; };
   }, [debounced, state]);
+
+  useEffect(() => {
+    let live = true;
+    setForecastBusy(true);
+    api.getCountyForecast(selectedCounty, debounced)
+      .then((fc) => { if (live) setForecast(fc); })
+      .catch((err) => console.warn('Could not fetch forecast:', err))
+      .finally(() => { if (live) setForecastBusy(false); });
+    return () => { live = false; };
+  }, [selectedCounty, debounced]);
 
   const chartData = useMemo(() => curve.map((c) => ({
     p: c.trigger_percentile,
@@ -234,6 +248,122 @@ export const IndexDoctorView: React.FC = () => {
           </div>
         </section>
       </div>
+
+      {/* 14-Day Forward Risk Forecast (BigQuery ML) */}
+      <section aria-labelledby="forecast-h" className="mt-12">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h2 id="forecast-h" className="text-xl font-semibold">14-Day Forward Risk Forecast</h2>
+              <span className="rounded bg-field-soft px-2.5 py-0.5 text-xs font-semibold text-field">
+                {forecast?.is_simulated_fallback ? 'Offline Statistical Fallback (ARIMA)' : 'BigQuery ML (ARIMA_PLUS)'}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-muted">
+              Predictive basis-risk actuarial projection: daily rainfall confidence intervals vs payout trigger probability.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <label htmlFor="county-select" className="text-sm font-medium text-muted">County:</label>
+            <select
+              id="county-select"
+              value={selectedCounty}
+              onChange={(e) => setSelectedCounty(e.target.value)}
+              className="field-input py-1.5 px-3 text-sm font-medium"
+            >
+              {['Embu', 'Machakos', 'Kirinyaga', 'Nakuru', 'Bungoma'].map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            {forecastBusy && <span className="text-xs text-muted animate-pulse">Forecasting...</span>}
+          </div>
+        </div>
+
+        {forecast ? (
+          <div className="mt-6 space-y-6">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="panel p-4">
+                <p className="text-xs text-muted">Forecasted Cumulative Basis-Risk</p>
+                <p className="mt-1 text-2xl font-bold text-ink">
+                  {(forecast.cumulative_deficit_risk * 100).toFixed(1)}%
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  Probability of deficit triggering an index payout in next 14 days
+                </p>
+              </div>
+
+              <div className="panel p-4">
+                <p className="text-xs text-muted">Season Trigger Threshold ({forecast.trigger_percentile}th)</p>
+                <p className="mt-1 text-2xl font-bold text-field">
+                  {forecast.trigger_threshold_mm.toFixed(0)} mm
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  Benchmark seasonal drought threshold for {forecast.county}
+                </p>
+              </div>
+
+              <div className="panel p-4">
+                <p className="text-xs text-muted">Forecast Horizon</p>
+                <p className="mt-1 text-2xl font-bold text-ink">14 Days</p>
+                <p className="mt-1 text-xs text-muted">
+                  Daily ARIMA confidence envelope (90% interval)
+                </p>
+              </div>
+            </div>
+
+            <div className="panel p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h3 className="font-semibold text-sm">Rainfall Expectation Envelope & Payout Probability</h3>
+                <span className="text-xs text-muted">Left: Daily Rain (mm) | Right: Payout Probability (%)</span>
+              </div>
+              <div className="h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart
+                    data={forecast.daily_forecasts.map(d => ({
+                      ...d,
+                      dateLabel: d.date.slice(5),
+                      probPct: Math.round(d.payout_probability * 100)
+                    }))}
+                    margin={{ top: 16, right: 16, bottom: 8, left: -8 }}
+                  >
+                    <CartesianGrid stroke="#D8DDD4" strokeDasharray="3 3" />
+                    <XAxis dataKey="dateLabel" tick={{ fill: '#56655B', fontSize: 11 }} stroke="#8A968D" />
+                    <YAxis yAxisId="left" tickFormatter={(v) => `${v}mm`} tick={{ fill: '#56655B', fontSize: 11 }} stroke="#8A968D" />
+                    <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fill: '#56655B', fontSize: 11 }} stroke="#8A968D" />
+                    <Tooltip
+                      formatter={(v: any, name: string) => {
+                        if (name === 'Payout Probability') return [`${v}%`, name];
+                        return [`${v} mm`, name];
+                      }}
+                      labelFormatter={(l) => `Date: ${l}`}
+                    />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <Area yAxisId="left" type="monotone" dataKey="upper_bound_mm" name="Confidence Upper" fill="#D1E7DD" stroke="transparent" />
+                    <Area yAxisId="left" type="monotone" dataKey="lower_bound_mm" name="Confidence Lower" fill="#FFFFFF" stroke="transparent" />
+                    <Line yAxisId="left" type="monotone" dataKey="expected_rain_mm" name="Expected Daily Rain" stroke="#1F5E3B" strokeWidth={2.5} dot={{ r: 3 }} />
+                    <Bar yAxisId="right" dataKey="probPct" name="Payout Probability" fill="#B45309" opacity={0.65} barSize={16} radius={[4, 4, 0, 0]} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-line bg-canvas p-4 text-xs text-muted flex items-start justify-between gap-4">
+              <div>
+                <p className="font-semibold text-ink">Auditability & Model Lineage Notice</p>
+                <p className="mt-0.5">{forecast.disclaimer}</p>
+              </div>
+              <span className="font-mono text-[11px] px-2 py-1 bg-surface border border-line rounded">
+                ML.FORECAST(fieldproof.rainfall_forecast_model)
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="panel p-8 text-center text-muted">
+            <Loading label="Computing 14-day predictive actuarial basis risk..." />
+          </div>
+        )}
+      </section>
 
       <p className="mt-10 max-w-prose text-sm text-muted">
         This replays the rule on historical test plots from the dataset. The payout total assumes a flat amount per paid plot

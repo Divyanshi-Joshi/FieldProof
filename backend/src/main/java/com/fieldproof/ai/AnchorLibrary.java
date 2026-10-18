@@ -59,7 +59,7 @@ public class AnchorLibrary {
 
         try {
             List<Map<String, String>> entries = objectMapper.readValue(
-                    anchorsJsonPath.toFile(),
+                    targetPath.toFile(),
                     new TypeReference<>() {}
             );
 
@@ -70,7 +70,8 @@ public class AnchorLibrary {
                     Path imgPath = Path.of(filePath);
                     if (!Files.exists(imgPath)) {
                         // Try resolving relative to anchors folder
-                        imgPath = anchorsJsonPath.getParent().resolve(filePath);
+                        Path parent = targetPath.getParent();
+                        imgPath = parent != null ? parent.resolve(filePath) : Path.of(filePath);
                     }
                     if (Files.exists(imgPath)) {
                         byte[] bytes = Files.readAllBytes(imgPath);

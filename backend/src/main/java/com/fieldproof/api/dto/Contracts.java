@@ -320,4 +320,23 @@ public final class Contracts {
         @JsonProperty("computed_at_utc") Instant computedAtUtc,
         @JsonProperty("is_live_gee_authenticated") boolean isLiveGeeAuthenticated
     ) {}
+
+    // ── BigQuery ML / Predictive Actuarial Risk Forecasting ──────────────────
+    public record DailyRiskForecast(
+        @JsonProperty("date") String date,
+        @JsonProperty("expected_rain_mm") double expectedRainMm,
+        @JsonProperty("lower_bound_mm") double lowerBoundMm,
+        @JsonProperty("upper_bound_mm") double upperBoundMm,
+        @JsonProperty("payout_probability") double payoutProbability
+    ) {}
+
+    public record CountyActuarialForecast(
+        @JsonProperty("county") String county,
+        @JsonProperty("trigger_percentile") int triggerPercentile,
+        @JsonProperty("trigger_threshold_mm") double triggerThresholdMm,
+        @JsonProperty("cumulative_deficit_risk") double cumulativeDeficitRisk,
+        @JsonProperty("daily_forecasts") List<DailyRiskForecast> dailyForecasts,
+        @JsonProperty("is_simulated_fallback") boolean isSimulatedFallback,
+        @JsonProperty("disclaimer") String disclaimer
+    ) {}
 }

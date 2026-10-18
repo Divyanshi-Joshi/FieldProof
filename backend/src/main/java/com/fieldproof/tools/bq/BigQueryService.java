@@ -29,6 +29,7 @@ public class BigQueryService {
         allowlistedQueries.clear();
         loadQueryIfExists("frozen_trigger", "protocol/frozen_trigger.sql");
         loadQueryIfExists("index_doctor_slider", "protocol/index_doctor_slider.sql");
+        loadQueryIfExists("forecast_payout_risk", "protocol/forecast_payout_risk.sql");
     }
 
     private void loadQueryIfExists(String name, String pathStr) {

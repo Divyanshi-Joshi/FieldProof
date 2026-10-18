@@ -312,3 +312,23 @@ export interface EarthEngineAnalysis {
   is_live_gee_authenticated: boolean;
 }
 
+// ─── BigQuery ML / Predictive Actuarial Risk Forecasting ─────────────────────
+
+export interface DailyRiskForecast {
+  date: string;
+  expected_rain_mm: number;
+  lower_bound_mm: number;
+  upper_bound_mm: number;
+  payout_probability: number;
+}
+
+export interface CountyActuarialForecast {
+  county: string;
+  trigger_percentile: number;
+  trigger_threshold_mm: number;
+  cumulative_deficit_risk: number;
+  daily_forecasts: DailyRiskForecast[];
+  is_simulated_fallback: boolean;
+  disclaimer: string;
+}
+
