@@ -24,8 +24,6 @@ public class FarmerMessageService {
 
     public FarmerMessageService() {
         loadLanguage("en", "/messages/en.yml");
-        loadLanguage("hi", "/messages/hi.yml");
-        loadLanguage("sw", "/messages/sw.yml");
     }
 
     private void loadLanguage(String lang, String resourcePath) {
