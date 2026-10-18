@@ -572,11 +572,11 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
             )}
 
             {problems.length > 0 && (
-              <div className="flex gap-3 rounded-lg bg-hold-soft p-4 text-sm">
+              <div className="flex gap-3 rounded-lg bg-hold-soft border border-hold/30 dark:border-red-500/30 p-4 text-sm">
                 <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-hold" aria-hidden />
                 <div>
                   <p className="font-semibold text-hold">Photo checks raised a problem</p>
-                  <ul className="mt-1 space-y-0.5">
+                  <ul className="mt-1 space-y-0.5 text-ink dark:text-red-200">
                     {problems.map((p) => <li key={p}>{p}</li>)}
                   </ul>
                 </div>

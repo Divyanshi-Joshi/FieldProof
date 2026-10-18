@@ -20,11 +20,11 @@ export default {
           soft: 'var(--color-field-soft)' 
         },
         // Evidence states: what each source says about the plot
-        loss: { DEFAULT: '#B45309', soft: '#FBEBD7', ink: '#7A3A06' },
-        calm: { DEFAULT: '#5E7466', soft: '#E7ECE8' },
+        loss: { DEFAULT: 'var(--color-loss)', soft: 'var(--color-loss-soft)', ink: 'var(--color-loss-ink)' },
+        calm: { DEFAULT: 'var(--color-calm)', soft: 'var(--color-calm-soft)' },
         // Outcome tones
-        hold: { DEFAULT: '#B42318', soft: '#FBE4E1' },
-        review: { DEFAULT: '#5B4BA0', soft: '#ECE9F7' },
+        hold: { DEFAULT: 'var(--color-hold)', soft: 'var(--color-hold-soft)' },
+        review: { DEFAULT: 'var(--color-review)', soft: 'var(--color-review-soft)' },
         // Data colours
         rain: '#38BDF8',
         bloom: '#FDE047',

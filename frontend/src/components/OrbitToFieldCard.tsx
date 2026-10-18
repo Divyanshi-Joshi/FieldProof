@@ -231,20 +231,7 @@ export const OrbitToFieldCard: React.FC<Props> = ({
             </p>
           </div>
 
-          {/* Telemetry Citations Footer */}
-          {synthesis.telemetry_citations && synthesis.telemetry_citations.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px] text-muted">
-              <span className="font-semibold text-ink">Planetary Evidence:</span>
-              {synthesis.telemetry_citations.map((cite, idx) => (
-                <span
-                  key={idx}
-                  className="rounded bg-canvas border border-line px-2 py-0.5 font-mono text-[10px]"
-                >
-                  {cite}
-                </span>
-              ))}
-            </div>
-          )}
+
 
           {/* Quick Grounding Action */}
           {onOpenPolicy && (
