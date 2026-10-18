@@ -59,25 +59,29 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
     {/* Hero */}
     <section className="mx-auto grid max-w-7xl gap-10 px-5 pb-16 pt-10 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pt-16">
       <div className="lg:col-span-5 lg:pt-6">
-        <h1 className="text-3xl font-semibold sm:text-4xl lg:text-[3.4rem] lg:leading-[1.05]">
-          His maize failed. The rain index said it was a normal season.
+        <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 py-1 text-xs font-semibold text-field mb-4">
+          <span className="h-2 w-2 rounded-full bg-field animate-pulse"></span>
+          <span>JAPAC Agricultural Parametric Engine • India (PMFBY) • Indonesia • Thailand</span>
+        </div>
+        <h1 className="text-3xl font-semibold sm:text-4xl lg:text-[3.2rem] lg:leading-[1.1] text-ink">
+          His crop failed. The weather index said it was a normal season.
         </h1>
-        <p className="mt-6 max-w-prose text-lg leading-8 text-muted">
-          Index insurance pays when an area's rainfall crosses a line. When one field fails and the index doesn't move,
-          the farmer gets nothing and the insurer never finds out.
+        <p className="mt-5 max-w-prose text-base sm:text-lg leading-7 sm:leading-8 text-muted">
+          Parametric index insurance pays when a macro station crosses a cutoff. When a micro-climate dry spell wipes out a smallholder's field while the area index shows normal rain,
+          the farmer receives zero payout.
         </p>
-        <p className="mt-4 max-w-prose text-lg leading-8 text-muted">
-          FieldProof finds those missed losses and gives each one to a human adjuster, with the evidence.
+        <p className="mt-3 max-w-prose text-base sm:text-lg leading-7 sm:leading-8 text-muted">
+          FieldProof resolves this basis-risk paradox by triangulating <strong>ground smartphone photos</strong>, <strong>Copernicus Sentinel-2 orbit</strong>, and <strong>BigQuery ML predictive forecasting</strong>.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <button onClick={() => onNavigate('farmer')} className="btn-primary px-5 py-3 text-base">
-            Follow Ramesh's claim
+          <button onClick={() => onNavigate('farmer')} className="btn-primary px-5 py-3 text-sm sm:text-base font-semibold shadow-lg shadow-field/20">
+            🌾 Farmer Portal (Submit & Track)
           </button>
-          <button onClick={() => onNavigate('insurer')} className="btn-quiet px-5 py-3 text-base">
-            Open the claims queue
+          <button onClick={() => onNavigate('insurer')} className="btn-quiet px-5 py-3 text-sm sm:text-base font-semibold">
+            🏛️ Adjuster Console (Triage & Audit)
           </button>
         </div>
-        <p className="mt-4 text-sm text-faint">A three-minute walk-through. No sign-in.</p>
+        <p className="mt-4 text-xs text-faint">Instant interactive walkthrough. 1-Click Persona switching enabled.</p>
       </div>
       <div className="lg:col-span-7">
         <SeasonChart />
