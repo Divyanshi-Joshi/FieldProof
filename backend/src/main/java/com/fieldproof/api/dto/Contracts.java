@@ -129,6 +129,26 @@ public final class Contracts {
         }
     }
 
+    /**
+     * Dynamic per-photo scene classification & perspective detection.
+     * Overcomes the lack of upload ordering guarantees (farmer may upload whole field,
+     * canopy, or soil in any order, or omit soil entirely).
+     * Ensures spatial grounding is strictly bounded only to genuinely visible features.
+     */
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+    public record PhotoAnalysis(
+        @JsonProperty("photo_index")       int photoIndex,
+        @JsonProperty("perspective")       String perspective,       // e.g. "Crop Stand", "Field Landscape", "Canopy & Border", "Soil Surface"
+        @JsonProperty("primary_subject")   String primarySubject,     // e.g. "Standing Maize Rows & Tassels", "Landscape Senescence", "Stalks & Boundary Grass"
+        @JsonProperty("soil_visible")      boolean soilVisible,
+        @JsonProperty("foliage_visible")   boolean foliageVisible,
+        @JsonProperty("grounded_symptoms") List<String> groundedSymptoms
+    ) {
+        public PhotoAnalysis {
+            groundedSymptoms = groundedSymptoms == null ? List.of() : List.copyOf(groundedSymptoms);
+        }
+    }
+
     // ─── Core Contract 1: GradingResult ──────────────────────────────────────
 
     /**
@@ -176,8 +196,9 @@ public final class Contracts {
         @JsonProperty("final_severity_band") SeverityBand finalSeverityBand,
         @JsonProperty("abstain_to_human")   boolean abstainToHuman,
 
-        // Gemini 2.0 Spatial Vision Grounding
-        @JsonProperty("visual_grounding")   List<VisualGroundingBox> visualGrounding
+        // Gemini 2.0 Spatial Vision Grounding & Dynamic Perspective Classification
+        @JsonProperty("visual_grounding")   List<VisualGroundingBox> visualGrounding,
+        @JsonProperty("photo_analyses")     List<PhotoAnalysis> photoAnalyses
     ) {
         // Backward-compatible 29-argument constructor
         public GradingResult(
@@ -198,7 +219,31 @@ public final class Contracts {
                 isCropField, sameFieldAcrossPhotos, screenRecaptureSuspected, crop, growthStage,
                 signs, damageType, confidence, visibleEvidence, photoQualityFlags,
                 pass1Band, pass2Band, passesAgreed, finalSeverityBand, abstainToHuman,
-                List.of()
+                List.of(), List.of()
+            );
+        }
+
+        // Backward-compatible 30-argument constructor (with visualGrounding)
+        public GradingResult(
+            String claimId, String plotId, Instant uploadedAt, List<String> photoUrls,
+            boolean integrityPassed, boolean duplicateWithinClaim, boolean duplicateAcrossClaims,
+            String matchedEarlierClaimId, List<Integer> rejectedPhotoIndices,
+            boolean exifTimestampPresent, boolean exifGpsPresent, List<String> integrityFlags,
+            GradingPass pass1, GradingPass pass2,
+            boolean isCropField, boolean sameFieldAcrossPhotos, boolean screenRecaptureSuspected,
+            String crop, GrowthStage growthStage, Signs signs, DamageType damageType,
+            double confidence, List<String> visibleEvidence, List<String> photoQualityFlags,
+            SeverityBand pass1Band, SeverityBand pass2Band, boolean passesAgreed,
+            SeverityBand finalSeverityBand, boolean abstainToHuman,
+            List<VisualGroundingBox> visualGrounding
+        ) {
+            this(claimId, plotId, uploadedAt, photoUrls, integrityPassed, duplicateWithinClaim,
+                duplicateAcrossClaims, matchedEarlierClaimId, rejectedPhotoIndices,
+                exifTimestampPresent, exifGpsPresent, integrityFlags, pass1, pass2,
+                isCropField, sameFieldAcrossPhotos, screenRecaptureSuspected, crop, growthStage,
+                signs, damageType, confidence, visibleEvidence, photoQualityFlags,
+                pass1Band, pass2Band, passesAgreed, finalSeverityBand, abstainToHuman,
+                visualGrounding != null ? visualGrounding : List.of(), List.of()
             );
         }
     }

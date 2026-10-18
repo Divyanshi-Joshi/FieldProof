@@ -44,69 +44,102 @@
       "photo_quality_flags": [],
       "pass_1_band": "SEVERE", "pass_2_band": "SEVERE",
       "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false,
+      "photo_analyses": [
+        {
+          "photo_index": 0,
+          "perspective": "Crop Stand (Eye-Level Rows)",
+          "primary_subject": "Standing Maize & Exposed Ground",
+          "soil_visible": true,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Severe Leaf Rolling (Pencil Curling)", "Stand Stunting & Biomass Deficit", "Tassel Wilting", "Dry Topsoil Surface"]
+        },
+        {
+          "photo_index": 1,
+          "perspective": "Field Landscape (Wide Overview)",
+          "primary_subject": "Field-Scale Canopy Senescence",
+          "soil_visible": false,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Field-Scale Canopy Senescence", "Canopy Gap & Stand Thinning", "Boundary Vegetation Contrast"]
+        },
+        {
+          "photo_index": 2,
+          "perspective": "Canopy & Field Margin",
+          "primary_subject": "Standing Dried Stalks & Border Vegetation",
+          "soil_visible": false,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Severe Foliar Brownout", "Stalk Desiccation & Brittle Stems", "Border Vegetation Disparity"]
+        }
+      ],
       "visual_grounding": [
         {
           "photo_index": 0,
-          "label": "Stand Stunting & Biomass Deficit",
-          "box_2d": [180, 140, 690, 520],
-          "confidence": 0.92,
-          "symptom_description": "Stand height deficit exceeding 40% vs expected Kharif vegetative milestone."
-        },
-        {
-          "photo_index": 0,
-          "label": "Field-Scale Canopy Senescence",
-          "box_2d": [310, 480, 760, 910],
-          "confidence": 0.94,
-          "symptom_description": "Widespread baseline leaf chlorosis progressing into foliar brownout across contiguous crop rows."
-        },
-        {
-          "photo_index": 0,
-          "label": "Canopy Gap & Patchiness",
-          "box_2d": [590, 180, 890, 480],
-          "confidence": 0.88,
-          "symptom_description": "Irregular plant stand caused by early vegetative drought mortality."
-        },
-        {
-          "photo_index": 1,
           "label": "Severe Leaf Rolling (Pencil Curling)",
-          "box_2d": [160, 240, 540, 720],
+          "box_2d": [200, 260, 620, 680],
           "confidence": 0.96,
-          "symptom_description": "Inward longitudinal folding of upper whorl maize leaves indicating acute cellular turgor loss."
+          "symptom_description": "Inward longitudinal rolling and folding of upper whorl maize leaves indicating acute cellular turgor loss."
         },
         {
-          "photo_index": 1,
-          "label": "Marginal Foliar Scorching",
-          "box_2d": [450, 410, 810, 890],
+          "photo_index": 0,
+          "label": "Stand Stunting & Biomass Deficit",
+          "box_2d": [220, 150, 720, 520],
           "confidence": 0.92,
-          "symptom_description": "Necrotic foliar margins with progressive tip burning along leaf blades."
+          "symptom_description": "Stand height and vegetative biomass deficit exceeding 35% compared to healthy Kharif baseline."
+        },
+        {
+          "photo_index": 0,
+          "label": "Tassel Wilting & Desiccation",
+          "box_2d": [80, 360, 310, 620],
+          "confidence": 0.91,
+          "symptom_description": "Premature flowering structure desiccation, causing pollen sterilization during dry spell."
+        },
+        {
+          "photo_index": 0,
+          "label": "Dry Compacted Topsoil",
+          "box_2d": [700, 320, 970, 780],
+          "confidence": 0.89,
+          "symptom_description": "Exposed dry dirt terrace between standing maize rows with zero surface moisture."
         },
         {
           "photo_index": 1,
-          "label": "Tassel Wilting",
-          "box_2d": [90, 360, 320, 640],
-          "confidence": 0.89,
-          "symptom_description": "Premature reproductive structure desiccation halting viable pollen shed during flowering."
-        },
-        {
-          "photo_index": 2,
-          "label": "Deep Polygonal Soil Cracking",
-          "box_2d": [480, 130, 920, 860],
-          "confidence": 0.97,
-          "symptom_description": "Severe polygonal vertisol fissures exceeding 3.0cm depth between crop root clusters."
-        },
-        {
-          "photo_index": 2,
-          "label": "Desiccated Topsoil Crust",
-          "box_2d": [190, 280, 550, 820],
+          "label": "Field-Scale Canopy Senescence",
+          "box_2d": [310, 360, 780, 920],
           "confidence": 0.94,
-          "symptom_description": "Bleached surface layer indicating complete loss of capillary soil moisture."
+          "symptom_description": "Widespread baseline chlorosis progressing into foliar brownout across contiguous sloping crop rows."
+        },
+        {
+          "photo_index": 1,
+          "label": "Canopy Gap & Stand Thinning",
+          "box_2d": [560, 160, 890, 480],
+          "confidence": 0.88,
+          "symptom_description": "Irregular patchy stand caused by early vegetative drought mortality across field gradient."
+        },
+        {
+          "photo_index": 1,
+          "label": "Boundary Vegetation Contrast",
+          "box_2d": [180, 30, 640, 340],
+          "confidence": 0.93,
+          "symptom_description": "Sharp color contrast between drought-senesced crop rows and adjacent resilient border trees."
         },
         {
           "photo_index": 2,
-          "label": "Adventitious Root Exposure",
-          "box_2d": [620, 440, 870, 750],
-          "confidence": 0.89,
-          "symptom_description": "Exposed, shrunken brace roots caused by severe subsoil shrinkage."
+          "label": "Severe Foliar Brownout",
+          "box_2d": [220, 440, 880, 960],
+          "confidence": 0.96,
+          "symptom_description": "Complete foliar necrosis with bleached, straw-colored leaves on standing mature stalks."
+        },
+        {
+          "photo_index": 2,
+          "label": "Stalk Desiccation & Brittle Stems",
+          "box_2d": [410, 510, 930, 840],
+          "confidence": 0.92,
+          "symptom_description": "Dried standing maize canes exhibiting severe vascular shrinkage and premature senescence."
+        },
+        {
+          "photo_index": 2,
+          "label": "Border Vegetation Disparity",
+          "box_2d": [170, 10, 880, 440],
+          "confidence": 0.94,
+          "symptom_description": "Lush green border wild weeds on left edge highlight that crop failure is restricted to the cultivated plot."
         }
       ]
     },
@@ -185,7 +218,77 @@
       "visible_evidence": ["moderate leaf curling", "early yellowing"],
       "photo_quality_flags": [],
       "pass_1_band": "MODERATE", "pass_2_band": "MODERATE",
-      "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false
+      "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false,
+      "photo_analyses": [
+        {
+          "photo_index": 0,
+          "perspective": "Crop Stand (Row Profile)",
+          "primary_subject": "Vegetative Maize Rows",
+          "soil_visible": true,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Moderate Leaf Curling", "Stand Stunting"]
+        },
+        {
+          "photo_index": 1,
+          "perspective": "Canopy Close-Up",
+          "primary_subject": "Curling Leaf Blades",
+          "soil_visible": false,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Inward Foliar Curling", "Early Chlorotic Lesions"]
+        },
+        {
+          "photo_index": 2,
+          "perspective": "Field Landscape",
+          "primary_subject": "Field Vegetative Density",
+          "soil_visible": false,
+          "foliage_visible": true,
+          "grounded_symptoms": ["Canopy Chlorosis & Senescence", "Vegetative Stand Thinning"]
+        }
+      ],
+      "visual_grounding": [
+        {
+          "photo_index": 0,
+          "label": "Moderate Leaf Curling",
+          "box_2d": [240, 280, 580, 690],
+          "confidence": 0.88,
+          "symptom_description": "Early afternoon leaf blade rolling along lateral midrib indicating moderate moisture deficit."
+        },
+        {
+          "photo_index": 0,
+          "label": "Vegetative Stand Stunting",
+          "box_2d": [210, 160, 680, 490],
+          "confidence": 0.84,
+          "symptom_description": "Inter-row height variation reflecting uneven soil moisture retention during vegetative growth."
+        },
+        {
+          "photo_index": 1,
+          "label": "Inward Foliar Curling",
+          "box_2d": [200, 240, 620, 750],
+          "confidence": 0.91,
+          "symptom_description": "V-shaped leaf blade cross section adopted by maize plants to reduce transpiration surface area."
+        },
+        {
+          "photo_index": 1,
+          "label": "Early Chlorotic Lesions",
+          "box_2d": [430, 360, 780, 850],
+          "confidence": 0.86,
+          "symptom_description": "Interveinal yellowing along lower leaves resulting from progressive moisture restriction."
+        },
+        {
+          "photo_index": 2,
+          "label": "Canopy Chlorosis & Senescence",
+          "box_2d": [290, 340, 750, 880],
+          "confidence": 0.89,
+          "symptom_description": "Moderate canopy yellowing across central plot rows under localized dry spell."
+        },
+        {
+          "photo_index": 2,
+          "label": "Vegetative Stand Thinning",
+          "box_2d": [520, 150, 860, 480],
+          "confidence": 0.85,
+          "symptom_description": "Canopy gaps visible between vegetative rows due to delayed emergence."
+        }
+      ]
     },
     "evidence": {
       "plot_id": "P-0217", "county": "Jalna", "season": "Kharif-2025", "crop": "maize",

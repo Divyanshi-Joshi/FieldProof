@@ -7,7 +7,7 @@ Signs:
 - leaf rolling: leaves curled or folded lengthwise (0 to 3).
 - canopy senescence: yellowing, browning or drying of leaves across the canopy (0 to 3).
 - stunting: plants short, or a patchy stand, compared with the healthy reference (0 to 3).
-- soil cracking visible: true or false.
+- soil cracking visible: true or false (must be false if ground soil surface is not visible in the photos).
 
 Other fields:
 - Set is_crop_field to false if the photo is not an agricultural crop field, and then score every sign 0.

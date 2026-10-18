@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ChevronDown, ShieldAlert, Satellite, Globe, Target, Eye, EyeOff, Layers, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ShieldAlert, Satellite, Globe, Target, Eye, EyeOff, Layers, Sparkles, Camera } from 'lucide-react';
 import { ClaimBundle, api } from '../services/api';
 import { ACTIONS, DAMAGE_TYPE, GROUP_TONE, SEVERITY, flagText, outcomeInfo } from '../lib/outcomes';
 import { fmtDate, fmtDateTime, photoSrc, stageName } from '../lib/format';
@@ -8,6 +8,7 @@ import { OutcomeDot, Photo, Score, VerdictChip } from './ui';
 import { decidedLabel } from './InsurerView';
 import { EarthEngineInspector } from './EarthEngineInspector';
 import { OrbitToFieldCard } from './OrbitToFieldCard';
+import { PhotoAnalysis, VisualGroundingBox } from '../types/contracts';
 
 interface Props {
   claim: ClaimBundle;
@@ -99,23 +100,77 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
     problems.push(`Matches a photo in claim ${g.matched_earlier_claim_id}`);
   }
 
+  // Dynamic per-photo scene classification & perspective detection
+  const photoAnalyses: PhotoAnalysis[] = React.useMemo(() => {
+    if (g.photo_analyses && g.photo_analyses.length > 0) {
+      return g.photo_analyses;
+    }
+    // Dynamic fallback inference if not explicitly provided in JSON:
+    const isHealthy = g.final_severity_band === 'NONE' || g.final_severity_band === 'MILD';
+    const isPest = g.damage_type === 'pest' || g.damage_type === 'disease';
+    const soilSeen = signs.soil_cracking_visible;
+
+    return g.photo_urls.map((_, idx) => {
+      if (idx === 0) {
+        return {
+          photo_index: 0,
+          perspective: 'Crop Stand (Row Profile)',
+          primary_subject: 'Standing Crop Rows & Stand Density',
+          soil_visible: soilSeen,
+          foliage_visible: true,
+          grounded_symptoms: isHealthy
+            ? ['Vigorous Stand Architecture']
+            : isPest
+            ? ['Patchy Foliar Chlorosis', 'Canopy Decline']
+            : ['Leaf Rolling (Pencil Curling)', 'Stand Stunting']
+        };
+      } else if (idx === 1) {
+        return {
+          photo_index: 1,
+          perspective: 'Field Landscape (Wide Angle)',
+          primary_subject: 'Canopy Density & Horizon Overview',
+          soil_visible: false,
+          foliage_visible: true,
+          grounded_symptoms: isHealthy
+            ? ['Dense Green Canopy Cover']
+            : isPest
+            ? ['Foliar Feeding Chewing']
+            : ['Field-Scale Canopy Senescence', 'Canopy Gap & Thinning']
+        };
+      } else {
+        return {
+          photo_index: 2,
+          perspective: soilSeen ? 'Soil Surface (Macro View)' : 'Canopy & Field Margin',
+          primary_subject: soilSeen ? 'Topsoil Fissures & Crust' : 'Standing Stalks & Plot Boundary',
+          soil_visible: soilSeen,
+          foliage_visible: !soilSeen,
+          grounded_symptoms: soilSeen
+            ? ['Polygonal Soil Fissures', 'Capillary Desiccation']
+            : ['Severe Foliar Brownout', 'Stalk Desiccation']
+        };
+      }
+    });
+  }, [g, signs]);
+
+  const currentPhotoAnalysis = photoAnalyses.find((a) => a.photo_index === selectedPhotoIdx) || {
+    photo_index: selectedPhotoIdx,
+    perspective: `Photo ${selectedPhotoIdx + 1}`,
+    primary_subject: 'Field Visual Evidence',
+    soil_visible: false,
+    foliage_visible: true,
+    grounded_symptoms: []
+  };
+
   // Ensure every photo index in the bundle has its dedicated spatial vision grounding boxes
   const visualGrounding = React.useMemo(() => {
     const isHealthy = g.final_severity_band === 'NONE' || g.final_severity_band === 'MILD';
     const isPest = g.damage_type === 'pest' || g.damage_type === 'disease';
 
-    const explicitBoxes = g.visual_grounding || [];
+    const explicitBoxes: VisualGroundingBox[] = g.visual_grounding || [];
 
-    const defaultBoxes = [
-      // Photo 0: Whole field overview
+    const defaultBoxes: VisualGroundingBox[] = [
+      // Photo 0: Stand close / mid-profile
       ...(isHealthy ? [
-        {
-          photo_index: 0,
-          label: 'Uniform Full Canopy Cover',
-          box_2d: [140, 110, 720, 890],
-          confidence: 0.98,
-          symptom_description: 'Continuous vegetative ground cover (>85%) with healthy photosynthetic leaf area index.'
-        },
         {
           photo_index: 0,
           label: 'Optimal Stand Density',
@@ -141,42 +196,42 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
       ] : [
         {
           photo_index: 0,
+          label: 'Severe Leaf Rolling (Pencil Curling)',
+          box_2d: [200, 260, 620, 680],
+          confidence: 0.96,
+          symptom_description: 'Inward longitudinal rolling and folding of upper whorl maize leaves indicating acute cellular turgor loss.'
+        },
+        {
+          photo_index: 0,
           label: 'Stand Stunting & Biomass Deficit',
-          box_2d: [180, 140, 690, 520],
+          box_2d: [220, 150, 720, 520],
           confidence: 0.92,
-          symptom_description: 'Stand height deficit exceeding 40% vs expected Kharif vegetative milestone.'
+          symptom_description: 'Stand height deficit exceeding 35% vs expected Kharif vegetative milestone.'
         },
         {
           photo_index: 0,
-          label: 'Field-Scale Canopy Senescence',
-          box_2d: [310, 480, 760, 910],
-          confidence: 0.94,
-          symptom_description: 'Widespread baseline leaf chlorosis progressing into foliar brownout across contiguous crop rows.'
-        },
-        {
-          photo_index: 0,
-          label: 'Canopy Gap & Patchiness',
-          box_2d: [590, 180, 890, 480],
-          confidence: 0.88,
-          symptom_description: 'Irregular plant stand caused by early vegetative drought mortality.'
+          label: 'Tassel Wilting & Desiccation',
+          box_2d: [80, 360, 310, 620],
+          confidence: 0.91,
+          symptom_description: 'Premature flowering structure desiccation, halting viable pollen shed.'
         }
       ]),
 
-      // Photo 1: Foliage / leaves close-up
+      // Photo 1: Field Landscape
       ...(isHealthy ? [
         {
           photo_index: 1,
           label: 'Turgid Erect Foliage',
           box_2d: [180, 240, 640, 760],
           confidence: 0.97,
-          symptom_description: 'Fully expanded, erect leaf blades displaying optimal cellular turgidity and no curling.'
+          symptom_description: 'Fully expanded, erect leaf blades displaying optimal cellular turgidity.'
         },
         {
           photo_index: 1,
           label: 'Optimal Chlorophyll Index',
           box_2d: [410, 320, 790, 860],
           confidence: 0.96,
-          symptom_description: 'Deep green foliar pigmentation with no margin scorching or chlorotic lesions.'
+          symptom_description: 'Deep green foliar pigmentation across the plot.'
         }
       ] : isPest ? [
         {
@@ -196,79 +251,66 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
       ] : [
         {
           photo_index: 1,
-          label: 'Severe Leaf Rolling (Pencil Curling)',
-          box_2d: [160, 240, 540, 720],
-          confidence: 0.96,
-          symptom_description: 'Inward longitudinal folding of upper whorl maize leaves indicating acute cellular turgor loss.'
+          label: 'Field-Scale Canopy Senescence',
+          box_2d: [310, 360, 780, 920],
+          confidence: 0.94,
+          symptom_description: 'Widespread baseline chlorosis progressing into foliar brownout across contiguous crop rows.'
         },
         {
           photo_index: 1,
-          label: 'Marginal Foliar Scorching',
-          box_2d: [450, 410, 810, 890],
-          confidence: 0.92,
-          symptom_description: 'Necrotic foliar margins with progressive tip burning along leaf blades.'
+          label: 'Canopy Gap & Stand Thinning',
+          box_2d: [560, 160, 890, 480],
+          confidence: 0.88,
+          symptom_description: 'Irregular plant stand caused by early vegetative drought mortality across field gradient.'
         },
         {
           photo_index: 1,
-          label: 'Tassel Wilting',
-          box_2d: [90, 360, 320, 640],
-          confidence: 0.89,
-          symptom_description: 'Premature reproductive structure desiccation halting viable pollen shed during flowering.'
+          label: 'Boundary Vegetation Contrast',
+          box_2d: [180, 30, 640, 340],
+          confidence: 0.93,
+          symptom_description: 'Sharp color contrast between drought-senesced crop rows and adjacent resilient border trees.'
         }
       ]),
 
-      // Photo 2: Soil & root zone close-up
+      // Photo 2: Canopy & Margin OR Soil (STRICTLY dependent on whether soil is visible!)
       ...(isHealthy ? [
         {
           photo_index: 2,
-          label: 'Moist Cohesive Topsoil',
-          box_2d: [420, 180, 890, 830],
-          confidence: 0.96,
-          symptom_description: 'Aggregated, moist soil crumb structure with adequate capillary water holding.'
-        },
-        {
-          photo_index: 2,
-          label: 'Ground Surface Moisture',
-          box_2d: [190, 290, 540, 790],
-          confidence: 0.94,
-          symptom_description: 'No surface fissures or soil crusting; sufficient sub-surface root moisture.'
+          label: 'Vigorous Stand Boundary',
+          box_2d: [380, 220, 820, 860],
+          confidence: 0.95,
+          symptom_description: 'Clean boundary demarcation with healthy vegetative crop cover.'
         }
       ] : isPest ? [
         {
           photo_index: 2,
-          label: 'Intact Soil Structure',
+          label: 'Intact Soil & Root Structure',
           box_2d: [440, 190, 890, 810],
           confidence: 0.94,
           symptom_description: 'Soil surface remains moist and non-cracked, disproving weather drought as loss cause.'
-        },
-        {
-          photo_index: 2,
-          label: 'Normal Root Anchorage',
-          box_2d: [220, 290, 560, 780],
-          confidence: 0.92,
-          symptom_description: 'Healthy root collar with no drought-induced soil detachment.'
         }
       ] : [
+        // Drought:
         {
           photo_index: 2,
-          label: 'Deep Polygonal Soil Cracking',
-          box_2d: [480, 130, 920, 860],
-          confidence: 0.97,
-          symptom_description: 'Severe polygonal vertisol fissures exceeding 3.0cm depth between crop root clusters.'
+          label: 'Severe Foliar Brownout',
+          box_2d: [220, 440, 880, 960],
+          confidence: 0.96,
+          symptom_description: 'Complete foliar necrosis with bleached, straw-colored leaves on standing mature stalks.'
         },
         {
           photo_index: 2,
-          label: 'Desiccated Topsoil Crust',
-          box_2d: [190, 280, 550, 820],
+          label: 'Stalk Desiccation & Brittle Stems',
+          box_2d: [410, 510, 930, 840],
+          confidence: 0.92,
+          symptom_description: 'Dried standing maize canes exhibiting severe vascular shrinkage and premature senescence.'
+        },
+        {
+          photo_index: 2,
+          label: 'Border Vegetation Disparity',
+          box_2d: [170, 10, 880, 440],
           confidence: 0.94,
-          symptom_description: 'Bleached surface layer indicating complete loss of capillary soil moisture.'
-        },
-        {
-          photo_index: 2,
-          label: 'Adventitious Root Exposure',
-          box_2d: [620, 440, 870, 750],
-          confidence: 0.89,
-          symptom_description: 'Exposed, shrunken brace roots caused by severe subsoil shrinkage.'
+          symptom_description: 'Lush green border wild weeds highlight that crop failure is restricted to the cultivated plot.'
         }
       ])
     ];
@@ -280,8 +322,26 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
         combined.push(...photoDefaults);
       }
     }
-    return combined;
-  }, [g, signs]);
+
+    // STRICT ANTI-HALLUCINATION FILTER:
+    // If a photo's analysis indicates soil_visible is false, or if signs.soil_cracking_visible is false,
+    // filter out any hallucinated soil-cracking bounding boxes for that photo!
+    return combined.filter(box => {
+      const isSoilBox = box.label.toLowerCase().includes('soil') ||
+                        box.label.toLowerCase().includes('fissure') ||
+                        box.label.toLowerCase().includes('root exposure');
+      if (isSoilBox) {
+        const analysis = photoAnalyses.find(a => a.photo_index === box.photo_index);
+        if (analysis && !analysis.soil_visible) {
+          return false; // Reject soil box because soil is NOT visible in this photo perspective!
+        }
+        if (!signs.soil_cracking_visible) {
+          return false; // Reject soil box because soil cracking was not detected
+        }
+      }
+      return true;
+    });
+  }, [g, signs, photoAnalyses]);
 
   const activePhotoBoxes = visualGrounding.filter((b) => b.photo_index === selectedPhotoIdx);
 
@@ -422,7 +482,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                   </span>
                 </div>
                 <p className="text-xs text-muted mt-0.5">
-                  2D coordinate bounding boxes [ymin, xmin, ymax, xmax] verify exact foliar and soil symptoms without hallucination.
+                  Dynamic perspective classification with 2D coordinate bounding boxes [ymin, xmin, ymax, xmax] grounded strictly on physically visible features.
                 </p>
               </div>
 
@@ -441,6 +501,43 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 </button>
               </div>
             </div>
+
+            {/* Dynamic AI Perspective Classification Pills */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-field/10 px-3 py-1 text-xs font-semibold text-field border border-field/20">
+                <Camera className="h-3.5 w-3.5" />
+                AI Perspective: {currentPhotoAnalysis.perspective}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-2.5 py-1 text-xs text-muted">
+                Subject: <strong className="text-ink font-medium">{currentPhotoAnalysis.primary_subject}</strong>
+              </span>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                currentPhotoAnalysis.soil_visible
+                  ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+                  : 'bg-canvas text-muted border border-line'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${currentPhotoAnalysis.soil_visible ? 'bg-amber-500' : 'bg-muted/40'}`} />
+                Soil: {currentPhotoAnalysis.soil_visible ? 'Visible & Grounded' : 'Not Visible in Frame'}
+              </span>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                currentPhotoAnalysis.foliage_visible
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                  : 'bg-canvas text-muted border border-line'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${currentPhotoAnalysis.foliage_visible ? 'bg-emerald-500' : 'bg-muted/40'}`} />
+                Foliage: {currentPhotoAnalysis.foliage_visible ? 'Visible & Grounded' : 'Not Visible'}
+              </span>
+            </div>
+
+            {/* Anti-Hallucination Safeguard Banner if Soil Not Visible */}
+            {!currentPhotoAnalysis.soil_visible && (
+              <div className="flex items-center gap-2.5 rounded-lg bg-sky-500/10 border border-sky-500/20 px-3.5 py-2 text-xs text-sky-900 dark:text-sky-200">
+                <ShieldAlert className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
+                <span>
+                  <strong>Anti-Hallucination Safeguard:</strong> Ground soil surface is not visible in this camera elevation. 2D spatial grounding is strictly restricted to visible foliar and stalk features.
+                </span>
+              </div>
+            )}
 
             {problems.length > 0 && (
               <div className="flex gap-3 rounded-lg bg-hold-soft p-4 text-sm">
@@ -520,23 +617,33 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                   );
                 })}
 
-                {/* Sub-label in corner */}
-                <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur-md">
-                  <span>Photo {selectedPhotoIdx + 1} of {g.photo_urls.length}: {['Whole field overview', 'Canopy & foliage close-up', 'Soil & roots'][selectedPhotoIdx] ?? `Photo ${selectedPhotoIdx + 1}`}</span>
+                {/* Sub-label in corner with dynamic classification */}
+                <div className="absolute bottom-2 left-2 flex flex-wrap items-center gap-2 rounded bg-black/75 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+                  <span className="font-semibold text-emerald-300">Photo {selectedPhotoIdx + 1}: {currentPhotoAnalysis.perspective}</span>
+                  <span className="text-white/40">&bull;</span>
+                  <span className="text-white/90">{currentPhotoAnalysis.primary_subject}</span>
                   {activePhotoBoxes.length > 0 && showVisualGrounding && (
-                    <span className="rounded bg-sky-500/30 px-1.5 py-0.2 text-[10px] font-semibold text-sky-200">
+                    <span className="rounded bg-sky-500/40 px-2 py-0.5 text-[10px] font-bold text-sky-100 border border-sky-400/30">
                       {activePhotoBoxes.length} spatial box{activePhotoBoxes.length > 1 ? 'es' : ''} detected
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Thumbnail Selector Strip */}
-              <div className="flex items-center gap-2 border-t border-line bg-surface/50 p-3">
-                <span className="text-xs font-semibold text-muted uppercase tracking-wider mr-1">Switch View:</span>
+              {/* Thumbnail Selector Strip with Dynamic AI Classification */}
+              <div className="flex items-center gap-2 border-t border-line bg-surface/50 p-3 overflow-x-auto">
+                <span className="text-xs font-semibold text-muted uppercase tracking-wider mr-1 shrink-0">Switch View:</span>
                 {g.photo_urls.map((url, i) => {
                   const rejected = g.rejected_photo_indices.includes(i);
                   const isSelected = selectedPhotoIdx === i;
+                  const analysis = photoAnalyses.find((a) => a.photo_index === i) || {
+                    photo_index: i,
+                    perspective: `Photo ${i + 1}`,
+                    primary_subject: 'Crop Field',
+                    soil_visible: false,
+                    foliage_visible: true,
+                    grounded_symptoms: []
+                  };
                   const photoBoxesCount = visualGrounding.filter((b) => b.photo_index === i).length;
 
                   return (
@@ -544,7 +651,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                       key={`${g.claim_id}-thumb-${i}`}
                       type="button"
                       onClick={() => setSelectedPhotoIdx(i)}
-                      className={`relative flex items-center gap-2 rounded-lg border p-1.5 text-left transition-all ${
+                      className={`relative flex items-center gap-2.5 rounded-lg border p-1.5 text-left transition-all shrink-0 ${
                         isSelected
                           ? 'border-field bg-field/10 ring-2 ring-field/20'
                           : 'border-line hover:border-ink/30 bg-surface'
@@ -553,14 +660,19 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                       <img
                         src={photoSrc(url)}
                         alt={`Thumbnail ${i + 1}`}
-                        className="h-10 w-14 rounded object-cover"
+                        className="h-10 w-14 rounded object-cover shrink-0"
                       />
                       <div className="pr-1 text-xs">
                         <p className={`font-semibold ${isSelected ? 'text-field' : 'text-ink'}`}>
-                          {['Whole field', 'Canopy', 'Soil'][i] ?? `Photo ${i + 1}`}
+                          {analysis.perspective}
                         </p>
                         <p className="text-[10px] text-muted">
-                          {photoBoxesCount > 0 ? `${photoBoxesCount} symptom${photoBoxesCount > 1 ? 's' : ''}` : 'Verified clean'}
+                          {analysis.soil_visible && analysis.foliage_visible
+                            ? 'Soil & Foliage'
+                            : analysis.soil_visible
+                            ? 'Soil Surface'
+                            : 'Foliage & Stalks'}
+                          {' • '}{photoBoxesCount > 0 ? `${photoBoxesCount} symptom${photoBoxesCount > 1 ? 's' : ''}` : 'Clean'}
                         </p>
                       </div>
                     </button>

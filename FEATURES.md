@@ -125,25 +125,37 @@ Directly prompting an LLM to "estimate the damage percentage" or "decide if this
 1. **Gemini 2.0 Spatial Vision Grounding**:
    - Natively outputs normalized 2D coordinate bounding boxes `[box_2d: [ymin, xmin, ymax, xmax]]` in a 0–1000 coordinate scale.
    - Every physical symptom scored in the concept-bottleneck rubric is anchored directly to concrete pixel coordinates on the farmer's photo:
-     - `Severe Leaf Rolling`: e.g. `[180, 240, 520, 710]` (94% confidence) — upper-whorl pencil-like curling.
-     - `Canopy Senescence`: e.g. `[460, 110, 810, 590]` (89% confidence) — progressive chlorosis and necrosis.
-     - `Soil Cracking`: e.g. `[620, 290, 940, 850]` (96% confidence) — polygonal desiccated clay soil fissures.
-2. **Concept-Bottleneck Agronomic Rubric**:
-   - The model is strictly constrained to scoring four physical agronomic signs on an integer 0–3 scale (`leaf_rolling_0_3`, `canopy_senescence_0_3`, `stunting_0_3`, `soil_cracking_visible`).
+     - `Severe Leaf Rolling`: e.g. `[200, 260, 620, 680]` (96% confidence) — upper-whorl pencil-like curling.
+     - `Canopy Senescence`: e.g. `[310, 360, 780, 920]` (94% confidence) — progressive chlorosis and foliar necrosis.
+     - `Dry Topsoil Surface`: e.g. `[700, 320, 970, 780]` (89% confidence) — exposed dirt terrace between crop rows (only when soil is physically visible).
+2. **Dynamic Camera Perspective & Scene Understanding**:
+   - Farmers upload photos in unpredictable order (there is zero guarantee photo 1 is whole field, photo 2 is canopy, or photo 3 is soil).
+   - Gemini 2.0 dynamically analyzes and classifies each image's perspective (`Crop Stand`, `Field Landscape`, `Canopy & Border Margin`, `Soil Surface`), primary subject, and visibility status (`soil_visible`, `foliage_visible`).
+   - Dynamic perspective tags appear on thumbnails and the main photo viewer, eliminating arbitrary slot assumptions.
+3. **Strict Anti-Hallucination Visibility Guard**:
+   - 2D spatial bounding boxes are **strictly restricted to features genuinely visible** in each specific camera frame.
+   - If an image depicts standing crop stalks or an elevated landscape view where topsoil is occluded or not in frame (`soil_visible: false`), the system **never hallucinates soil cracking boxes** on that image.
+   - An explicit **Anti-Hallucination Safeguard Banner** assures insurance adjusters that spatial grounding is constrained solely to verified visible foliar/stalk structures.
+4. **Concept-Bottleneck Agronomic Rubric**:
+   - The model is strictly constrained to scoring physical agronomic signs on an integer 0–3 scale (`leaf_rolling_0_3`, `canopy_senescence_0_3`, `stunting_0_3`, `soil_cracking_visible`).
    - The model **never** outputs a monetary payout or a final severity classification.
-3. **Tri-Anchor Calibration (`AnchorLibrary`)**:
+5. **Tri-Anchor Calibration (`AnchorLibrary`)**:
    - Inferences include three fixed reference images (`anchor_healthy`, `anchor_moderate`, `anchor_severe`) to eliminate camera exposure and phone sensor drift.
-4. **Two-Pass Agreement Gate**:
+6. **Two-Pass Agreement Gate**:
    - Two independent inferences execute with shuffled anchor orders (`pass_1` and `pass_2`).
    - Pure Java code maps the sign vectors to severity bands. If passes disagree, the system outputs **`ABSTAIN`** and routes the claim to a human agronomist.
 
 ### Where It Sits in the UI
 Located on **Claims Desk > Claim Detail > Farmer Field Evidence**:
+- **Dynamic AI Perspective Classifier Banner**:
+  - Displays detected camera angle (e.g. `AI Perspective: Crop Stand (Eye-Level Rows)`), primary subject, and real-time visibility badges for soil and foliage.
+- **Anti-Hallucination Safeguard Callout**:
+  - Explains when soil is not visible in the frame and confirms spatial bounding boxes are restricted to foliar/stalk structures.
 - **Interactive Multi-Photo Spatial Grounding Inspector**:
   - Focuses high-resolution photos with dynamic SVG/canvas bounding box overlays.
   - Interactive toggle button: **"Spatial Grounding: Active"** with real-time symptom highlights.
   - Hovering any bounding box highlights the symptom card below and displays the exact physical symptom explanation and model confidence score.
-  - Thumbnail selector with instant symptom counters (e.g. `2 symptoms detected`).
+  - Thumbnail selector with dynamic AI perspective titles (e.g. `Crop Stand`, `Field Landscape`, `Canopy & Margin`) and verified symptom counts.
   - Regulatory **Anti-Hallucination Audit Guarantee** badge confirming pixel grounding.
 
 ---

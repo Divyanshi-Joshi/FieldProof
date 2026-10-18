@@ -102,6 +102,15 @@ export interface VisualGroundingBox {
   symptom_description: string;
 }
 
+export interface PhotoAnalysis {
+  photo_index: number;
+  perspective: string; // e.g. "Crop Stand", "Field Landscape", "Canopy & Border", "Soil Surface"
+  primary_subject: string; // e.g. "Standing Maize Rows & Tassels", "Landscape Senescence", "Stalks & Boundary Grass"
+  soil_visible: boolean;
+  foliage_visible: boolean;
+  grounded_symptoms: string[];
+}
+
 // ─── Core Contract 1: GradingResult ──────────────────────────────────────────
 
 export interface GradingResult {
@@ -148,6 +157,8 @@ export interface GradingResult {
 
   /** Gemini 2.0 Spatial Vision Grounding 2D Bounding Boxes */
   visual_grounding?: VisualGroundingBox[];
+  /** Dynamic per-photo scene classification & perspective detection */
+  photo_analyses?: PhotoAnalysis[];
 }
 
 // ─── Core Contract 2: EvidenceRecord ─────────────────────────────────────────
