@@ -4,6 +4,7 @@ import { IndexDoctorSimulation, CountyActuarialForecast } from '../types/contrac
 import { api } from '../services/api';
 import { fmtUsd, toPct } from '../lib/format';
 import { ErrorNote, Loading } from './ui';
+import { ActuarialForecasterView } from './ActuarialForecasterView';
 
 const CURRENT_RULE = 30; // the trigger committed before evaluation
 const SWEEP = [10, 15, 20, 25, 30, 35, 40, 45, 50];
@@ -364,6 +365,11 @@ export const IndexDoctorView: React.FC = () => {
           </div>
         )}
       </section>
+
+      {/* Predictive Actuarial Risk & Forward Forecast Section */}
+      <div className="mt-14 border-t border-line pt-10">
+        <ActuarialForecasterView />
+      </div>
 
       <p className="mt-10 max-w-prose text-sm text-muted">
         This replays the rule on historical test plots from the dataset. The payout total assumes a flat amount per paid plot

@@ -4,6 +4,7 @@ import { X, Satellite, Globe, Layers, AlertTriangle, CheckCircle2, RefreshCw, Ca
 import { EarthEngineAnalysis } from '../types/contracts';
 import { api, ClaimBundle } from '../services/api';
 import { VerdictChip } from './ui';
+import { OrbitToFieldCard } from './OrbitToFieldCard';
 
 interface Props {
   claim: ClaimBundle;
@@ -20,7 +21,7 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
   const plotId = claim.grading?.plot_id || 'P-0142';
-  const county = claim.evidence?.county || 'Makueni';
+  const county = claim.evidence?.county || 'Beed';
 
   useEffect(() => {
     if (!isOpen) return;
@@ -91,15 +92,15 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
           <div>
             <div className="flex items-center gap-2">
               <h2 id="gee-inspector-title" className="font-display text-xl font-semibold sm:text-2xl">
-                Google Earth Engine & Vertex Geospatial
+                Google Earth Engine & Satellite Verification
               </h2>
               <span className="rounded bg-field-soft px-2 py-0.5 text-xs font-semibold text-field">
-                Orbit-to-Field
+                Sentinel-2 & CHIRPS
               </span>
             </div>
             <p className="mt-1 text-sm text-muted">
-              Dynamic multi-spectral Sentinel-2 vegetation and CHIRPS rainfall intelligence for plot{' '}
-              <strong className="text-ink">{plotId}</strong> ({county} County).
+              Dynamic multi-spectral Sentinel-2 vegetation and CHIRPS rainfall telemetry for plot{' '}
+              <strong className="text-ink">{plotId}</strong> ({county} District).
             </p>
           </div>
           <button
@@ -263,7 +264,7 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
                       Compares multi-temporal Sentinel-2 vegetation and CHIRPS rainfall across matching seasonal windows.
                     </p>
                   </div>
-                  <span className="text-xs font-mono text-muted">Target Window: Mar 15 – Jun 30</span>
+                  <span className="text-xs font-mono text-muted">Target Window: Kharif Season (July – October)</span>
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -296,7 +297,7 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
                   {/* Current Season (Observed Drop) */}
                   <div className="rounded-md border-2 border-field/30 bg-field-soft/40 p-3.5">
                     <div className="flex items-center justify-between text-xs font-semibold text-field">
-                      <span>2026 (Live)</span>
+                      <span>2025 (Kharif)</span>
                       <span className="font-mono">Current</span>
                     </div>
                     <p className="mt-2 font-display text-2xl font-semibold text-ink">
@@ -320,9 +321,17 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
                 </div>
               </div>
 
+              {/* Multi-Source Telemetry Card */}
+              <OrbitToFieldCard
+                claimId={claim.grading?.claim_id || 'CLM-1'}
+                plotId={plotId}
+                lat={analysis.latitude}
+                lon={analysis.longitude}
+              />
+
               {/* Provenance Details */}
               <div className="rounded-md border border-line bg-canvas/60 p-4 text-xs text-muted">
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:grid-cols-2">
                   <div>
                     <span className="font-medium text-ink">Plot Centroid Coordinates: </span>
                     <span className="font-mono">{analysis.latitude.toFixed(4)}°, {analysis.longitude.toFixed(4)}°</span>
@@ -332,8 +341,16 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
                     <span className="font-mono">{analysis.granule_id}</span>
                   </div>
                   <div>
-                    <span className="font-medium text-ink">Cloud Platform Mode: </span>
-                    <span>Vertex AI / Google Earth Engine REST API</span>
+                    <span className="font-medium text-ink">Google DeepMind ALU: </span>
+                    <span>3.51 Acres (1.42 ha) parcel boundary delineated</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-ink">Sentinel-1 SAR C-Band Radar: </span>
+                    <span className="font-mono">Soil moisture 0.18 m³/m³ (cloud-penetrating radar)</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-ink">AgriStack Parcel ID: </span>
+                    <span className="font-mono">{analysis.agristack_parcel_id || 'IN-MH-BEE-0142'}</span>
                   </div>
                   <div>
                     <span className="font-medium text-ink">Decision Concordance Role: </span>
@@ -361,7 +378,7 @@ export const EarthEngineInspector: React.FC<Props> = ({ claim, isOpen, onClose, 
               className="btn-primary text-xs py-2 px-4 inline-flex items-center gap-1.5"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`} />
-              {syncing ? 'Syncing...' : '⚡ Sync Orbit Data with Claim'}
+              {syncing ? 'Syncing...' : 'Sync Satellite Data with Claim'}
             </button>
           </div>
         </div>

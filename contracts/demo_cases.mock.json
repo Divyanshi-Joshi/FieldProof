@@ -43,10 +43,33 @@
       "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
       "photo_quality_flags": [],
       "pass_1_band": "SEVERE", "pass_2_band": "SEVERE",
-      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false
+      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false,
+      "visual_grounding": [
+        {
+          "photo_index": 0,
+          "label": "Severe Leaf Rolling",
+          "box_2d": [180, 240, 520, 710],
+          "confidence": 0.94,
+          "symptom_description": "Longitudinal pencil-like curling of upper whorl maize leaves indicating acute turgor loss."
+        },
+        {
+          "photo_index": 0,
+          "label": "Canopy Senescence",
+          "box_2d": [460, 110, 810, 590],
+          "confidence": 0.89,
+          "symptom_description": "Lower-canopy foliar chlorosis with progressive baseline browning from margin inward."
+        },
+        {
+          "photo_index": 1,
+          "label": "Soil Cracking",
+          "box_2d": [620, 290, 940, 850],
+          "confidence": 0.96,
+          "symptom_description": "Polygonal desiccated clay soil fissures exceeding 2.5cm depth between planting rows."
+        }
+      ]
     },
     "evidence": {
-      "plot_id": "P-0142", "county": "Makueni", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0142", "county": "Beed", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 341, "trigger_rain_mm": 290, "trigger_percentile": 30,
       "index_pays": false, "low_local_rain": true,
@@ -65,7 +88,7 @@
       "farmer_messages": {
         "en": "Your claim CLM-2026-001 for plot P-0142 has been escalated for review. We detected significant drought damage during the flowering stage. You will hear from us within 5 working days.",
         "hi": "आपका दावा CLM-2026-001 प्लॉट P-0142 के लिए समीक्षा हेतु भेजा गया है। फूल आने के चरण में सूखे का नुकसान पाया गया।",
-        "sw": "Dai lako CLM-2026-001 kwa shamba P-0142 limeongezwa kwa ukaguzi. Uharibifu wa ukame uligunduliwa wakati wa kutoa maua."
+        "mr": "तुमचा दावा CLM-2026-001 गट क्र. P-0142 साठी पुनरावलोकनासाठी पाठवला आहे. फुलोरा अवस्थेत दुष्काळाचे नुकसान आढळले आहे."
       }
     },
     "audit": {
@@ -123,7 +146,7 @@
       "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0217", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0217", "county": "Jalna", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 305, "trigger_rain_mm": 280, "trigger_percentile": 30,
       "index_pays": false, "low_local_rain": true,
@@ -142,7 +165,7 @@
       "farmer_messages": {
         "en": "Your claim CLM-2026-002 has been escalated for review. We found drought damage on your plot that was not captured by the area rainfall index.",
         "hi": "आपका दावा CLM-2026-002 समीक्षा के लिए भेजा गया है।",
-        "sw": "Dai lako CLM-2026-002 limeongezwa kwa ukaguzi."
+        "mr": "तुमचा दावा CLM-2026-002 पुनरावलोकनासाठी पाठवला आहे. तुमच्या शेतात दुष्काळाचे नुकसान आढळले आहे जे स्थानिक निर्देशांकात नोंदवले गेले नाही."
       }
     },
     "audit": {
@@ -200,7 +223,7 @@
       "passes_agreed": true, "final_severity_band": "MODERATE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0089", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0089", "county": "Latur", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 380, "trigger_rain_mm": 295, "trigger_percentile": 30,
       "index_pays": false, "low_local_rain": false,
@@ -219,7 +242,7 @@
       "farmer_messages": {
         "en": "We have reviewed your photos for plot P-0089. We need more photos from different angles to complete the assessment. Please upload 3 more photos. Reference: CLM-2026-003.",
         "hi": "हमने प्लॉट P-0089 की तस्वीरों की समीक्षा की है। कृपया अतिरिक्त तस्वीरें भेजें।",
-        "sw": "Tumekagua picha za shamba P-0089. Tunahitaji picha zaidi. Tafadhali pakia picha 3 zaidi."
+        "mr": "आम्ही गट क्र. P-0089 च्या फोटोंची तपासणी केली आहे. अधिक खात्रीसाठी कृपया आणखी ३ फोटो अपलोड करा."
       }
     },
     "audit": {
@@ -279,7 +302,7 @@
       "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0331", "county": "Makueni", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0331", "county": "Beed", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 410, "trigger_rain_mm": 290, "trigger_percentile": 30,
       "index_pays": false, "low_local_rain": false,
@@ -298,7 +321,7 @@
       "farmer_messages": {
         "en": "Your photos for plot P-0331 show pest damage, not weather-related damage. This is not covered by your weather index insurance. We are routing your case to our agricultural advisory service for assistance.",
         "hi": "प्लॉट P-0331 की तस्वीरें कीट क्षति दर्शाती हैं। यह मौसम बीमा के दायरे में नहीं है।",
-        "sw": "Picha za shamba P-0331 zinaonyesha uharibifu wa wadudu. Hii haifunikiwi na bima ya hali ya hewa."
+        "mr": "गट क्र. P-0331 च्या फोटोंमध्ये किडींचे नुकसान दिसत आहे. हे हवामान विम्यात येत नसल्याने कृषी सल्लागार विभागाकडे वर्ग केले आहे."
       }
     },
     "audit": {
@@ -362,7 +385,7 @@
       "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0055", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0055", "county": "Jalna", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 260, "trigger_rain_mm": 275, "trigger_percentile": 30,
       "index_pays": true, "low_local_rain": false,
@@ -381,7 +404,7 @@
       "farmer_messages": {
         "en": "We could not process your claim CLM-2026-005 for plot P-0055. The photos you submitted did not pass our verification checks. Please take new, original photos of your field and resubmit.",
         "hi": "हम आपके दावे CLM-2026-005 को संसाधित नहीं कर सके। कृपया नई तस्वीरें लेकर पुनः जमा करें।",
-        "sw": "Hatukuweza kushughulikia dai lako CLM-2026-005. Picha ulizotuma hazikupita ukaguzi. Tafadhali piga picha mpya."
+        "mr": "दावा CLM-2026-005 मंजूर होऊ शकला नाही. फोटो पडताळणी अयशस्वी झाली. कृपया शेताचे मूळ फोटो पुन्हा पाठवा."
       }
     },
     "audit": {
@@ -441,7 +464,7 @@
       "passes_agreed": false, "final_severity_band": "ABSTAIN", "abstain_to_human": true
     },
     "evidence": {
-      "plot_id": "P-0198", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0198", "county": "Latur", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 330, "trigger_rain_mm": 295, "trigger_percentile": 30,
       "index_pays": false, "low_local_rain": true,
@@ -460,7 +483,7 @@
       "farmer_messages": {
         "en": "Your claim CLM-2026-006 for plot P-0198 requires additional review. One of your photos was blurry. A claims officer will review your case. Reference: CLM-2026-006.",
         "hi": "आपके दावे CLM-2026-006 को अतिरिक्त समीक्षा की आवश्यकता है। एक तस्वीर धुंधली थी।",
-        "sw": "Dai lako CLM-2026-006 linahitaji ukaguzi zaidi. Picha moja ilikuwa na ukungu."
+        "mr": "तुमच्या दाव्याची अधिक तपासणी सुरू आहे. एक फोटो अस्पष्ट होता. विमा अधिकारी लवकरच निर्णय घेतील."
       }
     },
     "audit": {
@@ -520,7 +543,7 @@
       "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0403", "county": "Kitui", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0403", "county": "Akola", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "flowering",
       "season_rain_mm": 215, "trigger_rain_mm": 275, "trigger_percentile": 30,
       "index_pays": true, "low_local_rain": false,
@@ -539,7 +562,7 @@
       "farmer_messages": {
         "en": "Good news — your claim CLM-2026-007 for plot P-0403 has been confirmed. The rainfall index triggered for your area, and your photos confirm the damage. Your payout is being processed. Reference: CLM-2026-007.",
         "hi": "अच्छी खबर — आपका दावा CLM-2026-007 प्लॉट P-0403 के लिए पुष्टि हो गया है। भुगतान प्रक्रियाधीन है।",
-        "sw": "Habari njema — dai lako CLM-2026-007 kwa shamba P-0403 limethibitishwa. Malipo yako yanashughulikiwa."
+        "mr": "आनंदाची बातमी — दावा CLM-2026-007 मंजूर झाला आहे. नुकसान भरपाई लवकरच बँक खात्यात जमा होईल."
       }
     },
     "audit": {
@@ -550,7 +573,7 @@
       "frozen_protocol_commit_hash": "a3f7b2c", "evidence_timestamp_utc": "2026-10-16T11:02:00Z",
       "cache_hit": false,
       "system_outcome_class": "CONFIRMED_PAYOUT", "system_recommended_action": "FAST_TRACK",
-      "adjuster_id": "ADJ-KE-001", "adjuster_action": "APPROVED",
+      "adjuster_id": "ADJ-MH-001", "adjuster_action": "APPROVED",
       "adjuster_notes": "All signals aligned. Approved for fast-track payout.",
       "decided_at_utc": "2026-10-16T11:20:00Z"
     }
@@ -603,7 +626,7 @@
       "passes_agreed": true, "final_severity_band": "NONE", "abstain_to_human": false
     },
     "evidence": {
-      "plot_id": "P-0519", "county": "Machakos", "season": "2025-LR", "crop": "maize",
+      "plot_id": "P-0519", "county": "Dewas", "season": "Kharif-2025", "crop": "maize",
       "critical_growth_stage": "vegetative",
       "season_rain_mm": 240, "trigger_rain_mm": 280, "trigger_percentile": 30,
       "index_pays": true, "low_local_rain": true,
@@ -622,7 +645,7 @@
       "farmer_messages": {
         "en": "Your claim CLM-2026-008 for plot P-0519 is currently under review by our claims team. Reference: CLM-2026-008.",
         "hi": "आपका दावा CLM-2026-008 प्लॉट P-0519 के लिए समीक्षाधीन है।",
-        "sw": "Dai lako CLM-2026-008 kwa shamba P-0519 linakaguliwa na timu yetu ya bima."
+        "mr": "तुमचा दावा CLM-2026-008 सध्या आमच्या तपासणी पथकाकडे प्रलंबित आहे."
       }
     },
     "audit": {

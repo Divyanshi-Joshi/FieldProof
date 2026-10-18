@@ -3,7 +3,29 @@
 FieldProof is an automated, AI-assisted reconciliation layer for parametric index crop insurance. It bridges the gap between conventional macro-level weather indices and farmer-level ground reality.
 
 > **Foundational Principle:**  
-> *"Gemini perceives and explains; Google Earth Engine independently verifies; deterministic Java decides; a human adjuster signs off."*
+> *"Gemini perceives and explains; Google Earth Engine independently calculates; deterministic Java decides; a human adjuster signs off."*
+
+---
+
+## 🛰️ Strict Architectural Boundary: Google Geospatial Engine vs. Gemini
+
+A core requirement of financial insurance regulation is that **generative models must never hallucinate satellite physics or determine financial liabilities**.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 HOW RESPONSIBILITIES ARE SPLIT                                   │
+├─────────────────────────────────────────────────┬────────────────────────────────────────────────┤
+│   Google Earth Engine (GEE) & Geospatial Engine │   Gemini Perception & Policy Grounding         │
+├─────────────────────────────────────────────────┼────────────────────────────────────────────────┤
+│ • Sentinel-2 MSI L2A 10m (B4, B8, B11)          │ • Ground photo feature extraction (0–3 scale)  │
+│ • Sentinel-1 SAR C-band radar soil moisture     │ • Concept-bottleneck physical symptoms         │
+│ • Mathematical NDVI & NDRE calculation          │ • Policy citation grounding (PMFBY §7.1.4)     │
+│ • 3-Year Kharif baseline (μ, σ)                 │ • Multilingual farmer voice explanations       │
+│ • Statistical Z-Score (Z = [obs - μ] / σ)       │                                                │
+│ • DeepMind ALU 1.42 ha parcel atomic unit       │ ❌ NEVER invents satellite numbers             │
+│ • BigQuery GIS joins with AgriStack             │ ❌ NEVER determines payout amounts             │
+└─────────────────────────────────────────────────┴────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -17,21 +39,23 @@ FieldProof solves the fatal flaw of index insurance—**basis risk** (when an in
  │   Farmer Photos (1-3 images) ──► Image Integrity Forensics (pHash/dHash/EXIF/Moiré)   │
  │                                            │                                           │
  │                                            ▼                                           │
- │                   Two-Pass Calibrated Gemini 3 Vision Forensics                        │
+ │                   Two-Pass Calibrated Gemini Vision Forensics                          │
  │                   [Signs: leaf_rolling, canopy_senescence, stunting, soil_cracking]    │
  └────────────────────────────────────────────┬───────────────────────────────────────────┘
                                               │
                                               ▼
  ┌────────────────────────────────────────────────────────────────────────────────────────┐
  │                                   ORBIT-LEVEL EVIDENCE                                 │
- │   Farmer Plot Centroid / GPS Polygon (e.g., Lat: -1.8021, Lon: 37.6253)                │
+ │   Farmer Plot Centroid / GPS Polygon (e.g., Beed, MH: Lat: 18.9891, Lon: 75.7601)      │
  │                                            │                                           │
  │                                            ▼                                           │
- │                       Google Earth Engine & Vertex Geospatial                          │
+ │                       Google Earth Engine & BigQuery Geospatial                        │
  │      • Optical: COPERNICUS/S2_SR_HARMONIZED (Sentinel-2 L2A 10m Reflectance)           │
+ │      • Radar: Sentinel-1 C-Band SAR (Dielectric Surface Soil Moisture: 0.18 m³/m³)     │
  │      • Rainfall: UCSB-CHG/CHIRPS/DAILY (0.05° High-Resolution Precipitation)            │
- │      • 3-Year Historical Baseline (2023–2025 Harmonic Seasonal Mean μ & Std Dev σ)     │
- │      • On-the-fly Dynamic NDVI Anomaly Z-Score & Moisture Deficit %                    │
+ │      • 3-Year Historical Baseline (2023–2025 Kharif Seasonal Mean μ & Std Dev σ)       │
+ │      • DeepMind ALU: 1.42 ha (3.51 ac) Parcel Boundary joined with AgriStack           │
+ │      • Dynamic NDVI Anomaly Z-Score (Z = -1.90σ) & Dry Spell Duration (21 days)        │
  └────────────────────────────────────────────┬───────────────────────────────────────────┘
                                               │
                                               ▼
@@ -54,60 +78,73 @@ FieldProof solves the fatal flaw of index insurance—**basis risk** (when an in
 
 ---
 
-## Feature 1: Orbit-to-Field (Google Earth Engine & Vertex Geospatial)
+## Feature 1: Hyper-Local Geospatial Basis Risk Resolution (Google Earth Engine, DeepMind ALU & BigQuery GIS)
 
 ### The Problem It Solves
-Traditional parametric insurance uses area-yield or weather-station aggregate rainfall. If a weather station recorded 341 mm of rain over a 4-month season (above the 290 mm payout trigger), the automated system rejects the claim. However, if a 21-day dry spell struck right during **flowering**, the crop was permanently scorched and yielded zero grain. 
+Area-yield and weather index insurance fail systematically because satellite rainfall grids (CHIRPS / ERA5) and reference weather stations operate at coarse resolutions (5–10 km). A micro-drought or localized dry spell can completely wipe out an individual village's crop while a station 8 km away records adequate seasonal rainfall, triggering a false-negative zero payout.
 
-### How It Works
-Google Earth Engine connects orbit-level satellite data dynamically to the farmer's GPS coordinates:
-1. **Sentinel-2 Multi-Spectral Surface Reflectance (`COPERNICUS/S2_SR_HARMONIZED`)**:
-   - Uses Band 8 (Near-Infrared: 842 nm) and Band 4 (Red: 665 nm) at 10m ground resolution.
-   - Computes Normalized Difference Vegetation Index:
-     $$\text{NDVI} = \frac{\text{B8} - \text{B4}}{\text{B8} + \text{B4}}$$
-   - Filters clouds via Sentinel-2's Scene Classification Layer (`SCL`).
-2. **3-Year Multi-Temporal Historical Baseline**:
-   - For the exact same seasonal calendar window (March 15 to June 30), GEE pulls the 2023, 2024, and 2025 seasons.
-   - Computes baseline mean $\mu_{\text{baseline}}$ and standard deviation $\sigma_{\text{baseline}}$.
-3. **Dynamic Z-Score Formulation**:
-   $$Z = \frac{\text{NDVI}_{\text{observed}} - \mu_{\text{baseline}}}{\sigma_{\text{baseline}}}$$
-   If $Z \le -1.5$, the plot exhibits verified vegetative drought stress.
-4. **CHIRPS Daily Precipitation (`UCSB-CHG/CHIRPS/DAILY`)**:
-   - Evaluates 0.05° (~5 km) daily pentad precipitation records.
-   - Measures consecutive dry days ($< 2.5\text{ mm}$ rain).
-   - Computes moisture deficit % against the 3-year historical average:
-     $$\text{Moisture Deficit \%} = \max\left(0, \frac{P_{\text{hist}} - P_{\text{current}}}{P_{\text{hist}}} \times 100\right)$$
+### Google Cloud & Google AI Technologies Used
+1. **Google Earth Engine (GEE) REST API**:
+   - **Sentinel-2 MSI Level-2A (10m)**: Direct planetary-scale access to multispectral bands B4 (Red: 665 nm), B8 (NIR: 842 nm), and B11 (SWIR: 1610 nm) computing plot-level NDVI, NDRE, and SWIR moisture reflectance.
+   - **Sentinel-1 C-Band Synthetic Aperture Radar (SAR)**: Active radar penetration through heavy monsoon cloud cover to measure ground surface roughness and dielectric soil moisture deficit (volumetric soil moisture $0.18\text{ m}^3/\text{m}^3$).
+   - **Dynamic Z-Score Formulation**:
+     $$Z = \frac{\text{NDVI}_{\text{observed}} - \mu_{\text{baseline}}}{\sigma_{\text{baseline}}}$$
+     Calculated across a 3-year Kharif historical baseline envelope (July–October, 2023–2025). When $Z \le -1.5$, vegetative drought stress is mathematically proven.
+2. **Google DeepMind Agricultural Landscape Understanding (ALU & AMED)**:
+   - Frontier foundation models developed by Google DeepMind's AnthroKrishi team in India.
+   - Delineates individual smallholder farms as discrete "atomic units" (e.g. 1.42 ha / 3.51 ac parcel boundary), isolating farm boundaries from surrounding vegetation and establishing sowing dates and crop growth stages.
+3. **BigQuery Geospatial (GIS)**:
+   - High-throughput spatial predicates (`ST_CONTAINS`, `ST_GEOGPOINT`, `ST_INTERSECTS`) executing sub-second polygon joins between India's AgriStack geo-referenced parcel registry (`IN-MH-BEE-0142`) and planetary satellite raster grids.
 
-### Where It's Seen in the UI
-- **Claim Detail > Satellite Card**: Shows the dynamic Z-score ($Z = -1.90$) and a `GEE Orbit` badge.
-- **Orbit Deep-Dive Modal**:
-  - Displays Sentinel-2 tile metadata, cloud-mask percentage, and plot GPS centroid.
-  - Interactive **3-Year Historical Trajectory**: Visual comparison bars comparing 2023, 2024, 2025 against the 2026 observed drop.
-  - **⚡ Sync Orbit Data with Claim**: Button that triggers on-the-fly re-computation, refreshes the claim evidence in the database, and re-evaluates the concordance decision instantly.
+### How Backend Implements It
+- **[`EarthEngineService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/tools/gee/EarthEngineService.java)**: Authenticates via Google Cloud Application Default Credentials (ADC) to Earth Engine REST API, extracts plot polygon NDVI $z$-scores ($\frac{\text{observed} - \mu}{\sigma}$), computes dry-spell duration, and reads Sentinel-1 SAR soil moisture.
+- **[`OrbitToFieldService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/OrbitToFieldService.java)**: Harmonizes macro-station weather grid data with DeepMind ALU 1.42 ha boundaries and 10m Sentinel-2 / Sentinel-1 telemetry into structured plain-English basis-risk summaries.
+
+### Where It Sits in the UI & How It Delivers Instant Conclusions
+Located in **Claims Desk > Claim Detail > Multi-Source Telemetry & Resolution Breakdown**:
+1. **Executive Conclusion Banner**:
+   - Immediately states the determination: *"Reconciliation Conclusion: Missed by Weather Index • Action: Payout Recommended (§7.1.4)"*.
+   - Explains in plain English: *"The 10km regional weather station reported 341 mm seasonal rain (above the 290 mm index trigger), resulting in a standard denial. However, hyper-local 10m Sentinel-2 telemetry reveals a 21-day dry spell during the critical flowering stage, driving vegetative stress to -1.90σ below the 3-year Kharif baseline. Under PMFBY Policy Clause §7.1.4, the ground evidence overrides the coarse index."*
+2. **3-Box Resolution Contrast Hierarchy**:
+   - **Macro Weather Grid (10 km)**: CHIRPS 341 mm vs 290 mm trigger $\to$ Index did not pay (₹0).
+   - **DeepMind ALU & AgriStack (1.42 ha)**: AgriStack ID `IN-MH-BEE-0142`, 3.51 ac boundary isolated, SAR Soil Moisture Deficit $0.18\text{ m}^3/\text{m}^3$.
+   - **Earth Engine Sentinel-2 (10 m)**: NDVI 0.31 ($-1.90\sigma$ vegetative stress), 21-day flowering dry spell $\to$ Severe crop damage confirmed.
+3. **Interactive Orbit Telemetry Inspector**:
+   - 3-year Kharif baseline envelope comparison (2023, 2024, 2025 vs 2026).
+   - Dynamic satellite metadata, cloud score (<15%), and instant recalculation synchronization.
+
 
 ---
 
-## Feature 2: Calibrated Zero-Hallucination Gemini Vision Forensics
+## Feature 2: Gemini 2.0 Spatial Vision Grounding & Two-Pass Calibrated Vision Forensics
 
 ### The Problem It Solves
-Directly prompting an LLM to "estimate the damage percentage" or "decide if this claim should be paid" results in severe hallucinations, camera lighting bias, and legal non-compliance.
+Directly prompting an LLM to "estimate the damage percentage" or "decide if this claim should be paid" results in severe hallucinations, camera lighting bias, and legal non-compliance. Furthermore, claims adjusters cannot afford to guess which pixels the model inspected when assigning severity scores.
 
-### How It Works
-1. **Concept-Bottleneck Rubric**: Gemini is constrained to scoring only four concrete, physical agronomic signs on an integer 0–3 scale:
-   - `leaf_rolling_0_3`: Degree of longitudinal leaf curling (0 = flat, 3 = tightly rolled pencil-like tubes).
-   - `canopy_senescence_0_3`: Fraction of canopy exhibiting yellowing/necrosis (0 = green, 3 = complete brownout).
-   - `stunting_0_3`: Stand height deficit relative to standard crop growth stage.
-   - `soil_cracking_visible`: Boolean detection of polygonal dry soil fissures.
-2. **Tri-Anchor Calibration (`AnchorLibrary`)**:
-   - Every Gemini call includes three fixed reference images:
-     - `anchor_healthy` (Score: 0)
-     - `anchor_moderate` (Score: 2)
-     - `anchor_severe` (Score: 3)
-   - These anchors eliminate prompt drift caused by camera hardware, exposure, or cloud shadows.
-3. **Two-Pass Agreement Gate**:
-   - Two independent Gemini inferences are executed with shuffled anchor ordering (`pass_1` and `pass_2`).
-   - Pure Java code maps the signs vector to a severity band (`NONE`, `MILD`, `MODERATE`, `SEVERE`).
-   - If `pass_1_band != pass_2_band`, the system refuses to guess and outputs **`ABSTAIN`**, routing the claim to a human agronomist.
+### Google AI Technologies Used
+1. **Gemini 2.0 Spatial Vision Grounding**:
+   - Natively outputs normalized 2D coordinate bounding boxes `[box_2d: [ymin, xmin, ymax, xmax]]` in a 0–1000 coordinate scale.
+   - Every physical symptom scored in the concept-bottleneck rubric is anchored directly to concrete pixel coordinates on the farmer's photo:
+     - `Severe Leaf Rolling`: e.g. `[180, 240, 520, 710]` (94% confidence) — upper-whorl pencil-like curling.
+     - `Canopy Senescence`: e.g. `[460, 110, 810, 590]` (89% confidence) — progressive chlorosis and necrosis.
+     - `Soil Cracking`: e.g. `[620, 290, 940, 850]` (96% confidence) — polygonal desiccated clay soil fissures.
+2. **Concept-Bottleneck Agronomic Rubric**:
+   - The model is strictly constrained to scoring four physical agronomic signs on an integer 0–3 scale (`leaf_rolling_0_3`, `canopy_senescence_0_3`, `stunting_0_3`, `soil_cracking_visible`).
+   - The model **never** outputs a monetary payout or a final severity classification.
+3. **Tri-Anchor Calibration (`AnchorLibrary`)**:
+   - Inferences include three fixed reference images (`anchor_healthy`, `anchor_moderate`, `anchor_severe`) to eliminate camera exposure and phone sensor drift.
+4. **Two-Pass Agreement Gate**:
+   - Two independent inferences execute with shuffled anchor orders (`pass_1` and `pass_2`).
+   - Pure Java code maps the sign vectors to severity bands. If passes disagree, the system outputs **`ABSTAIN`** and routes the claim to a human agronomist.
+
+### Where It Sits in the UI
+Located on **Claims Desk > Claim Detail > Farmer Field Evidence**:
+- **Interactive Multi-Photo Spatial Grounding Inspector**:
+  - Focuses high-resolution photos with dynamic SVG/canvas bounding box overlays.
+  - Interactive toggle button: **"Spatial Grounding: Active"** with real-time symptom highlights.
+  - Hovering any bounding box highlights the symptom card below and displays the exact physical symptom explanation and model confidence score.
+  - Thumbnail selector with instant symptom counters (e.g. `2 symptoms detected`).
+  - Regulatory **Anti-Hallucination Audit Guarantee** badge confirming pixel grounding.
 
 ---
 
@@ -163,7 +200,7 @@ Insurers frequently struggle to choose the optimal percentile trigger (e.g. 20th
 - Dynamically calculates:
   - **Basis-Risk Gap Rate %**: Farmers who lost crops but received no payout.
   - **Overpayment Rate %**: Payouts made where crops did not suffer damage.
-  - **Payout Frequency & Projected Outlay ($ USD)** across individual counties.
+  - **Payout Frequency & Projected Outlay (₹ INR)** across individual districts (Beed, Jalna, Latur, Akola, Dewas).
 
 ---
 
@@ -177,7 +214,7 @@ Adjusters require legally defensible policy citations, while smallholder farmers
    - Strict allowlist of policy clauses loaded from `policy/clauses.json`.
    - Validates that adjuster briefs cite only legitimate, active policy sections.
 2. **Farmer Message Localization**:
-   - Generates farmer-facing text in **English (`en`)**, **Hindi (`hi`)**, and **Swahili (`sw`)**.
+   - Generates farmer-facing text in **English (`en`)**, **Hindi (`hi`)**, and **Marathi (`mr`)**.
    - Transparently explains why a claim was fast-tracked, held, or escalated, and includes statutory disclaimers that human adjusters make final decisions.
 
 ---

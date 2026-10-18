@@ -8,6 +8,8 @@ import com.google.genai.types.Content;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
+import com.google.genai.types.Tool;
+import com.google.genai.types.ToolCodeExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -276,5 +278,127 @@ public class GeminiGateway {
      */
     public long getParseFailureCount() {
         return parseFailureCount.get();
+    }
+
+    public record GeminiCodeExecutionOutput(
+            String pythonCode,
+            String executionOutput,
+            String responseText,
+            long latencyMs,
+            Long inputTokens,
+            Long outputTokens,
+            String modelVersion
+    ) {}
+
+    /**
+     * Executes actuarial code forecasting using Gemini's native Python Code Execution sandbox.
+     */
+    public GeminiCodeExecutionOutput executeCodeForecasting(String prompt, String systemInstruction) {
+        String model = props.gemini().model();
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while acquiring Gemini concurrency permit", e);
+        }
+
+        long startTime = System.currentTimeMillis();
+        try {
+            Client client = clientSupplier.get();
+            Tool codeExecTool = Tool.builder()
+                    .codeExecution(ToolCodeExecution.builder().build())
+                    .build();
+
+            GenerateContentConfig.Builder configBuilder = GenerateContentConfig.builder()
+                    .tools(List.of(codeExecTool));
+
+            if (systemInstruction != null && !systemInstruction.isBlank()) {
+                configBuilder.systemInstruction(Content.fromParts(Part.fromText(systemInstruction)));
+            }
+
+            Content content = Content.fromParts(Part.fromText(prompt));
+            GenerateContentResponse response = client.models.generateContent(
+                    model,
+                    content,
+                    configBuilder.build()
+            );
+
+            long latency = System.currentTimeMillis() - startTime;
+            String pyCode = response.executableCode();
+            String execOutput = response.codeExecutionResult();
+            String text = response.text();
+
+            Long inputTokens = null;
+            Long outputTokens = null;
+            if (response.usageMetadata().isPresent()) {
+                var usage = response.usageMetadata().get();
+                if (usage.promptTokenCount().isPresent()) {
+                    inputTokens = usage.promptTokenCount().get().longValue();
+                }
+                if (usage.candidatesTokenCount().isPresent()) {
+                    outputTokens = usage.candidatesTokenCount().get().longValue();
+                }
+            }
+
+            return new GeminiCodeExecutionOutput(
+                    pyCode != null ? pyCode : "",
+                    execOutput != null ? execOutput : "",
+                    text != null ? text : "",
+                    latency,
+                    inputTokens,
+                    outputTokens,
+                    response.modelVersion().orElse(model)
+            );
+        } catch (Exception e) {
+            log.warn("Gemini Code Execution call failed: {}", e.getMessage());
+            throw new RuntimeException("Gemini Code Execution failed: " + e.getMessage(), e);
+        } finally {
+            semaphore.release();
+        }
+    }
+
+    /**
+     * Generates free text (e.g. for Policy Grounding or Orbit-to-Field Multimodal Synthesis)
+     * using the full context window.
+     */
+    public String generateGroundedText(String systemInstruction, List<GeminiCall.PartInput> parts) {
+        String model = props.gemini().model();
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while acquiring Gemini permit", e);
+        }
+
+        try {
+            Client client = clientSupplier.get();
+            GenerateContentConfig.Builder configBuilder = GenerateContentConfig.builder();
+            if (systemInstruction != null && !systemInstruction.isBlank()) {
+                configBuilder.systemInstruction(Content.fromParts(Part.fromText(systemInstruction)));
+            }
+
+            List<Part> sdkParts = new ArrayList<>();
+            for (GeminiCall.PartInput p : parts) {
+                if (p.isImage()) {
+                    sdkParts.add(Part.fromBytes(p.imageBytes(), p.mimeType()));
+                } else if (p.isText()) {
+                    sdkParts.add(Part.fromText(p.text()));
+                }
+            }
+
+            Content content = Content.fromParts(sdkParts.toArray(new Part[0]));
+            GenerateContentResponse response = client.models.generateContent(
+                    model,
+                    content,
+                    configBuilder.build()
+            );
+
+            return response.text();
+        } catch (Exception e) {
+            log.warn("Gemini generateGroundedText failed: {}", e.getMessage());
+            throw new RuntimeException("Gemini text generation failed: " + e.getMessage(), e);
+        } finally {
+            semaphore.release();
+        }
     }
 }

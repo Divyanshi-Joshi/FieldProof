@@ -1,0 +1,249 @@
+================================================================================
+           REPUBLIC OF INDIA — MINISTRY OF AGRICULTURE & FARMERS WELFARE
+               IRDAI STATUTORY STANDARD WEATHER-INDEX BINDER (SPECIMEN)
+        FieldProof Sovereign Parametric Risk Reconciliation Protocol (WBCIS)
+================================================================================
+
+Master Binder Ref:    FP-INDIA-WBCIS-PARAMETRIC-2026-REG-B4
+Statutory Filing:     IRDAI-CIRCULAR-2025/114-PMFBY-WBCIS-INDEX
+Underwriting Syndicate: Agriculture Insurance Company of India & Lead Reinsurers
+Territory:            Maharashtra & Madhya Pradesh Agro-Climatic Zones (Districts:
+                      Beed, Jalna, Latur, Akola, Amravati, Solapur, Ahmednagar, Dewas)
+Covered Crops:        Zea mays (Kharif Maize/Makka), Glycine max (Soybean),
+                      Gossypium (Cotton/Kapas), Sorghum bicolor (Jowar), Bajra
+Underwriting Season:  2025 Kharif Season (June through October; Sowing to Harvest)
+
+IMPORTANT NOTICE TO LOSS ADJUSTERS, COMPLIANCE OFFICERS, AND AUDITORS:
+This legal binder establishes the definitive contractual terms, evidence hierarchy,
+statutory trigger formulas, and reconciliation rules governing all automated and
+AI-assisted claim evaluations under PMFBY / WBCIS operational guidelines.
+Under Section 33 of the Insurance Regulatory and Development Authority Act,
+every claim determination MUST be grounded against specific numbered clauses of this binder.
+Zero automated determination may disburse funds without explicit citation of the governing
+article, documented sensory corroboration, and an immutable cryptographic audit record.
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE OF CONTENTS & SECTION INDEX
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — INTERPRETATION, DEFINITIONS, AND GOVERNING JURISPRUDENCE
+SECTION 2 — PARAMETRIC INDEX FORMULATION, PERCENTILES, AND TRIGGER THRESHOLDS
+SECTION 3 — MULTI-MODAL EVIDENCE HIERARCHY & SATELLITE ORBITAL VERIFICATION
+SECTION 4 — CONCEPT-BOTTLENECK AGRONOMIC SIGN RUBRIC AND VISUAL ANCHORING
+SECTION 5 — BASIS RISK RECONCILIATION PROTOCOL (SPATIAL AND PHENOLOGICAL GAPS)
+SECTION 6 — LOSS OVERPAYMENT CONTROL, EVIDENCE CONFLICTS, AND RE-SAMPLING
+SECTION 7 — NON-WEATHER PERIL EXCLUSIONS AND AGRICULTURAL ADVISORY REFERRALS
+SECTION 8 — FORENSIC IMAGE INTEGRITY, ANTI-FRAUD VERIFICATION, AND PERCEPTUAL HASHING
+SECTION 9 — TWO-PASS AGREEMENT GATES, MODEL ABSTENTION, AND ADJUSTER PREROGATIVE
+SECTION 10 — IMMUTABLE LEDGERING, BIGQUERY AUDIT ARCHITECTURE, AND APPEALS
+
+================================================================================
+SECTION 1 — INTERPRETATION, DEFINITIONS, AND GOVERNING JURISPRUDENCE
+================================================================================
+
+CL-1.1: PRIMARY DEFINITION OF INDEX PERFORMANCE & RAINFALL TRIGGERING
+(Page 3, Paragraph 1.1)
+The Insurer agrees to indemnify the Insured Smallholder Farmer against cumulative
+seasonal precipitation deficiency below the actuarially established contract threshold.
+The Primary Index shall trigger automatically (index_pays = TRUE) when cumulative
+seasonal precipitation recorded across the specified Dekadal Window falls strictly
+below the 30th percentile (P30) of the long-term historical distribution (1991–2020 ERA5
+reanalysis and UCSB-CHG CHIRPS daily high-resolution pentads). Where seasonal rainfall
+equals or exceeds the P30 threshold (P >= 290.0 mm for Marathwada rain-shadow districts), the Primary
+Index shall register an outcome of Non-Trigger (index_pays = FALSE).
+
+CL-1.2: DEFINITION OF BASIS RISK
+(Page 4, Paragraph 1.2)
+"Basis Risk" is legally defined as any material divergence between the area-yield or
+gridded index determination and the actual agronomic loss suffered at the individual
+farm plot. Basis risk encompasses two distinct statutory classes:
+  (a) Downside Basis Risk (Type II Basis Risk / Basis Risk Gap): Where the index fails
+      to trigger despite severe vegetative mortality at the plot centroid;
+  (b) Upside Basis Risk (Type I Basis Risk / Overpayment): Where the index triggers a
+      payout to an insured plot that experienced normal or surplus vegetative yield.
+
+CL-1.3: PREVALENCE OF RECONCILIATION PROTOCOL
+(Page 5, Paragraph 1.3)
+To remedy the inherent unfairness of conventional index insurance, this policy enacts
+the FieldProof Multi-Sensor Reconciliation Protocol. The Insurer shall maintain an active
+ground-and-orbit audit mechanism to detect, classify, and escalate all instances of
+basis risk prior to final policy settlement.
+
+================================================================================
+SECTION 2 — CONFIRMED PAYOUT AND FAST-TRACK INDEMNIFICATION
+================================================================================
+
+CL-2.1: CONFIRMED PAYOUT FAST-TRACK PROTOCOL
+(Page 7, Paragraph 2.1)
+Where the Primary Rainfall Index triggers (index_pays = TRUE) AND independent ground-level
+photographic evidence confirms crop damage at MODERATE or SEVERE intensity, the claim
+shall be classified as a CONFIRMED PAYOUT.
+  (a) The claim is immediately routed to the human loss adjuster with a pre-populated
+      fast-track authorization brief;
+  (b) Underwriting guidelines permit expedited approval within twenty-four (24) hours
+      of digital intake;
+  (c) Payout calculation proceeds according to the statutory sum insured per hectare (₹25,000 INR/ha).
+
+CL-2.2: POSSIBLE OVERPAYMENT MITIGATION AND REVIEW
+(Page 8, Paragraph 2.2)
+Where the Primary Rainfall Index triggers (index_pays = TRUE) but photographic evidence
+graded by the calibrated perception engine verifies NONE or MILD damage (healthy crop canopy):
+  (a) Automated payout disbursement is strictly halted;
+  (b) The claim is flagged as a POSSIBLE OVERPAYMENT;
+  (c) A certified agricultural surveyor or adjuster must review the discrepancy within
+      five (5) business days to determine whether micro-climate, supplemental irrigation,
+      or soil moisture retention explains the crop's survival.
+
+================================================================================
+SECTION 3 — GROUND EVIDENCE ASSESSMENT & CONCEPT-BOTTLENECK CONSTRAINTS
+================================================================================
+
+CL-3.1: CONCEPT-BOTTLENECK AGRONOMIC RUBRIC
+(Page 11, Paragraph 3.1)
+Artificial intelligence perception systems employed by the Insurer are legally restricted
+from outputting direct monetary valuations, loss percentages, or subjective damage scores.
+AI vision models must evaluate claims exclusively through an explainable concept-bottleneck
+vector scoring four physical agronomic indicators:
+  (i)   Leaf Rolling (0 to 3): Degree of inward longitudinal curled foliage;
+  (ii)  Canopy Senescence (0 to 3): Fractional necrosis/yellowing of crop stand;
+  (iii) Stunting (0 to 3): Relative stand height deficit versus growth stage norm;
+  (iv)  Soil Cracking (Boolean): Presence of polygonal desiccation fissures.
+All mappings from the sign vector to severity bands (NONE, MILD, MODERATE, SEVERE) must
+be executed by verified, deterministic pure Java code.
+
+CL-3.2: MULTI-PERMUTATION REFERENCE ANCHOR CALIBRATION
+(Page 12, Paragraph 3.2)
+To eliminate hardware camera bias, white balance distortion, and prompt drift, every
+model inference must prepend three fixed visual reference anchors (healthy=0, moderate=2,
+severe=3) sourced from the vetted development archive. Anchor permutation order must be
+shuffled across grading passes to prevent positional bias.
+
+================================================================================
+SECTION 4 — BASIS RISK ESCALATION & GAP RESOLUTION PROTOCOL
+================================================================================
+
+CL-4.1: STATUTORY BASIS-RISK ESCALATION MANDATE
+(Page 16, Paragraph 4.1)
+When the Primary Index fails to trigger (index_pays = FALSE) but the farmer files a
+contemporaneous claim supported by ground imagery, the Insurer is bound by statutory
+mandate to evaluate satellite orbital telemetry and phenological timing before issuing
+any denial of indemnity.
+
+CL-4.2: PHENOLOGICAL CRITICAL-STAGE DROUGHT ESCALATION
+(Page 18, Paragraph 4.2)
+Where the Primary Index does NOT trigger (e.g. cumulative rainfall exceeded 290 mm),
+a claim shall be classified as a PHENOLOGICAL BASIS-RISK GAP and escalated for full payout when:
+  (a) Ground photos confirm MODERATE or SEVERE drought damage;
+  (b) Google Earth Engine Sentinel-2 multi-spectral NDVI anomaly exhibits verified
+      vegetative stress (Z <= -1.5 relative to the 3-year baseline); AND
+  (c) CHIRPS daily precipitation records confirm a continuous dry spell exceeding
+      fourteen (14) consecutive days overlapping the crop's critical reproductive
+      or flowering phenological window.
+Under Clause 4.2, the temporal distribution of rainfall supersedes aggregate volume.
+
+CL-4.3: SPATIAL BASIS-RISK ESCALATION (TOPOGRAPHIC / MICRO-CLIMATIC DEFICIT)
+(Page 21, Paragraph 4.3)
+Where the Primary Index does NOT trigger, but:
+  (a) Ground photos confirm MODERATE or SEVERE drought damage;
+  (b) Google Earth Engine Sentinel-2 NDVI anomaly verifies stress (Z <= -1.5);
+  (c) No dry spell overlap occurred during flowering, BUT plot-level CHIRPS rainfall
+      was severely depressed relative to the county weather station aggregate (low local rain);
+The claim shall be classified as a SPATIAL BASIS-RISK GAP and escalated for adjuster sign-off.
+
+================================================================================
+SECTION 5 — EVIDENCE CONFLICTS, SAMPLING DEFICITS, AND RE-EVALUATION
+================================================================================
+
+CL-5.1: EVIDENCE CONFLICT HOLD PROTOCOL
+(Page 24, Paragraph 5.1)
+Where ground photographs exhibit MODERATE or SEVERE damage, but orbital satellite
+telemetry (Google Earth Engine Sentinel-2 L2A) does NOT confirm vegetative stress (Z > -1.5):
+  (a) The claim must NOT be denied summarily;
+  (b) The claim is placed on an EVIDENCE CONFLICT HOLD;
+  (c) The automated system prompts the farmer via SMS/WhatsApp to submit two (2) supplementary
+      wide-angle plot photos within forty-eight (48) hours;
+  (d) If conflicting signals persist, the claim is assigned to an in-person field adjuster.
+
+================================================================================
+SECTION 6 — NON-WEATHER PERIL EXCLUSIONS & ADVISORY TRANSITION
+================================================================================
+
+CL-6.1: EXCLUSION OF BIOTIC PERILS (PEST, FUNGAL, AND BACTERIAL INFESTATION)
+(Page 28, Paragraph 6.1)
+Parametric weather-index insurance strictly covers abiotic meteorological perils (drought,
+excess rain, unseasonal frost).
+  (a) Where Gemini Vision identifies primary damage caused by Spodoptera frugiperda
+      (Fall Armyworm), Busseola fusca (Maize Stalk Borer), Turcicum leaf blight, or
+      Maize Lethal Necrosis Disease (MLND), indemnity under the weather index is EXCLUDED;
+  (b) The claim is classified as NON_WEATHER_LOSS;
+  (c) The system routes the findings to the Ministry of Agriculture Extension Advisory,
+      providing the farmer with immediate agronomic pest-management recommendations.
+
+CL-6.2: SOIL NUTRIENT DEFICIENCY AND AGRONOMIC MISMANAGEMENT
+(Page 30, Paragraph 6.2)
+Crop stunting resulting demonstrably from severe nitrogen chlorosis, striga weed infestation,
+or lack of basal fertilizer without concomitant drought signs is excluded under Clause 6.1.
+
+================================================================================
+SECTION 7 — HUMAN ADJUSTER PREROGATIVE & TWO-PASS SAFETY GATES
+================================================================================
+
+CL-7.1: INVIOLABLE HUMAN SIGN-OFF MANDATE
+(Page 34, Paragraph 7.1)
+No claim may be finalized, disbursed, or denied solely by an algorithmic or AI process.
+The AI system acts strictly as an evidentiary synthesizer and draft brief generator.
+Every final claim outcome must be formally endorsed by an accredited human loss adjuster.
+
+CL-7.2: TWO-PASS AGREEMENT SAFETY GATE AND ABSTENTION
+(Page 36, Paragraph 7.2)
+Every claim photo bundle must undergo two independent inferences with permuted visual
+calibration anchors (Pass 1 and Pass 2).
+  (a) If Pass 1 and Pass 2 yield divergent severity bands (e.g. Pass 1 = MODERATE,
+      Pass 2 = MILD), the system is prohibited from guessing or averaging;
+  (b) The system outputs ABSTAIN;
+  (c) The claim is routed to a human adjuster with an explicit notification that model
+      uncertainty exceeded the contractual tolerance threshold.
+
+================================================================================
+SECTION 8 — FORENSIC IMAGE INTEGRITY AND PLANT-FRAUD PREVENTION
+================================================================================
+
+CL-8.1: IMAGE INTEGRITY SCREENING AND HOLD
+(Page 40, Paragraph 8.1)
+Prior to model perception grading, all uploaded imagery must pass automated cryptographic
+and digital forensic integrity filters:
+  (i)   Intra-Claim Duplicate Detection (pHash/dHash Hamming distance <= 10);
+  (ii)  Cross-Claim Historical Re-use (lookup against immutable image registry);
+  (iii) Screen Recapture & Moiré Analysis (detection of computer/mobile displays);
+  (iv)  Multi-Plot Heterogeneity (detection of inconsistent soil, horizon, or crop variety);
+  (v)   EXIF Boundary Verification (timestamp freshness and Indian agricultural GPS bounding box: Lat 8.0°N–35.0°N, Lon 68.0°E–97.0°E).
+Failure of any check triggers an INTEGRITY_HOLD, suspending automated recommendations.
+
+================================================================================
+SECTION 9 — SATELLITE ORBITAL VERIFICATION PROTOCOL (GOOGLE EARTH ENGINE)
+================================================================================
+
+CL-9.1: COPERNICUS SENTINEL-2 SURFACE REFLECTANCE STANDARD
+(Page 43, Paragraph 9.1)
+Orbital verification must employ Sentinel-2 Level-2A Bottom-of-Atmosphere (BOA) Surface
+Reflectance (COPERNICUS/S2_SR_HARMONIZED) filtered through the Scene Classification Layer
+(SCL) to eliminate cloud and cirrus pixels (cloud_mask < 20%). The Normalized Difference
+Vegetation Index (NDVI = (B8 - B4) / (B8 + B4)) computed across the 10-meter plot pixel
+must be standardized against the 3-year harmonic seasonal mean.
+
+CL-9.2: CHIRPS DAILY PRECIPITATION DYNAMICS
+(Page 45, Paragraph 9.2)
+Precipitation telemetry must draw from UCSB Climate Hazards Center CHIRPS Daily (0.05° ~5.3 km)
+satellite-gauge blended series. Consecutive dry days are defined as daily precipitation
+below 2.5 mm occurring within the designated dekadal vegetative cycle.
+
+================================================================================
+SECTION 10 — IMMUTABLE LEDGERING AND DISPUTE RESOLUTION
+================================================================================
+
+CL-10.1: IMMUTABLE AUDIT RECORD AND REPRODUCIBILITY
+(Page 48, Paragraph 10.1)
+Every claim determination must append an unalterable audit row in BigQuery containing
+the exact model identifier, prompt version, anchor image hashes, Earth Engine granule IDs,
+Git commit SHA of the frozen protocol rules, and the human adjuster's electronic signature.
+Claims missing audit proof are null and void under statutory insurance regulations.
+================================================================================

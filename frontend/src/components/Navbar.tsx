@@ -8,11 +8,11 @@ interface NavbarProps {
 }
 
 const ITEMS: { tab: ActiveTab; label: string }[] = [
-  { tab: 'landing', label: 'How it works' },
+  { tab: 'landing', label: 'Overview' },
   { tab: 'farmer', label: 'Farmer' },
   { tab: 'insurer', label: 'Claims' },
   { tab: 'doctor', label: 'Index Doctor' },
-  { tab: 'validation', label: 'Results' },
+  { tab: 'validation', label: 'Validation' },
 ];
 
 export const Logo: React.FC<{ className?: string }> = ({ className = 'h-7 w-7' }) => (

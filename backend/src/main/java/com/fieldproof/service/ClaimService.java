@@ -325,8 +325,8 @@ public class ClaimService {
                 safePlotId,
                 null,
                 null,
-                county != null ? county : "Makueni",
-                "2026-LR",
+                county != null ? county : "Beed",
+                "2025-Kharif",
                 crop != null ? crop : "maize"
         );
 
@@ -374,7 +374,7 @@ public class ClaimService {
                 band, band, true, band, false
         );
 
-        String rawBrief = "Newly submitted claim " + claimId + " for plot " + safePlotId + " (" + (county != null ? county : "Makueni") + "). "
+        String rawBrief = "Newly submitted claim " + claimId + " for plot " + safePlotId + " (" + (county != null ? county : "Beed") + "). "
                 + (integrityPassed ? "Photos passed authenticity checks. " : "Photos raised authenticity flags. ")
                 + "Model perceived " + damageType + " damage at stage " + growthStage + " (" + band + "). "
                 + "Concordance table outcome: " + outcomeClass + " (" + action + "). Cited clause(s): " + String.join(", ", clauseIds) + ".";
@@ -425,8 +425,8 @@ public class ClaimService {
 
         String plotId = existing.grading().plotId();
         String crop = existing.grading().crop();
-        String county = existing.evidence() != null ? existing.evidence().county() : "Makueni";
-        String season = existing.evidence() != null ? existing.evidence().season() : "2026-LR";
+        String county = existing.evidence() != null ? existing.evidence().county() : "Beed";
+        String season = existing.evidence() != null ? existing.evidence().season() : "2025-Kharif";
 
         Contracts.EvidenceRecord newEvidence = earthEngineService.createEvidenceRecord(
                 plotId,

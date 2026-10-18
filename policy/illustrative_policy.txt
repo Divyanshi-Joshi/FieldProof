@@ -6,10 +6,10 @@
   Policy Ref:   FP-DEMO-2026-001
   Insurer:      [Illustrative Insurer Name]
   Underwriter:  [Managing General Agent / Reinsurer]
-  Coverage:     Index-Based Crop Insurance — Seasonal Rainfall Trigger
-  Territory:    Kenya (Counties: Makueni, Kitui, Machakos, Tharaka-Nithi)
-  Season:       2025 Long Rains (March–June)
-  Crops:        Maize, Sorghum, Millet, Beans, Cowpeas
+  Coverage:     Index-Based Crop Insurance — Seasonal Rainfall Trigger (WBCIS)
+  Territory:    India (Districts: Beed, Jalna, Latur, Akola, Dewas)
+  Season:       Kharif 2025 (June–October)
+  Crops:        Maize (Makka), Soybean, Cotton (Kapas), Sorghum (Jowar), Bajra
 
   IMPORTANT: This is an illustrative 2-page policy created solely for the
   FieldProof AI Builder Cup 2026 demonstration. It does not constitute an
