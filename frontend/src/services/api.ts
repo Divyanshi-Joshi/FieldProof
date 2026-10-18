@@ -5,6 +5,7 @@ import {
   GradingResult,
   IndexDoctorSimulation,
   EarthEngineAnalysis,
+  CountyActuarialForecast,
   OrbitToFieldSynthesis,
   PolicyGroundingResult,
   PolicyQueryResponse,
@@ -197,6 +198,16 @@ export const api = {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return data.simulation ? data.simulation : data;
+  },
+
+  async getCountyForecast(county: string = 'Embu', percentile: number = 30): Promise<CountyActuarialForecast> {
+    const params = new URLSearchParams({
+      county,
+      percentile: String(percentile)
+    });
+    const res = await fetch(`${API_BASE}/index-doctor/forecast?${params.toString()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
   },
 
   async getValidationSummary(): Promise<ValidationSummary> {

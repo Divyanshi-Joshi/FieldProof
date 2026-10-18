@@ -15,6 +15,12 @@ class BigQueryServiceTest {
         assertNotNull(plan);
         assertEquals("frozen_trigger", plan.queryName());
         assertEquals("P-0142", plan.boundParameters().get("plot_id"));
+
+        assertTrue(bq.isQueryAllowed("forecast_payout_risk"));
+        BigQueryService.QueryPlan forecastPlan = bq.prepareNamedQuery("forecast_payout_risk", Map.of("county", "Embu", "trigger_threshold_mm", 290.0));
+        assertNotNull(forecastPlan);
+        assertEquals("forecast_payout_risk", forecastPlan.queryName());
+        assertEquals("Embu", forecastPlan.boundParameters().get("county"));
     }
 
     @Test

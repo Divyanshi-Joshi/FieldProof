@@ -1,5 +1,6 @@
 package com.fieldproof.api;
 
+import com.fieldproof.api.dto.Contracts;
 import com.fieldproof.api.dto.Contracts.IndexDoctorSimulation;
 import com.fieldproof.tools.IndexDoctorService;
 import com.fieldproof.tools.IndexDoctorService.RecalibrationRecommendation;
@@ -59,5 +60,23 @@ public class IndexDoctorController {
         response.put("disclaimer", IndexDoctorService.DISCLAIMER);
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * BigQuery ML Predictive Basis-Risk Actuarial Forecasting endpoint.
+     * Evaluates a 14-day forward rainfall distribution and payout probability envelope.
+     *
+     * <pre>
+     * GET /api/index-doctor/forecast?county=Embu&percentile=30
+     * GET /api/doctor/forecast?county=Embu&percentile=30
+     * </pre>
+     */
+    @GetMapping({"/index-doctor/forecast", "/doctor/forecast"})
+    public ResponseEntity<Contracts.CountyActuarialForecast> getCountyForecast(
+            @RequestParam(name = "county", defaultValue = "Embu") String county,
+            @RequestParam(name = "percentile", defaultValue = "30") int percentile) {
+
+        Contracts.CountyActuarialForecast forecast = service.getCountyForecast(county, percentile);
+        return ResponseEntity.ok(forecast);
     }
 }
