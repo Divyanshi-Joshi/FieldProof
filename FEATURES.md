@@ -200,19 +200,39 @@ Before any image is graded by Gemini, it passes through `ImageIntegrityTools`:
 
 ---
 
-## Feature 5: Index Doctor (Interactive Recalibration Simulator)
+## Feature 5: Index Doctor & Predictive Forward-Looking Actuarial Risk Simulator
 
 ### The Problem It Solves
-Insurers frequently struggle to choose the optimal percentile trigger (e.g. 20th vs 30th vs 40th percentile). Setting it too low causes high farmer basis risk; setting it too high causes insurer insolvency.
+1. **Retrospective Parameter Risk**: Insurers frequently struggle to calibrate optimal trigger percentiles (e.g., 20th vs 30th vs 40th percentile). Setting triggers too low causes high farmer basis risk; setting them too high threatens insurer solvency.
+2. **Forward-Looking Liquidity Blindspots**: Parametric crop policies traditionally evaluate claims retrospectively *after* harvest concludes. Actuaries and claims desks have zero forward visibility into drought escalation or portfolio capital reserve depletion during the season, delaying reinsurance drawdown and liquidity reserves.
 
-### How It Works
-- Located on the **Index Doctor** tab in the UI.
-- Powered by `protocol/index_doctor_slider.sql` and `IndexDoctorService.java`.
-- An interactive slider lets adjusters simulate trigger percentiles from 10% to 50% in real-time across hundreds of historical seasons.
-- Dynamically calculates:
-  - **Basis-Risk Gap Rate %**: Farmers who lost crops but received no payout.
-  - **Overpayment Rate %**: Payouts made where crops did not suffer damage.
-  - **Payout Frequency & Projected Outlay (₹ INR)** across individual districts (Beed, Jalna, Latur, Akola, Dewas).
+### Google Cloud & Google AI Technologies Used
+1. **Gemini Sandboxed Python Code Execution Tool**:
+   - Instead of maintaining complex, high-latency external data engineering pipelines, Gemini dynamically writes and executes production-grade statistical Python code (`actuarial_monte_carlo.py`) inside Google Cloud's sandboxed CPython 3.11 execution environment.
+   - Runs a 1,000-path Monte Carlo time-series simulation utilizing Markov dry-spell transition matrices conditioned on historical regional precipitation patterns.
+2. **Deterministic Liquidity & Payout Modeling**:
+   - Calculates the forward breach probability $P(\text{seasonal\_rain} \le \text{trigger\_threshold})$ over the next 14 critical days.
+   - Assigns actuarial solvency risk tiers (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`) and computes projected claim disbursements across a 1,000 ha portfolio (e.g., ₹2,82,20,000 / $340k).
+
+### How Backend Implements It
+- **[`ActuarialForecastingService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/ActuarialForecastingService.java)**:
+  - Dispatches dynamic code execution prompts to Gemini Vertex AI via Application Default Credentials (ADC).
+  - Collects generated Python code, sandbox stdout logs, and quantitative metrics with automatic fallback to high-precision calibrated Monte Carlo routines if offline.
+- **[`ActuarialController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/ActuarialController.java)**:
+  - Exposes `/api/actuarial/forecast` and `/api/actuarial/counties` for real-time interactive actuarial simulation.
+- **[`IndexDoctorService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/IndexDoctorService.java)**:
+  - Executes historical SQL trigger replays (`protocol/index_doctor_slider.sql`) across historical seasons to quantify basis-risk gap % and overpayment rates.
+
+### Where It Sits in the UI
+Located on the **Index Doctor** tab in the main navigation:
+1. **Historical Calibration Section (Top)**:
+   - Interactive slider allowing adjusters to simulate trigger percentiles from 10% to 50% in real-time.
+   - Live displays for Basis-Risk Gap Rate %, Overpayment Rate %, and payout outlay across Beed, Jalna, Latur, Akola, and Dewas.
+2. **Predictive Forward Actuarial Risk Engine (Bottom)**:
+   - **Interactive Control Bar**: Dynamic target district selector, Plot ID, Current Rainfall slider (150–400 mm), and Contractual Trigger P30 slider (200–400 mm).
+   - **Real-Time Actuarial KPI Cards**: 14-Day Forward Payout Likelihood %, Solvency Risk Alert Badge (`CRITICAL` / `HIGH` / `MODERATE`), Expected 14-Day Inflow (+mm), and Projected Portfolio Reserve Outlay (₹ INR).
+   - **14-Day Monte Carlo Trajectory Chart**: Interactive Recharts composed chart showing projected cumulative rainfall trajectory against contractual trigger thresholds.
+   - **Code & Sandbox Verification Tabs**: Allows insurance auditors to inspect the actual statistical calculation script (`actuarial_monte_carlo.py`) and runtime verification logs.
 
 ---
 
