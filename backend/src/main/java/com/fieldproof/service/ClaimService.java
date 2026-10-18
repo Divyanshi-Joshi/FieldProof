@@ -383,13 +383,11 @@ public class ClaimService {
                 briefGuard.validateBrief(rawBrief, clauseIds, evidence);
 
         String enMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "en");
-        String hiMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "hi");
-        String swMsg = farmerMessageService.getMessage(outcomeClass, integrityFlags, "sw");
 
         Contracts.ClaimDecision decision = new Contracts.ClaimDecision(
                 claimId, safePlotId, outcomeClass, action, failureMode, clauseIds, briefValidation.valid(),
                 briefValidation.sanitizedBrief(),
-                new Contracts.FarmerMessages(enMsg, hiMsg, swMsg)
+                new Contracts.FarmerMessages(enMsg, null, null)
         );
 
         Contracts.AuditRecord audit = new Contracts.AuditRecord(
@@ -458,9 +456,7 @@ public class ClaimService {
 
         List<String> integrityFlags = existing.grading() != null ? existing.grading().integrityFlags() : List.of();
         String enMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "en");
-        String hiMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "hi");
-        String swMsg = farmerMessageService.getMessage(conc.outcomeClass(), integrityFlags, "sw");
-        Contracts.FarmerMessages farmerMessages = new Contracts.FarmerMessages(enMsg, hiMsg, swMsg);
+        Contracts.FarmerMessages farmerMessages = new Contracts.FarmerMessages(enMsg, null, null);
 
         Contracts.ClaimDecision newDecision = new Contracts.ClaimDecision(
                 claimId,

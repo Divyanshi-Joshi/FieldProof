@@ -18,23 +18,4 @@ class FarmerMessageServiceTest {
         assertTrue(msg.contains("fast-tracked for payout"));
         assertTrue(msg.contains("Status notification only"));
     }
-
-    @Test
-    void testHindiMessageWithDuplicateRejection() {
-        FarmerMessageService service = new FarmerMessageService();
-        String msg = service.getMessage(OutcomeClass.INTEGRITY_HOLD, List.of("DUPLICATE_WITHIN_CLAIM"), "hi");
-
-        assertNotNull(msg);
-        assertTrue(msg.contains("दावा रोका गया है"));
-        assertTrue(msg.contains("एक ही फोटो दो बार अपलोड"));
-    }
-
-    @Test
-    void testSwahiliMessageWithDisclaimer() {
-        FarmerMessageService service = new FarmerMessageService();
-        String msg = service.getMessage(OutcomeClass.PHENOLOGICAL_BASIS_RISK_GAP, List.of(), "sw");
-
-        assertNotNull(msg);
-        assertTrue(msg.contains("wakati wa kutoa maua"));
-    }
 }

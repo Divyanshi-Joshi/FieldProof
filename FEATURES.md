@@ -22,7 +22,7 @@ In accordance with insurance regulatory standards (IRDAI), **generative models m
 │ • Mathematical NDVI & NDRE calculation          │ • 2D Spatial Vision Bounding Boxes [ymin,xmin] │
 │ • 3-Year Kharif baseline (μ, σ)                 │ • Dynamic camera perspective classification   │
 │ • Statistical Z-Score (Z = [obs - μ] / σ)       │ • Policy citation grounding (PMFBY §7.1.4)     │
-│ • DeepMind ALU 1.42 ha parcel atomic unit       │ • Multilingual farmer voice explanations       │
+│ • DeepMind ALU 1.42 ha parcel atomic unit       │ • Human-readable claim brief synthesis         │
 │ • BigQuery GIS joins with AgriStack             │                                                │
 │ • BigQuery ML (ARIMA_PLUS) 14-day forecast      │ ❌ NEVER invents satellite numbers             │
 │                                                 │ ❌ NEVER determines payout amounts             │
@@ -298,28 +298,7 @@ Located directly in the **Adjuster Desk** (`ClaimDetail.tsx`):
 
 ---
 
-### Feature 7: Multilingual Farmer Voice & Message Localization
-
-#### The Problem It Solves
-Smallholder farmers need transparent, jargon-free explanations in their native language explaining why their claim was paid, escalated, or routed to agricultural advisories.
-
-#### How It Works
-1. **Native Localization Engine**:
-   - Generates culturally empathetic, clear explanations in **English (`en`)**, **Hindi (`hi`)**, and **Marathi (`mr`)**.
-   - Explains the reconciliation outcome transparently: *"The weather station registered sufficient rain, but satellite data and your photos showed severe drought during flowering. An adjuster has approved your claim under PMFBY Clause §4.2."*
-2. **Web Speech API Audio Playback**:
-   - Integrated text-to-speech engine allows farmers to listen to read-aloud audio in their preferred language.
-
-#### Backend Implementation
-- **[`FarmerMessageService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/service/FarmerMessageService.java)**: Generates localized message packs across supported languages.
-
-#### Where It Sits in the UI
-- **Farmer Portal** tab (`FarmerView.tsx`): Lets farmers look up their plot ID (`P-0142`), switch languages (English / Hindi / Marathi), and listen to audio readouts.
-- **Claims Desk > Claim Detail > Message the Farmer Will Get (`ClaimDetail.tsx`)**: Shows the exact message that will be dispatched to the farmer upon adjuster sign-off.
-
----
-
-### Feature 8: Immutable BigQuery Audit Ledger & Two-Pass Gate Oversight
+### Feature 7: Immutable BigQuery Audit Ledger & Two-Pass Gate Oversight
 
 #### The Problem It Solves
 Financial regulatory compliance requires every insurance decision to be reproducible, explainable, and tamper-evident.
