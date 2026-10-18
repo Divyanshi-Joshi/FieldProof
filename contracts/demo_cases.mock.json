@@ -47,24 +47,66 @@
       "visual_grounding": [
         {
           "photo_index": 0,
-          "label": "Severe Leaf Rolling",
-          "box_2d": [180, 240, 520, 710],
-          "confidence": 0.94,
-          "symptom_description": "Longitudinal pencil-like curling of upper whorl maize leaves indicating acute turgor loss."
+          "label": "Stand Stunting & Biomass Deficit",
+          "box_2d": [180, 140, 690, 520],
+          "confidence": 0.92,
+          "symptom_description": "Stand height deficit exceeding 40% vs expected Kharif vegetative milestone."
         },
         {
           "photo_index": 0,
-          "label": "Canopy Senescence",
-          "box_2d": [460, 110, 810, 590],
-          "confidence": 0.89,
-          "symptom_description": "Lower-canopy foliar chlorosis with progressive baseline browning from margin inward."
+          "label": "Field-Scale Canopy Senescence",
+          "box_2d": [310, 480, 760, 910],
+          "confidence": 0.94,
+          "symptom_description": "Widespread baseline leaf chlorosis progressing into foliar brownout across contiguous crop rows."
+        },
+        {
+          "photo_index": 0,
+          "label": "Canopy Gap & Patchiness",
+          "box_2d": [590, 180, 890, 480],
+          "confidence": 0.88,
+          "symptom_description": "Irregular plant stand caused by early vegetative drought mortality."
         },
         {
           "photo_index": 1,
-          "label": "Soil Cracking",
-          "box_2d": [620, 290, 940, 850],
+          "label": "Severe Leaf Rolling (Pencil Curling)",
+          "box_2d": [160, 240, 540, 720],
           "confidence": 0.96,
-          "symptom_description": "Polygonal desiccated clay soil fissures exceeding 2.5cm depth between planting rows."
+          "symptom_description": "Inward longitudinal folding of upper whorl maize leaves indicating acute cellular turgor loss."
+        },
+        {
+          "photo_index": 1,
+          "label": "Marginal Foliar Scorching",
+          "box_2d": [450, 410, 810, 890],
+          "confidence": 0.92,
+          "symptom_description": "Necrotic foliar margins with progressive tip burning along leaf blades."
+        },
+        {
+          "photo_index": 1,
+          "label": "Tassel Wilting",
+          "box_2d": [90, 360, 320, 640],
+          "confidence": 0.89,
+          "symptom_description": "Premature reproductive structure desiccation halting viable pollen shed during flowering."
+        },
+        {
+          "photo_index": 2,
+          "label": "Deep Polygonal Soil Cracking",
+          "box_2d": [480, 130, 920, 860],
+          "confidence": 0.97,
+          "symptom_description": "Severe polygonal vertisol fissures exceeding 3.0cm depth between crop root clusters."
+        },
+        {
+          "photo_index": 2,
+          "label": "Desiccated Topsoil Crust",
+          "box_2d": [190, 280, 550, 820],
+          "confidence": 0.94,
+          "symptom_description": "Bleached surface layer indicating complete loss of capillary soil moisture."
+        },
+        {
+          "photo_index": 2,
+          "label": "Adventitious Root Exposure",
+          "box_2d": [620, 440, 870, 750],
+          "confidence": 0.89,
+          "symptom_description": "Exposed, shrunken brace roots caused by severe subsoil shrinkage."
         }
       ]
     },
