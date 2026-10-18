@@ -5,6 +5,7 @@ import com.fieldproof.api.dto.Contracts.IndexDoctorSimulation;
 import com.fieldproof.tools.IndexDoctorService;
 import com.fieldproof.tools.IndexDoctorService.RecalibrationRecommendation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +29,9 @@ public class IndexDoctorController {
 
     private final IndexDoctorService service;
 
-    public IndexDoctorController() {
-        this.service = new IndexDoctorService();
+    @Autowired
+    public IndexDoctorController(@Autowired(required = false) com.fieldproof.tools.bq.BigQueryService bigQueryService) {
+        this.service = new IndexDoctorService(bigQueryService);
     }
 
     /**
@@ -58,7 +60,6 @@ public class IndexDoctorController {
         response.put("simulation", simulation);
         response.put("recalibration_recommendations", recommendations);
         response.put("disclaimer", IndexDoctorService.DISCLAIMER);
-
         return ResponseEntity.ok(response);
     }
 
@@ -67,13 +68,13 @@ public class IndexDoctorController {
      * Evaluates a 14-day forward rainfall distribution and payout probability envelope.
      *
      * <pre>
-     * GET /api/index-doctor/forecast?county=Embu&percentile=30
-     * GET /api/doctor/forecast?county=Embu&percentile=30
+     * GET /api/index-doctor/forecast?county=Beed&percentile=30
+     * GET /api/doctor/forecast?county=Beed&percentile=30
      * </pre>
      */
     @GetMapping({"/index-doctor/forecast", "/doctor/forecast"})
     public ResponseEntity<Contracts.CountyActuarialForecast> getCountyForecast(
-            @RequestParam(name = "county", defaultValue = "Embu") String county,
+            @RequestParam(name = "county", defaultValue = "Beed") String county,
             @RequestParam(name = "percentile", defaultValue = "30") int percentile) {
 
         Contracts.CountyActuarialForecast forecast = service.getCountyForecast(county, percentile);

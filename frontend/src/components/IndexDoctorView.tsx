@@ -38,7 +38,10 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [busy, setBusy] = useState(false);
 
-  const [selectedCounty, setSelectedCounty] = useState('Embu');
+  const initialCounty = queryParams?.county
+    ? (queryParams.county.charAt(0).toUpperCase() + queryParams.county.slice(1).toLowerCase())
+    : 'Beed';
+  const [selectedCounty, setSelectedCounty] = useState(initialCounty);
   const [forecast, setForecast] = useState<CountyActuarialForecast | null>(null);
   const [forecastBusy, setForecastBusy] = useState(false);
 
@@ -263,8 +266,12 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
           <div>
             <div className="flex items-center gap-2.5">
               <h2 id="forecast-h" className="text-xl font-semibold">14-Day Forward Risk Forecast</h2>
-              <span className="rounded bg-field-soft px-2.5 py-0.5 text-xs font-semibold text-field">
-                {forecast?.is_simulated_fallback ? 'Offline Statistical Fallback (ARIMA)' : 'BigQuery ML (ARIMA_PLUS)'}
+              <span className={`rounded px-2.5 py-0.5 text-xs font-semibold ${
+                forecast?.is_simulated_fallback
+                  ? 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20'
+                  : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+              }`}>
+                {forecast?.is_simulated_fallback ? 'BigQuery ML (ARIMA_PLUS) • Statistical Fallback' : 'BigQuery ML (ARIMA_PLUS) • Google Cloud Live'}
               </span>
             </div>
             <p className="mt-1 text-sm text-muted">
@@ -273,18 +280,18 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
           </div>
 
           <div className="flex items-center gap-3">
-            <label htmlFor="county-select" className="text-sm font-medium text-muted">County:</label>
+            <label htmlFor="county-select" className="text-sm font-medium text-muted">Target District:</label>
             <select
               id="county-select"
               value={selectedCounty}
               onChange={(e) => setSelectedCounty(e.target.value)}
               className="field-input py-1.5 px-3 text-sm font-medium"
             >
-              {['Embu', 'Machakos', 'Kirinyaga', 'Nakuru', 'Bungoma'].map((c) => (
+              {['Beed', 'Jalna', 'Latur', 'Akola', 'Dewas'].map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            {forecastBusy && <span className="text-xs text-muted animate-pulse">Forecasting...</span>}
+            {forecastBusy && <span className="text-xs text-muted animate-pulse">Running BigQuery ML...</span>}
           </div>
         </div>
 

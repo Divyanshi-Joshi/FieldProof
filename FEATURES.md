@@ -207,21 +207,28 @@ Before any image is graded by Gemini, it passes through `ImageIntegrityTools`:
 2. **Forward-Looking Liquidity Blindspots**: Parametric crop policies traditionally evaluate claims retrospectively *after* harvest concludes. Actuaries and claims desks have zero forward visibility into drought escalation or portfolio capital reserve depletion during the season, delaying reinsurance drawdown and liquidity reserves.
 
 ### Google Cloud & Google AI Technologies Used
-1. **Gemini Sandboxed Python Code Execution Tool**:
+1. **Google Cloud BigQuery ML (`ARIMA_PLUS`) Time-Series Model**:
+   - **Planetary-Scale Automated Time-Series**: BigQuery ML model created via [`protocol/create_arima_plus_model.sql`](file:///c:/Users/giris/Downloads/AI_builder/protocol/create_arima_plus_model.sql) trained directly on multi-year regional daily weather telemetry.
+   - **Automatic Decomposition & Cleaning**: Uses BigQuery ML's native `auto_arima=TRUE`, automatic trend/seasonal decomposition, anomaly spike/dip cleaning, and step-change adjustments across individual district time series.
+   - **Inference with 90% Prediction Intervals**: Executes `ML.FORECAST(MODEL fieldproof.rainfall_forecast_model, STRUCT(14 AS horizon, 0.9 AS confidence_level))` via [`protocol/forecast_payout_risk.sql`](file:///c:/Users/giris/Downloads/AI_builder/protocol/forecast_payout_risk.sql) to project upper/lower rainfall bounds and daily payout probability curves.
+2. **Gemini Sandboxed Python Code Execution Tool**:
    - Instead of maintaining complex, high-latency external data engineering pipelines, Gemini dynamically writes and executes production-grade statistical Python code (`actuarial_monte_carlo.py`) inside Google Cloud's sandboxed CPython 3.11 execution environment.
    - Runs a 1,000-path Monte Carlo time-series simulation utilizing Markov dry-spell transition matrices conditioned on historical regional precipitation patterns.
-2. **Deterministic Liquidity & Payout Modeling**:
+3. **Deterministic Liquidity & Payout Modeling**:
    - Calculates the forward breach probability $P(\text{seasonal\_rain} \le \text{trigger\_threshold})$ over the next 14 critical days.
    - Assigns actuarial solvency risk tiers (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`) and computes projected claim disbursements across a 1,000 ha portfolio (e.g., ₹2,82,20,000 / $340k).
 
 ### How Backend Implements It
+- **[`BigQueryService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/tools/bq/BigQueryService.java)**:
+  - Connects to Google Cloud BigQuery via Application Default Credentials (ADC) and executes the allowlisted query `forecast_payout_risk` (`ML.FORECAST`).
+  - Automatically falls back to high-fidelity statistical ARIMA simulation when offline or in unit test mode.
+- **[`IndexDoctorService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/tools/IndexDoctorService.java)**:
+  - Generates 14-day district risk curves across Indian districts (Beed, Jalna, Latur, Akola, Dewas) and evaluates historical SQL trigger replays (`protocol/index_doctor_slider.sql`).
 - **[`ActuarialForecastingService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/ActuarialForecastingService.java)**:
   - Dispatches dynamic code execution prompts to Gemini Vertex AI via Application Default Credentials (ADC).
   - Collects generated Python code, sandbox stdout logs, and quantitative metrics with automatic fallback to high-precision calibrated Monte Carlo routines if offline.
-- **[`ActuarialController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/ActuarialController.java)**:
-  - Exposes `/api/actuarial/forecast` and `/api/actuarial/counties` for real-time interactive actuarial simulation.
-- **[`IndexDoctorService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/IndexDoctorService.java)**:
-  - Executes historical SQL trigger replays (`protocol/index_doctor_slider.sql`) across historical seasons to quantify basis-risk gap % and overpayment rates.
+- **[`ActuarialController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/ActuarialController.java)** & **[`IndexDoctorController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/IndexDoctorController.java)**:
+  - Expose `/api/index-doctor/forecast` (BigQuery ML ARIMA_PLUS) and `/api/actuarial/forecast` (Gemini Sandboxed Python Monte Carlo) for real-time interactive actuarial simulation.
 
 ### Where It Sits in the UI
 Located on the **Index Doctor** tab in the main navigation:
