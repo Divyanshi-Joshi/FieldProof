@@ -165,9 +165,10 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selec
                 <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
                   <span className="text-muted py-0.5">Try:</span>
                   {[
-                    'What dry spell triggers phenological review?',
-                    'What is the excess rainfall deductible?',
-                    'How is vegetative stress measured?',
+                    'Is prevented sowing covered under PMFBY §4.2.1?',
+                    'What timeline is mandated for localized calamities under §5.4?',
+                    'How are post-harvest losses evaluated under §7.1.4?',
+                    'What dry spell triggers phenological review under §4.2?',
                   ].map((s) => (
                     <button
                       key={s}

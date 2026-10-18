@@ -8,6 +8,7 @@ import { OutcomeDot, Photo, Score, VerdictChip } from './ui';
 import { decidedLabel } from './InsurerView';
 import { EarthEngineInspector } from './EarthEngineInspector';
 import { OrbitToFieldCard } from './OrbitToFieldCard';
+import { PolicyRAGAssistant } from './PolicyRAGAssistant';
 import { PhotoAnalysis, VisualGroundingBox } from '../types/contracts';
 import { ActiveTab } from '../App';
 
@@ -768,23 +769,23 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
             onOpenPolicy={(id) => onOpenClause(id || 'CL-2.1')}
           />
 
-          {/* Pillar 3: Predictive Forward-Looking Actuarial Risk Simulation Bridge */}
+          {/* BigQuery ML (ARIMA_PLUS) 14-Day Forward Trajectory Simulation Bridge */}
           <section className="rounded-xl border border-sky-500/25 bg-gradient-to-r from-sky-500/5 via-surface to-canvas p-5 shadow-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded bg-sky-500/15 px-2 py-0.5 text-xs font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5">
-                    <TrendingUp className="h-3.5 w-3.5" /> 14-Day Forward Trajectory Available
+                    <TrendingUp className="h-3.5 w-3.5" /> BigQuery ML (ARIMA_PLUS) Forecast
                   </span>
                   <span className="rounded bg-surface border border-line px-2 py-0.5 text-[11px] font-mono text-muted">
                     Plot {e.plot_id} • {e.county} District
                   </span>
                 </div>
                 <h4 className="text-base font-semibold text-ink">
-                  Predictive Weather Simulation & Portfolio Solvency Impact
+                  14-Day Forward Predictive Weather Trajectory & Payout Risk
                 </h4>
                 <p className="text-xs text-muted max-w-2xl leading-relaxed">
-                  While this claim experienced a {e.max_dry_spell_days}-day dry spell, evaluate whether regional precipitation over the next 14 days will sustain drought conditions across {e.county}, and quantify forward portfolio capital reserve exposure before harvest concludes.
+                  While this plot experienced a {e.max_dry_spell_days}-day dry spell, evaluate whether regional precipitation over the next 14 days will sustain drought conditions across {e.county} using Google BigQuery ML time-series forecasting.
                 </p>
               </div>
               <button
@@ -798,11 +799,21 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 })}
                 className="btn-primary shrink-0 flex items-center gap-2 px-4 py-2.5 text-xs font-semibold shadow-md shadow-sky-500/10"
               >
-                <span>Simulate 14-Day Risk for {e.county}</span>
+                <span>View BigQuery ML Forecast for {e.county}</span>
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </section>
+
+          {/* Statutory Policy RAG Grounding (PMFBY / WBCIS Binders) */}
+          <PolicyRAGAssistant
+            claimId={g.claim_id}
+            onOpenClause={onOpenClause}
+            onInsertToNotes={(citation) => {
+              setNotes((prev) => (prev ? `${prev}\n\n${citation}` : citation));
+              setEditing(true);
+            }}
+          />
 
           {/* Brief */}
           <section aria-labelledby="brief-h" className="panel p-5">

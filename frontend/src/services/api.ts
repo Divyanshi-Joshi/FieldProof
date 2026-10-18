@@ -9,8 +9,6 @@ import {
   OrbitToFieldSynthesis,
   PolicyGroundingResult,
   PolicyQueryResponse,
-  ActuarialForecastResult,
-  ActuarialCounty,
   ResponsibleAiAudit,
   TwoPassComparison
 } from '../types/contracts';
@@ -278,24 +276,6 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query }),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  },
-
-  // ─── Pillar 3: Actuarial Forecasting (Gemini Code Execution) ───────────────
-  async getActuarialForecast(plotId?: string, county?: string, currentRain?: number, triggerRain?: number): Promise<ActuarialForecastResult> {
-    const params = new URLSearchParams();
-    if (plotId) params.append('plot_id', plotId);
-    if (county) params.append('county', county);
-    if (currentRain !== undefined) params.append('current_rain_mm', String(currentRain));
-    if (triggerRain !== undefined) params.append('trigger_rain_mm', String(triggerRain));
-    const res = await fetch(`${API_BASE}/actuarial/forecast?${params.toString()}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  },
-
-  async getActuarialCounties(): Promise<ActuarialCounty[]> {
-    const res = await fetch(`${API_BASE}/actuarial/counties`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   },

@@ -59,6 +59,14 @@
       "maps_to_action": "ESCALATE"
     },
     {
+      "clause_id": "CL-4.2.1",
+      "section": 4,
+      "title": "Prevented Sowing / Planting / Germination Risk (§4.2.1)",
+      "summary": "In case majority of insured farmers in a notified insurance unit having intent to sow/plant and incurred expenditure are prevented from sowing/germination due to adverse weather (rainfall deficit/prolonged dry spell), eligible for indemnity up to 25% of sum insured; policy terminates.",
+      "maps_to_outcome": "PREVENTED_SOWING",
+      "maps_to_action": "INDEMNIFY_25_PERCENT"
+    },
+    {
       "clause_id": "CL-4.3",
       "section": 4,
       "title": "Spatial Basis-Risk Escalation",
@@ -73,6 +81,22 @@
       "summary": "Index does NOT trigger, photo confirms weather damage, but satellite does NOT confirm stress. Request additional photos; human review.",
       "maps_to_outcome": "EVIDENCE_CONFLICT",
       "maps_to_action": "ASK_MORE_PHOTOS_HUMAN_REVIEW"
+    },
+    {
+      "clause_id": "CL-5.3",
+      "section": 5,
+      "title": "Mid-Season Adversity On-Account Payout (§5.3)",
+      "summary": "On-account payment up to 25% of likely claims during the cropping season when prolonged adverse seasonal weather (drought, dry spell, flood) causes expected yield to drop below 50% of normal yield.",
+      "maps_to_outcome": "MID_SEASON_ADVERSITY",
+      "maps_to_action": "ON_ACCOUNT_PAYMENT"
+    },
+    {
+      "clause_id": "CL-5.4",
+      "section": 5,
+      "title": "Localized Calamities Assessment (§5.4)",
+      "summary": "Loss or damage from localized perils including hailstorm, landslide, inundation, cloud burst, and lightning fire affecting isolated plots within the insurance unit. Assessed on individual plot basis upon notification within 72 hours.",
+      "maps_to_outcome": "LOCALIZED_CALAMITY",
+      "maps_to_action": "INDIVIDUAL_PLOT_SURVEY"
     },
     {
       "clause_id": "CL-6.1",
@@ -97,6 +121,14 @@
       "summary": "Permuted visual anchor passes must agree on severity band, or system abstains to human review.",
       "maps_to_outcome": "ABSTAIN",
       "maps_to_action": "ABSTAIN_TO_HUMAN"
+    },
+    {
+      "clause_id": "CL-7.1.4",
+      "section": 7,
+      "title": "Post-Harvest Losses in Cut & Spread Condition (§7.1.4)",
+      "summary": "Coverage available up to 14 days post-harvest for harvested crops kept in 'cut and spread' condition in the field to dry against unseasonal, cyclonic rains and hailstorms. Assessed on individual farm basis.",
+      "maps_to_outcome": "POST_HARVEST_LOSS",
+      "maps_to_action": "INDIVIDUAL_PLOT_SURVEY"
     },
     {
       "clause_id": "CL-8.1",

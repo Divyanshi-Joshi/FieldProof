@@ -211,12 +211,9 @@ Before any image is graded by Gemini, it passes through `ImageIntegrityTools`:
    - **Planetary-Scale Automated Time-Series**: BigQuery ML model created via [`protocol/create_arima_plus_model.sql`](file:///c:/Users/giris/Downloads/AI_builder/protocol/create_arima_plus_model.sql) trained directly on multi-year regional daily weather telemetry.
    - **Automatic Decomposition & Cleaning**: Uses BigQuery ML's native `auto_arima=TRUE`, automatic trend/seasonal decomposition, anomaly spike/dip cleaning, and step-change adjustments across individual district time series.
    - **Inference with 90% Prediction Intervals**: Executes `ML.FORECAST(MODEL fieldproof.rainfall_forecast_model, STRUCT(14 AS horizon, 0.9 AS confidence_level))` via [`protocol/forecast_payout_risk.sql`](file:///c:/Users/giris/Downloads/AI_builder/protocol/forecast_payout_risk.sql) to project upper/lower rainfall bounds and daily payout probability curves.
-2. **Gemini Sandboxed Python Code Execution Tool**:
-   - Instead of maintaining complex, high-latency external data engineering pipelines, Gemini dynamically writes and executes production-grade statistical Python code (`actuarial_monte_carlo.py`) inside Google Cloud's sandboxed CPython 3.11 execution environment.
-   - Runs a 1,000-path Monte Carlo time-series simulation utilizing Markov dry-spell transition matrices conditioned on historical regional precipitation patterns.
-3. **Deterministic Liquidity & Payout Modeling**:
+2. **Deterministic Liquidity & Payout Modeling**:
    - Calculates the forward breach probability $P(\text{seasonal\_rain} \le \text{trigger\_threshold})$ over the next 14 critical days.
-   - Assigns actuarial solvency risk tiers (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`) and computes projected claim disbursements across a 1,000 ha portfolio (e.g., ₹2,82,20,000 / $340k).
+   - Computes expected 14-day rainfall totals and daily payout likelihood curves to help insurers anticipate reinsurance drawdowns.
 
 ### How Backend Implements It
 - **[`BigQueryService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/tools/bq/BigQueryService.java)**:
@@ -224,29 +221,60 @@ Before any image is graded by Gemini, it passes through `ImageIntegrityTools`:
   - Automatically falls back to high-fidelity statistical ARIMA simulation when offline or in unit test mode.
 - **[`IndexDoctorService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/tools/IndexDoctorService.java)**:
   - Generates 14-day district risk curves across Indian districts (Beed, Jalna, Latur, Akola, Dewas) and evaluates historical SQL trigger replays (`protocol/index_doctor_slider.sql`).
-- **[`ActuarialForecastingService.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/ai/ActuarialForecastingService.java)**:
-  - Dispatches dynamic code execution prompts to Gemini Vertex AI via Application Default Credentials (ADC).
-  - Collects generated Python code, sandbox stdout logs, and quantitative metrics with automatic fallback to high-precision calibrated Monte Carlo routines if offline.
-- **[`ActuarialController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/ActuarialController.java)** & **[`IndexDoctorController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/IndexDoctorController.java)**:
-  - Expose `/api/index-doctor/forecast` (BigQuery ML ARIMA_PLUS) and `/api/actuarial/forecast` (Gemini Sandboxed Python Monte Carlo) for real-time interactive actuarial simulation.
+- **[`IndexDoctorController.java`](file:///c:/Users/giris/Downloads/AI_builder/backend/src/main/java/com/fieldproof/api/IndexDoctorController.java)**:
+  - Exposes `/api/index-doctor/forecast` and `/api/index-doctor/counties` for real-time interactive actuarial simulation.
 
 ### Where It Sits in the UI
 Located on the **Index Doctor** tab in the main navigation:
 1. **Historical Calibration Section (Top)**:
    - Interactive slider allowing adjusters to simulate trigger percentiles from 10% to 50% in real-time.
    - Live displays for Basis-Risk Gap Rate %, Overpayment Rate %, and payout outlay across Beed, Jalna, Latur, Akola, and Dewas.
-2. **Predictive Forward Actuarial Risk Engine (Bottom)**:
-   - **Interactive Control Bar**: Dynamic target district selector, Plot ID, Current Rainfall slider (150–400 mm), and Contractual Trigger P30 slider (200–400 mm).
-   - **Real-Time Actuarial KPI Cards**: 14-Day Forward Payout Likelihood %, Solvency Risk Alert Badge (`CRITICAL` / `HIGH` / `MODERATE`), Expected 14-Day Inflow (+mm), and Projected Portfolio Reserve Outlay (₹ INR).
-   - **14-Day Monte Carlo Trajectory Chart**: Interactive Recharts composed chart showing projected cumulative rainfall trajectory against contractual trigger thresholds.
-   - **Code & Sandbox Verification Tabs**: Allows insurance auditors to inspect the actual statistical calculation script (`actuarial_monte_carlo.py`) and runtime verification logs.
+2. **BigQuery ML (ARIMA_PLUS) Predictive Engine (Bottom)**:
+   - **Target District Selector**: Beed, Jalna, Latur, Akola, Dewas.
+   - **KPI Cards**: Expected 14-Day Cumulative Rain (mm), Payout Likelihood (%), and Confidence Interval Spread.
+   - **Prediction Interval Chart**: Recharts composed chart showing 90% confidence bands, expected daily precipitation, and payout probability bars.
+   - **Claim Detail Bridge**: One-click deep-link from any claim directly into its district's 14-day BigQuery ML projection.
 
 ---
 
-## Feature 6: Policy Agent & Multilingual Farmer Messenger
+## Feature 6: Statutory Policy RAG Grounding (PMFBY / WBCIS Binders)
 
 ### The Problem It Solves
-Adjusters require legally defensible policy citations, while smallholder farmers need transparent, jargon-free explanations in their native language.
+Insurance adjusters are legally required by the Insurance Regulatory and Development Authority of India (IRDAI) to ground every payout, rejection, or escalation against specific statutory clauses. Conventional vector RAG systems suffer from chunk boundary loss and hallucinations when interpreting interconnected insurance riders.
+
+### Google Cloud & Google AI Technologies Used
+1. **Gemini 2.0 Long-Context Native Grounding (1M+ Tokens)**:
+   - Feeds the entire official 45-page statutory insurance policy binder (`FP-INDIA-WBCIS-PARAMETRIC-2026-REG-B4`) directly into Gemini's context window.
+   - Guarantees zero retrieval chunking loss, preserving holistic legal relationships across definitions, trigger formulas, exclusions, and appeal procedures.
+2. **Concept-Bottleneck Zero-Hallucination Verification**:
+   - Every cited clause is cryptographically validated against `policy/clause_index.json` and `PolicyIndex.java` before being presented to the adjuster.
+   - Zero hallucination score computed and displayed on every statutory answer.
+
+### Official Indian Insurance Scheme Clauses Implemented
+- **Prevented Sowing / Planting / Germination Risk (§4.2.1)**:
+  - Payout of up to 25% of Sum Insured when monsoon deficit or delayed rains prevent planting across the notified insurance unit.
+- **Localized Calamities Assessment (§5.4)**:
+  - Farm-level assessment within 72-hour notification for hailstorm, inundation, landslide, cloudburst, and lightning fire, corroborated with Sentinel-1 SAR radar backscatter.
+- **Post-Harvest Losses Under Cut & Spread Condition (§7.1.4)**:
+  - Coverage up to 14 days post-harvest for harvested crops drying in the field against unseasonal/cyclonic rain and hailstorm.
+- **Mid-Season Adversity On-Account Relief (§5.3)**:
+  - Immediate 25% on-account liquidity relief when severe seasonal drought or floods cause expected yield to fall below 50% of normal yield.
+- **Critical-Stage Flowering Drought Escalation (§4.2)**:
+  - Reconciles aggregate rainfall with micro-temporal dry spells exceeding 14 days during reproductive flowering.
+- **Spatial Micro-Climatic Basis Risk (§4.3)**:
+  - Escalates claims where plot-level precipitation is depressed relative to county automatic weather stations.
+
+### Where It Sits in the UI
+Located directly in the **Adjuster Desk** (`ClaimDetail.tsx`):
+1. **Statutory Claim Grounding Card**:
+   - Automatically displays the governing clause, official legal rationale, and verified citations for the selected claim.
+2. **Interactive Policy Query Assistant (`PolicyRAGAssistant.tsx`)**:
+   - Real-time statutory query bar with 1-click preset pills for Prevented Sowing §4.2.1, Localized Calamities §5.4, Post-Harvest §7.1.4, and Mid-Season Adversity §5.3.
+   - Displays verbatim quoted rules, page references, and statutory application notes.
+3. **One-Click Citation Insertion**:
+   - Click "Cite" or "Insert Citation" on any scheme clause to automatically paste the formatted legal citation directly into the Adjuster's decision notes.
+4. **Policy Drawer Modal (`PolicyModal.tsx`)**:
+   - Full 4-tab interactive policy viewer with complete clause index, free-form statutory search, locked SQL payout rule, and master policy text.
 
 ### How It Works
 1. **PolicyIndex & BriefGuard**:

@@ -4,7 +4,6 @@ import { IndexDoctorSimulation, CountyActuarialForecast } from '../types/contrac
 import { api } from '../services/api';
 import { fmtUsd, toPct } from '../lib/format';
 import { ErrorNote, Loading } from './ui';
-import { ActuarialForecasterView } from './ActuarialForecasterView';
 
 const CURRENT_RULE = 30; // the trigger committed before evaluation
 const SWEEP = [10, 15, 20, 25, 30, 35, 40, 45, 50];
@@ -260,8 +259,29 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
         </section>
       </div>
 
-      {/* 14-Day Forward Risk Forecast (BigQuery ML) */}
-      <section aria-labelledby="forecast-h" className="mt-12">
+      {/* 14-Day Forward Risk Forecast (BigQuery ML ARIMA_PLUS) */}
+      <section id="forward-actuarial-forecast" aria-labelledby="forecast-h" className="mt-12">
+        {queryParams?.claimId && (
+          <div className="mb-6 rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-pulse" />
+              <div>
+                <p className="text-xs font-semibold text-ink">
+                  Case Investigation: Analyzing 14-Day BigQuery ML Risk for Claim {queryParams.claimId} (Plot {queryParams.plot || 'P-0142'}, {selectedCounty})
+                </p>
+                <p className="text-[11px] text-muted">
+                  Daily rainfall probability projection to evaluate drought persistence before harvest conclusion.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => onNavigate?.('insurer', queryParams.claimId)}
+              className="btn-secondary text-xs flex items-center gap-1.5 px-3 py-1.5 font-semibold"
+            >
+              ← Return to Claim {queryParams.claimId}
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
           <div>
             <div className="flex items-center gap-2.5">
@@ -380,10 +400,6 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
         )}
       </section>
 
-      {/* Predictive Actuarial Risk & Forward Forecast Section */}
-      <div id="forward-actuarial-forecast" className="mt-14 border-t border-line pt-10">
-        <ActuarialForecasterView queryParams={queryParams} onNavigate={onNavigate} />
-      </div>
 
       <p className="mt-10 max-w-prose text-sm text-muted">
         This replays the rule on historical test plots from the dataset. The payout total assumes a flat amount per paid plot

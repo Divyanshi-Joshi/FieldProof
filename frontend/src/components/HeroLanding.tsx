@@ -220,10 +220,9 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
               <span className="rounded bg-canvas border border-line px-2 py-0.5 text-xs font-semibold text-ink">
                 Predictive Analytics
               </span>
-              <h3 className="font-semibold text-base">Forward Actuarial Risk</h3>
+              <h3 className="font-semibold text-base">BigQuery ML Predictive Risk</h3>
               <p className="text-xs text-muted leading-relaxed">
-                14-day predictive weather trajectory simulation to model forward payout probability, drought escalation,
-                and capital reserves.
+                14-day BigQuery ML (ARIMA_PLUS) predictive weather trajectory simulation to model forward payout probability and drought escalation.
               </p>
             </div>
             <button

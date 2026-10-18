@@ -514,32 +514,6 @@ public final class Contracts {
         @JsonProperty("context_binder_ref") String contextBinderRef
     ) {}
 
-    // ─── Actuarial Forecasting via Sandboxed Code Execution ──────────────────
-    public record RainfallForecastPoint(
-        @JsonProperty("date") String date,
-        @JsonProperty("expected_rain_mm") double expectedRainMm,
-        @JsonProperty("confidence_lower_90_mm") double confidenceLower90Mm,
-        @JsonProperty("confidence_upper_90_mm") double confidenceUpper90Mm,
-        @JsonProperty("cumulative_projected_mm") double cumulativeProjectedMm
-    ) {}
-
-    public record ActuarialForecastResult(
-        @JsonProperty("plot_id") String plotId,
-        @JsonProperty("county") String county,
-        @JsonProperty("season") String season,
-        @JsonProperty("current_cumulative_rain_mm") double currentCumulativeRainMm,
-        @JsonProperty("trigger_rain_mm") double triggerRainMm,
-        @JsonProperty("forward_14d_payout_probability") double forward14dPayoutProbability,
-        @JsonProperty("drought_escalation_risk") String droughtEscalationRisk,
-        @JsonProperty("projected_portfolio_outlay_usd") double projectedPortfolioOutlayUsd,
-        @JsonProperty("forecast_time_series") List<RainfallForecastPoint> forecastTimeSeries,
-        @JsonProperty("executed_python_code") String executedPythonCode,
-        @JsonProperty("sandbox_execution_output") String sandboxExecutionOutput,
-        @JsonProperty("code_execution_engine") String codeExecutionEngine,
-        @JsonProperty("mathematical_model_type") String mathematicalModelType,
-        @JsonProperty("computed_at_utc") Instant computedAtUtc
-    ) {}
-
     // ─── Responsible AI & Two-Pass Gate ──────────────────────────────────────
     public record TwoPassComparison(
         @JsonProperty("claim_id") String claimId,

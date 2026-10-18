@@ -58,7 +58,14 @@ public class PolicyIndex {
             }
 
             // Always ensure the core frozen trigger clause IDs exist
-            validClauseIds.addAll(List.of("CL-1.1", "CL-2.1", "CL-2.2", "CL-4.2", "CL-4.3", "CL-5.1", "CL-6.1", "CL-7.1", "CL-7.2", "CL-8.1", "CL-9.1", "CL-9.2", "CL-10.1", "4.2.1", "5.3", "7.1.4"));
+            validClauseIds.addAll(List.of(
+                    "CL-1.1", "CL-1.2", "CL-1.3", "CL-2.1", "CL-2.2", "CL-3.1", "CL-3.2",
+                    "CL-4.1", "CL-4.2", "CL-4.2.1", "CL-4.3",
+                    "CL-5.1", "CL-5.3", "CL-5.4",
+                    "CL-6.1", "CL-6.2", "CL-7.1", "CL-7.1.4", "CL-7.2",
+                    "CL-8.1", "CL-9.1", "CL-9.2", "CL-10.1",
+                    "4.2.1", "§4.2.1", "5.3", "§5.3", "5.4", "§5.4", "7.1.4", "§7.1.4"
+            ));
 
             log.info("PolicyIndex initialized with {} clause IDs", validClauseIds.size());
         } catch (Exception e) {
@@ -68,7 +75,12 @@ public class PolicyIndex {
 
     public boolean isClauseValid(String clauseId) {
         if (clauseId == null) return false;
-        return validClauseIds.contains(clauseId.trim());
+        String trimmed = clauseId.trim();
+        if (validClauseIds.contains(trimmed)) return true;
+        String clNormalized = trimmed.startsWith("CL-") ? trimmed : "CL-" + trimmed;
+        if (validClauseIds.contains(clNormalized)) return true;
+        String clean = trimmed.replace("§", "").replace("CL-", "");
+        return validClauseIds.contains(clean) || validClauseIds.contains("CL-" + clean);
     }
 
     public List<String> validateCitations(List<String> citations) {
