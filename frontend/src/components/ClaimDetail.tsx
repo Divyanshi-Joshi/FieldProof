@@ -348,6 +348,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
 
   const activePhotoBoxes = visualGrounding.filter((b) => b.photo_index === selectedPhotoIdx);
 
+
   return (
     <article className="settle space-y-6">
       {/* Header */}
@@ -622,13 +623,20 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                         ? 'bg-yellow-950/90 text-yellow-200 border-yellow-500/40'
                         : 'bg-sky-950/90 text-sky-200 border-sky-500/40';
 
+                  const isNearTopEdge = ymin < 35;
+
                   return (
                     <div
                       key={`bbox-${selectedPhotoIdx}-${bIdx}`}
                       onMouseEnter={() => setHoveredBoxIdx(bIdx)}
                       onMouseLeave={() => setHoveredBoxIdx(null)}
-                      className={`absolute transition-all duration-200 cursor-pointer rounded-sm border-2 ${isHovered ? 'ring-2 ring-white scale-[1.01] z-30' : 'z-20'
-                        } ${boxBorderColor}`}
+                      className={`absolute transition-all duration-200 cursor-pointer rounded-sm border-2 ${
+                        isHovered
+                          ? 'ring-2 ring-white scale-[1.01] z-40 shadow-lg'
+                          : hoveredBoxIdx !== null
+                          ? 'opacity-65 z-20'
+                          : 'z-20'
+                      } ${boxBorderColor}`}
                       style={{
                         top: `${top}%`,
                         left: `${left}%`,
@@ -636,7 +644,13 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                         width: `${width}%`,
                       }}
                     >
-                      <span className={`absolute -top-7 left-0 flex items-center gap-1.5 rounded border px-2 py-0.5 text-[11px] font-semibold tracking-wide shadow-md backdrop-blur-md whitespace-nowrap ${badgeColor}`}>
+                      <span
+                        className={`absolute ${
+                          isNearTopEdge ? 'top-1 left-1' : '-top-7 left-0'
+                        } flex items-center gap-1.5 rounded border px-2 py-0.5 text-[11px] font-semibold tracking-wide shadow-md backdrop-blur-md whitespace-nowrap pointer-events-none ${
+                          isHovered ? 'z-50 ring-1 ring-white' : 'z-20'
+                        } ${badgeColor}`}
+                      >
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
                         {box.label} &bull; {Math.round(box.confidence * 100)}%
                       </span>
@@ -644,13 +658,11 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                   );
                 })}
 
-                {/* Sub-label in corner with dynamic classification */}
-                <div className="absolute bottom-2 left-2 flex flex-wrap items-center gap-2 rounded bg-black/75 px-3 py-1.5 text-xs text-white backdrop-blur-md">
-                  <span className="font-semibold text-emerald-300">Photo {selectedPhotoIdx + 1}: {currentPhotoAnalysis.perspective}</span>
-                  <span className="text-white/40">&bull;</span>
-                  <span className="text-white/90">{currentPhotoAnalysis.primary_subject}</span>
+                {/* Floating pill in bottom corner with primary subject on left and spatial badge on right */}
+                <div className="absolute bottom-2.5 left-2.5 flex items-center gap-2.5 rounded-lg bg-black/80 px-3 py-1.5 text-xs text-white backdrop-blur-md border border-white/10 shadow-md z-20">
+                  <span className="font-medium text-white/90">{currentPhotoAnalysis.primary_subject}</span>
                   {activePhotoBoxes.length > 0 && showVisualGrounding && (
-                    <span className="rounded bg-sky-500/40 px-2 py-0.5 text-[10px] font-bold text-sky-100 border border-sky-400/30">
+                    <span className="rounded bg-sky-500/40 px-2 py-0.5 text-[10px] font-bold text-sky-100 border border-sky-400/30 whitespace-nowrap">
                       {activePhotoBoxes.length} spatial box{activePhotoBoxes.length > 1 ? 'es' : ''} detected
                     </span>
                   )}

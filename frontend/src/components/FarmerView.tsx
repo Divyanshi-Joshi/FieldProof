@@ -63,10 +63,68 @@ const SAMPLES: Sample[] = [
   },
 ];
 
+/**
+ * Automatically downsizes photos on the client before network upload.
+ * Smartphone cameras produce 5-15MB files; downscaling to max 1600px
+ * preserves fine leaf and soil cracks for Gemini and adjuster review,
+ * while keeping total payload under 800KB for lightning-fast submission.
+ */
+async function compressImageFile(file: File | Blob, maxDim = 1600, quality = 0.85): Promise<Blob> {
+  if (file.size <= 500 * 1024 && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(file);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          resolve(blob || file);
+        },
+        'image/jpeg',
+        quality,
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
 async function toBlob(p: Photo): Promise<Blob> {
-  if (p.file) return p.file;
+  if (p.file) {
+    return compressImageFile(p.file);
+  }
   const r = await fetch(p.url);
-  return r.blob();
+  const blob = await r.blob();
+  if (blob.size > 800 * 1024) {
+    return compressImageFile(blob);
+  }
+  return blob;
 }
 
 export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
@@ -76,7 +134,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
   const [crop, setCrop] = useState<Crop>(SAMPLES[0].crop);
   const [photos, setPhotos] = useState<Slots>(SAMPLES[0].photos);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<UploadResult | null>(null);
   const phoneTop = useRef<HTMLDivElement>(null);
 
@@ -86,18 +144,26 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
     setCrop(s.crop);
     setPhotos([...s.photos] as Slots);
     setResult(null);
-    setError(false);
+    setErrorMessage(null);
   };
 
   useEffect(() => {
     phoneTop.current?.scrollTo?.({ top: 0 });
   }, [result]);
 
+  const MAX_FILE_SIZE_MB = 2.5;
+
   const setSlot = (i: number, f: File | undefined) => {
     if (!f) return;
+    if (f.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      const sizeMb = (f.size / (1024 * 1024)).toFixed(1);
+      setErrorMessage(`⚠️ Photo "${f.name}" is ${sizeMb} MB. Image size exceeds the ${MAX_FILE_SIZE_MB} MB limit — kindly compress your photo or choose an image under ${MAX_FILE_SIZE_MB} MB.`);
+      return;
+    }
     const next = [...photos] as Slots;
     next[i] = { url: URL.createObjectURL(f), name: f.name, file: f };
     setPhotos(next);
+    setErrorMessage(null);
   };
 
   const ready = photos.filter(Boolean).length;
@@ -105,7 +171,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
   const send = async () => {
     if (ready < 3) return;
     setSending(true);
-    setError(false);
+    setErrorMessage(null);
     try {
       const blobs = await Promise.all((photos as Photo[]).map(toBlob));
       const res = await api.uploadClaim(
@@ -114,8 +180,18 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
         (photos as Photo[]).map((p) => p.name),
       );
       setResult(res);
-    } catch {
-      setError(true);
+    } catch (err: any) {
+      console.error("Claim upload failed:", err);
+      const msg = err?.message || '';
+      if (msg.includes('413')) {
+        setErrorMessage('Photos exceed server upload limit. Photos are now automatically resized.');
+      } else if (msg.includes('503')) {
+        setErrorMessage(msg);
+      } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+        setErrorMessage('Could not connect to the backend server. Make sure the Spring Boot server is running on port 8080.');
+      } else {
+        setErrorMessage(t.error);
+      }
     } finally {
       setSending(false);
     }
@@ -127,6 +203,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
     bad.forEach((i) => { if (i >= 0 && i < 3) next[i] = null; });
     setPhotos(next);
     setResult(null);
+    setErrorMessage(null);
   };
 
   const message = result?.farmer_messages?.en || null;
@@ -208,6 +285,10 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
                   <p className="text-sm text-muted">{t.photosReady(ready)}</p>
                 </div>
                 <p className="mt-1 text-sm text-muted">{t.photoHint}</p>
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-line bg-canvas px-2.5 py-1 text-xs text-muted">
+                  <span className="h-1.5 w-1.5 rounded-full bg-field"></span>
+                  <span>Max 2.5 MB per photo (JPEG/PNG). Kindly compress larger photos before uploading.</span>
+                </div>
 
                 <ul className="mt-3 space-y-2.5">
                   {t.slots.map((slot, i) => {
@@ -218,7 +299,14 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
                           {p ? <img src={p.url} alt="" className="h-full w-full object-cover" /> : <Camera className="h-6 w-6 text-faint" aria-hidden />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-semibold leading-5">{slot.title}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold leading-5">{slot.title}</p>
+                            {p?.file && (
+                              <span className="rounded border border-line bg-canvas px-1.5 py-0.5 text-[10px] font-medium text-muted">
+                                {(p.file.size / (1024 * 1024)).toFixed(1)} MB
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm leading-5 text-muted">{slot.hint}</p>
                         </div>
                         <label className={`shrink-0 cursor-pointer rounded-md px-3 py-2 text-sm font-semibold ${p ? 'border border-line text-ink' : 'bg-field text-white'}`}>
@@ -236,7 +324,11 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
                   })}
                 </ul>
 
-                {error && <p role="alert" className="mt-4 rounded-md bg-hold-soft p-3 text-sm text-hold">{t.error}</p>}
+                {errorMessage && (
+                  <div role="alert" className="mt-4 rounded-md bg-hold-soft p-3 text-sm text-hold">
+                    <p className="font-semibold">{errorMessage}</p>
+                  </div>
+                )}
 
                 <button onClick={send} disabled={ready < 3 || sending} className="btn-primary mt-5 w-full py-3.5 text-base">
                   {sending ? t.sending : t.send}

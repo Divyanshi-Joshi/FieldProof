@@ -241,7 +241,9 @@ public class ClaimService {
         if (integrityPassed && gradingService != null && !photoInputs.isEmpty()) {
             try {
                 log.info("Dispatching Gemini vision grading for claim {} ({} photos)", claimId, photoInputs.size());
-                GradingService.GradingExecution exec = gradingService.grade(photoInputs, true, 1);
+                java.util.concurrent.CompletableFuture<GradingService.GradingExecution> gradingFuture =
+                        java.util.concurrent.CompletableFuture.supplyAsync(() -> gradingService.grade(photoInputs, true, 1));
+                GradingService.GradingExecution exec = gradingFuture.get(12, java.util.concurrent.TimeUnit.SECONDS);
                 if (exec != null && exec.gradingResult() != null) {
                     com.fieldproof.core.GradingResult r = exec.gradingResult();
                     if (r.signs() != null) {

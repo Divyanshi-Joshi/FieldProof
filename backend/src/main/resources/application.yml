@@ -10,6 +10,10 @@ spring:
     name: fieldproof
   jackson:
     default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 150MB
 
 # ── FieldProof custom properties ──────────────────────────────────────────────
 # Bound to com.fieldproof.config.FieldProofProperties via @ConfigurationProperties("fieldproof")

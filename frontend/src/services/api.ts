@@ -170,7 +170,14 @@ export const api = {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || "Live uploads temporarily disabled");
     }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (res.status === 413) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || "Photos exceed upload size limit (HTTP 413)");
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Upload failed (HTTP ${res.status})`);
+    }
 
     const data = await res.json();
     if (res.status === 202 && data.claimId) {
