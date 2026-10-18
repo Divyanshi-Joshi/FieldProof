@@ -124,8 +124,8 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
           grounded_symptoms: isHealthy
             ? ['Vigorous Stand Architecture']
             : isPest
-            ? ['Patchy Foliar Chlorosis', 'Canopy Decline']
-            : ['Leaf Rolling (Pencil Curling)', 'Stand Stunting']
+              ? ['Patchy Foliar Chlorosis', 'Canopy Decline']
+              : ['Leaf Rolling (Pencil Curling)', 'Stand Stunting']
         };
       } else if (idx === 1) {
         return {
@@ -137,8 +137,8 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
           grounded_symptoms: isHealthy
             ? ['Dense Green Canopy Cover']
             : isPest
-            ? ['Foliar Feeding Chewing']
-            : ['Field-Scale Canopy Senescence', 'Canopy Gap & Thinning']
+              ? ['Foliar Feeding Chewing']
+              : ['Field-Scale Canopy Senescence', 'Canopy Gap & Thinning']
         };
       } else {
         return {
@@ -331,8 +331,8 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
     // filter out any hallucinated soil-cracking bounding boxes for that photo!
     return combined.filter(box => {
       const isSoilBox = box.label.toLowerCase().includes('soil') ||
-                        box.label.toLowerCase().includes('fissure') ||
-                        box.label.toLowerCase().includes('root exposure');
+        box.label.toLowerCase().includes('fissure') ||
+        box.label.toLowerCase().includes('root exposure');
       if (isSoilBox) {
         const analysis = photoAnalyses.find(a => a.photo_index === box.photo_index);
         if (analysis && !analysis.soil_visible) {
@@ -351,17 +351,16 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
   return (
     <article className="settle space-y-6">
       {/* Header */}
-      <header className={`rounded-lg p-6 border ${
-        o.group === 'missed' 
-          ? 'bg-loss-soft dark:bg-amber-950/40 border-loss/20 dark:border-amber-500/30 text-ink' 
-          : o.group === 'paid' 
-          ? 'bg-field-soft dark:bg-emerald-950/40 border-field/20 dark:border-emerald-500/30 text-ink' 
-          : o.group === 'hold' 
-          ? 'bg-hold-soft dark:bg-red-950/40 border-hold/20 dark:border-red-500/30 text-ink' 
-          : o.group === 'review' 
-          ? 'bg-review-soft dark:bg-purple-950/40 border-review/20 dark:border-purple-500/30 text-ink' 
-          : 'bg-calm-soft dark:bg-slate-800/40 border-line text-ink'
-      }`}>
+      <header className={`rounded-lg p-6 border ${o.group === 'missed'
+          ? 'bg-loss-soft dark:bg-amber-950/40 border-loss/20 dark:border-amber-500/30 text-ink'
+          : o.group === 'paid'
+            ? 'bg-field-soft dark:bg-emerald-950/40 border-field/20 dark:border-emerald-500/30 text-ink'
+            : o.group === 'hold'
+              ? 'bg-hold-soft dark:bg-red-950/40 border-hold/20 dark:border-red-500/30 text-ink'
+              : o.group === 'review'
+                ? 'bg-review-soft dark:bg-purple-950/40 border-review/20 dark:border-purple-500/30 text-ink'
+                : 'bg-calm-soft dark:bg-slate-800/40 border-line text-ink'
+        }`}>
         <p className="text-sm text-muted">
           Claim {g.claim_id}. Plot {g.plot_id}, {e.county} county, {e.crop}, season {e.season}. Sent {fmtDate(g.uploaded_at)}.
         </p>
@@ -522,11 +521,10 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 <button
                   type="button"
                   onClick={() => setShowVisualGrounding(!showVisualGrounding)}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                    showVisualGrounding
+                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${showVisualGrounding
                       ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-sm'
                       : 'bg-surface border border-line text-muted hover:text-ink'
-                  }`}
+                    }`}
                 >
                   {showVisualGrounding ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                   <span>{showVisualGrounding ? 'Spatial Grounding: Active' : 'Show Spatial Grounding'}</span>
@@ -543,19 +541,17 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
               <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-2.5 py-1 text-xs text-muted">
                 Subject: <strong className="text-ink font-medium">{currentPhotoAnalysis.primary_subject}</strong>
               </span>
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                currentPhotoAnalysis.soil_visible
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${currentPhotoAnalysis.soil_visible
                   ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20'
                   : 'bg-canvas text-muted border border-line'
-              }`}>
+                }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${currentPhotoAnalysis.soil_visible ? 'bg-amber-500' : 'bg-muted/40'}`} />
                 Soil: {currentPhotoAnalysis.soil_visible ? 'Visible & Grounded' : 'Not Visible in Frame'}
               </span>
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                currentPhotoAnalysis.foliage_visible
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${currentPhotoAnalysis.foliage_visible
                   ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
                   : 'bg-canvas text-muted border border-line'
-              }`}>
+                }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${currentPhotoAnalysis.foliage_visible ? 'bg-emerald-500' : 'bg-muted/40'}`} />
                 Foliage: {currentPhotoAnalysis.foliage_visible ? 'Visible & Grounded' : 'Not Visible'}
               </span>
@@ -613,27 +609,26 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                   const boxBorderColor = isLeaf
                     ? 'border-amber-400 bg-amber-500/15'
                     : isSenescence
-                    ? 'border-orange-500 bg-orange-500/15'
-                    : isSoil
-                    ? 'border-yellow-600 bg-yellow-700/15'
-                    : 'border-sky-400 bg-sky-500/15';
+                      ? 'border-orange-500 bg-orange-500/15'
+                      : isSoil
+                        ? 'border-yellow-600 bg-yellow-700/15'
+                        : 'border-sky-400 bg-sky-500/15';
 
                   const badgeColor = isLeaf
                     ? 'bg-amber-950/90 text-amber-200 border-amber-500/40'
                     : isSenescence
-                    ? 'bg-orange-950/90 text-orange-200 border-orange-500/40'
-                    : isSoil
-                    ? 'bg-yellow-950/90 text-yellow-200 border-yellow-500/40'
-                    : 'bg-sky-950/90 text-sky-200 border-sky-500/40';
+                      ? 'bg-orange-950/90 text-orange-200 border-orange-500/40'
+                      : isSoil
+                        ? 'bg-yellow-950/90 text-yellow-200 border-yellow-500/40'
+                        : 'bg-sky-950/90 text-sky-200 border-sky-500/40';
 
                   return (
                     <div
                       key={`bbox-${selectedPhotoIdx}-${bIdx}`}
                       onMouseEnter={() => setHoveredBoxIdx(bIdx)}
                       onMouseLeave={() => setHoveredBoxIdx(null)}
-                      className={`absolute transition-all duration-200 cursor-pointer rounded-sm border-2 ${
-                        isHovered ? 'ring-2 ring-white scale-[1.01] z-30' : 'z-20'
-                      } ${boxBorderColor}`}
+                      className={`absolute transition-all duration-200 cursor-pointer rounded-sm border-2 ${isHovered ? 'ring-2 ring-white scale-[1.01] z-30' : 'z-20'
+                        } ${boxBorderColor}`}
                       style={{
                         top: `${top}%`,
                         left: `${left}%`,
@@ -683,11 +678,10 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                       key={`${g.claim_id}-thumb-${i}`}
                       type="button"
                       onClick={() => setSelectedPhotoIdx(i)}
-                      className={`relative flex items-center gap-2.5 rounded-lg border p-1.5 text-left transition-all shrink-0 ${
-                        isSelected
+                      className={`relative flex items-center gap-2.5 rounded-lg border p-1.5 text-left transition-all shrink-0 ${isSelected
                           ? 'border-field bg-field/10 ring-2 ring-field/20'
                           : 'border-line hover:border-ink/30 bg-surface'
-                      } ${rejected ? 'ring-2 ring-hold' : ''}`}
+                        } ${rejected ? 'ring-2 ring-hold' : ''}`}
                     >
                       <img
                         src={photoSrc(url)}
@@ -702,8 +696,8 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                           {analysis.soil_visible && analysis.foliage_visible
                             ? 'Soil & Foliage'
                             : analysis.soil_visible
-                            ? 'Soil Surface'
-                            : 'Foliage & Stalks'}
+                              ? 'Soil Surface'
+                              : 'Foliage & Stalks'}
                           {' • '}{photoBoxesCount > 0 ? `${photoBoxesCount} symptom${photoBoxesCount > 1 ? 's' : ''}` : 'Clean'}
                         </p>
                       </div>
@@ -734,11 +728,10 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                         key={`card-box-${bIdx}`}
                         onMouseEnter={() => setHoveredBoxIdx(bIdx)}
                         onMouseLeave={() => setHoveredBoxIdx(null)}
-                        className={`rounded-lg border p-3 transition-all cursor-pointer ${
-                          isHovered
+                        className={`rounded-lg border p-3 transition-all cursor-pointer ${isHovered
                             ? 'border-field bg-field/5 shadow-sm ring-1 ring-field'
                             : 'border-line bg-surface/50 hover:border-ink/30'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold text-sm text-ink">{box.label}</span>
@@ -763,7 +756,7 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
                 <div className="rounded-md bg-sky-500/5 border border-sky-500/20 p-2.5 text-xs text-muted flex items-start gap-2">
                   <Sparkles className="h-4 w-4 text-sky-500 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Anti-Hallucination Visual Audit:</strong> Gemini 2.0 Spatial Vision binds observable damage signs directly to 2D pixel coordinates, guaranteeing that severity scores reflect physical leaf and soil signs before entering the pure Java concordance decision table.
+                    <strong>Gemini 2.0 Spatial Vision</strong> binds observable damage signs directly to 2D pixel coordinates, guaranteeing that severity scores reflect physical leaf and soil signs before entering the pure Java concordance decision table.
                   </span>
                 </div>
               </div>
