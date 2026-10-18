@@ -17,12 +17,27 @@ const TAB_PATH: Record<ActiveTab, string> = {
   validation: '/results',
 };
 
-/** Hash routes (#/claims/CLM-1) work on Cloud Run's static hosting without server rewrites. */
-function readRoute(): { tab: ActiveTab; claimId: string | null } {
-  const parts = window.location.hash.replace(/^#/, '').split('/').filter(Boolean);
+/** Hash routes (#/claims/CLM-1 or #/index-doctor?county=beed&plot=P-0142) work on Cloud Run's static hosting. */
+function readRoute(): { tab: ActiveTab; claimId: string | null; queryParams: Record<string, string> } {
+  const hash = window.location.hash.replace(/^#/, '');
+  const [pathPart, queryPart] = hash.split('?');
+  const parts = (pathPart || '').split('/').filter(Boolean);
   const head = `/${parts[0] ?? ''}`;
   const tab = (Object.keys(TAB_PATH) as ActiveTab[]).find((k) => TAB_PATH[k] === head) ?? 'landing';
-  return { tab, claimId: tab === 'insurer' && parts[1] ? decodeURIComponent(parts[1]) : null };
+
+  const queryParams: Record<string, string> = {};
+  if (queryPart) {
+    const sp = new URLSearchParams(queryPart);
+    sp.forEach((v, k) => {
+      queryParams[k] = v;
+    });
+  }
+
+  return {
+    tab,
+    claimId: tab === 'insurer' && parts[1] ? decodeURIComponent(parts[1]) : null,
+    queryParams,
+  };
 }
 
 export const App: React.FC = () => {
@@ -39,8 +54,13 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const navigate = (tab: ActiveTab, claimId?: string | null) => {
-    const path = TAB_PATH[tab] + (tab === 'insurer' && claimId ? `/${encodeURIComponent(claimId)}` : '');
+  const navigate = (tab: ActiveTab, claimId?: string | null, params?: Record<string, string | number>) => {
+    let path = TAB_PATH[tab] + (tab === 'insurer' && claimId ? `/${encodeURIComponent(claimId)}` : '');
+    if (params && Object.keys(params).length > 0) {
+      const sp = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => sp.set(k, String(v)));
+      path += `?${sp.toString()}`;
+    }
     if (window.location.hash !== `#${path}`) window.location.hash = path;
   };
 
@@ -69,7 +89,9 @@ export const App: React.FC = () => {
             onNavigate={navigate}
           />
         )}
-        {route.tab === 'doctor' && <IndexDoctorView />}
+        {route.tab === 'doctor' && (
+          <IndexDoctorView queryParams={route.queryParams} onNavigate={navigate} />
+        )}
         {route.tab === 'validation' && <ValidationView onOpenPolicy={() => openPolicy()} />}
       </main>
 

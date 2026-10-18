@@ -22,7 +22,14 @@ function delta(now: number, base: number, fmt: (n: number) => string, goodWhenDo
   return <span className={good ? 'font-semibold text-field' : 'font-semibold text-loss-ink'}>{diff > 0 ? '+' : '−'}{fmt(Math.abs(diff))}</span>;
 }
 
-export const IndexDoctorView: React.FC = () => {
+import { ActiveTab } from '../App';
+
+interface IndexDoctorViewProps {
+  queryParams?: Record<string, string>;
+  onNavigate?: (tab: ActiveTab, claimId?: string | null, params?: Record<string, string | number>) => void;
+}
+
+export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, onNavigate }) => {
   const [pct, setPct] = useState(CURRENT_RULE);
   const debounced = useDebounced(pct, 200);
   const [sim, setSim] = useState<IndexDoctorSimulation | null>(null);
@@ -367,8 +374,8 @@ export const IndexDoctorView: React.FC = () => {
       </section>
 
       {/* Predictive Actuarial Risk & Forward Forecast Section */}
-      <div className="mt-14 border-t border-line pt-10">
-        <ActuarialForecasterView />
+      <div id="forward-actuarial-forecast" className="mt-14 border-t border-line pt-10">
+        <ActuarialForecasterView queryParams={queryParams} onNavigate={onNavigate} />
       </div>
 
       <p className="mt-10 max-w-prose text-sm text-muted">

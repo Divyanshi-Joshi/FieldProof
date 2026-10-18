@@ -3,35 +3,56 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, ComposedChart
 } from 'recharts';
 import {
-  Code, Terminal, TrendingUp, AlertTriangle, Play, ShieldCheck, DollarSign, CloudRain, Cpu, CheckCircle2, ChevronRight
+  Code, Terminal, TrendingUp, AlertTriangle, Play, ShieldCheck, DollarSign, CloudRain, Cpu, CheckCircle2, ChevronRight, ArrowLeft
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ActuarialForecastResult, ActuarialCounty } from '../types/contracts';
 import { fmtUsd } from '../lib/format';
 import { Loading } from './ui';
+import { ActiveTab } from '../App';
 
-export const ActuarialForecasterView: React.FC = () => {
+interface ActuarialForecasterViewProps {
+  queryParams?: Record<string, string>;
+  onNavigate?: (tab: ActiveTab, claimId?: string | null, params?: Record<string, string | number>) => void;
+}
+
+export const ActuarialForecasterView: React.FC<ActuarialForecasterViewProps> = ({ queryParams, onNavigate }) => {
   const [counties, setCounties] = useState<ActuarialCounty[]>([]);
-  const [selectedCounty, setSelectedCounty] = useState('beed');
-  const [plotId, setPlotId] = useState('P-0142');
-  const [currentRain, setCurrentRain] = useState(248.0);
-  const [triggerRain, setTriggerRain] = useState(290.0);
+  const [selectedCounty, setSelectedCounty] = useState(queryParams?.county?.toLowerCase() || 'beed');
+  const [plotId, setPlotId] = useState(queryParams?.plot || 'P-0142');
+  const [currentRain, setCurrentRain] = useState(queryParams?.current ? parseFloat(queryParams.current) : 248.0);
+  const [triggerRain, setTriggerRain] = useState(queryParams?.trigger ? parseFloat(queryParams.trigger) : 290.0);
   const [loading, setLoading] = useState(false);
   const [forecast, setForecast] = useState<ActuarialForecastResult | null>(null);
   const [activeTab, setActiveTab] = useState<'chart' | 'code' | 'terminal'>('chart');
 
-  // Load counties on mount
+  // Load counties on mount and sync params
   useEffect(() => {
     api.getActuarialCounties().then((c) => {
       setCounties(c);
-      if (c.length > 0) {
+      if (c.length > 0 && !queryParams?.trigger) {
         setTriggerRain(c[0].trigger_p30_mm);
       }
     }).catch(console.error);
 
-    // Initial forecast run
-    runForecast('P-0142', 'beed', 248.0, 290.0);
-  }, []);
+    const initCounty = queryParams?.county?.toLowerCase() || 'beed';
+    const initPlot = queryParams?.plot || 'P-0142';
+    const initCurrent = queryParams?.current ? parseFloat(queryParams.current) : 248.0;
+    const initTrigger = queryParams?.trigger ? parseFloat(queryParams.trigger) : 290.0;
+
+    setSelectedCounty(initCounty);
+    setPlotId(initPlot);
+    setCurrentRain(initCurrent);
+    setTriggerRain(initTrigger);
+
+    runForecast(initPlot, initCounty, initCurrent, initTrigger);
+
+    if (queryParams?.plot || queryParams?.claimId) {
+      setTimeout(() => {
+        document.getElementById('forward-actuarial-forecast')?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  }, [queryParams?.county, queryParams?.plot, queryParams?.current, queryParams?.trigger]);
 
   const handleCountyChange = (cId: string) => {
     setSelectedCounty(cId);
@@ -59,6 +80,36 @@ export const ActuarialForecasterView: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-10 lg:px-8 space-y-8">
+      {/* Contextual Bridge Banner if Navigated from a Specific Claim */}
+      {queryParams?.claimId && (
+        <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-sm animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <span className="flex h-3 w-3 rounded-full bg-sky-500 animate-pulse shrink-0" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-sky-600 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                  Case Investigation Context
+                </span>
+                <span className="font-semibold text-sm text-ink">
+                  Claim {queryParams.claimId} • Plot {plotId} ({selectedCounty.toUpperCase()})
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-muted">
+                Pre-loaded parameters from farmer evidence: current cumulative rain ({currentRain.toFixed(1)} mm) vs. trigger ({triggerRain.toFixed(1)} mm).
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate?.('insurer', queryParams.claimId)}
+            className="btn-secondary text-xs flex items-center gap-2 px-3.5 py-2 shadow-sm font-semibold hover:border-field"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Return to Claim {queryParams.claimId}</span>
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="border-b border-line pb-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
