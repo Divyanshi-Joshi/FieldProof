@@ -1,28 +1,29 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Surfaces and text
-        canvas: '#F3F4F0',
-        surface: '#FFFFFF',
-        sunk: '#EAECE6',
-        ink: '#16231C',
-        muted: '#56655B',
-        faint: '#8A968D',
-        line: '#D8DDD4',
-        // Brand: field green, used for primary actions and links
-        field: { DEFAULT: '#1F5E3B', hover: '#174A2E', soft: '#E3EEE6' },
-        // Evidence states: what each source says about the plot
-        loss: { DEFAULT: '#B45309', soft: '#FBEBD7', ink: '#7A3A06' },
-        calm: { DEFAULT: '#5E7466', soft: '#E7ECE8' },
+        // Dynamic surface & ink colors driven by CSS variables
+        canvas: 'var(--color-canvas)',
+        surface: 'var(--color-surface)',
+        sunk: 'var(--color-sunk)',
+        ink: 'var(--color-ink)',
+        muted: 'var(--color-muted)',
+        faint: 'var(--color-faint)',
+        line: 'var(--color-line)',
+        // Brand: field green
+        field: { DEFAULT: '#10B981', hover: '#059669', soft: 'var(--color-field-soft)' },
+        // Evidence states
+        loss: { DEFAULT: '#F59E0B', soft: 'var(--color-loss-soft)', ink: '#D97706' },
+        calm: { DEFAULT: '#6EE7B7', soft: 'var(--color-calm-soft)' },
         // Outcome tones
-        hold: { DEFAULT: '#B42318', soft: '#FBE4E1' },
-        review: { DEFAULT: '#5B4BA0', soft: '#ECE9F7' },
+        hold: { DEFAULT: '#EF4444', soft: 'var(--color-hold-soft)' },
+        review: { DEFAULT: '#8B5CF6', soft: 'var(--color-review-soft)' },
         // Data colours
-        rain: '#3A6EA5',
-        bloom: '#F2DD8C',
+        rain: '#38BDF8',
+        bloom: '#FDE047',
       },
       fontFamily: {
         display: ['"Bricolage Grotesque Variable"', '"Bricolage Grotesque"', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],

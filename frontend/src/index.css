@@ -3,21 +3,52 @@
 @tailwind utilities;
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; }
+  :root {
+    --color-canvas: #0F172A;
+    --color-surface: #1E293B;
+    --color-sunk: #0B1120;
+    --color-ink: #F8FAFC;
+    --color-muted: #94A3B8;
+    --color-faint: #64748B;
+    --color-line: #334155;
+    --color-field-soft: rgba(16, 185, 129, 0.15);
+    --color-loss-soft: rgba(245, 158, 11, 0.15);
+    --color-calm-soft: rgba(110, 231, 183, 0.15);
+    --color-hold-soft: rgba(239, 68, 68, 0.15);
+    --color-review-soft: rgba(139, 92, 246, 0.15);
+  }
+
+  html.light {
+    --color-canvas: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-sunk: #F1F5F9;
+    --color-ink: #0F172A;
+    --color-muted: #475569;
+    --color-faint: #94A3B8;
+    --color-line: #E2E8F0;
+    --color-field-soft: #ECFDF5;
+    --color-loss-soft: #FFFBEB;
+    --color-calm-soft: #F0FDF4;
+    --color-hold-soft: #FEF2F2;
+    --color-review-soft: #F5F3FF;
+  }
+
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+  html.light { color-scheme: light; }
   body {
-    @apply bg-canvas text-ink font-sans antialiased;
+    @apply bg-canvas text-ink font-sans antialiased transition-colors duration-200;
     font-feature-settings: 'tnum' 1;
   }
   h1, h2, h3 { @apply font-display text-ink; letter-spacing: -0.015em; }
-  ::selection { background: #F2DD8C; color: #16231C; }
+  ::selection { background: #10B981; color: #FFFFFF; }
 
   :focus-visible {
-    outline: 2px solid #1F5E3B;
+    outline: 2px solid #10B981;
     outline-offset: 2px;
     border-radius: 4px;
   }
 
-  input[type='range'] { accent-color: #1F5E3B; }
+  input[type='range'] { accent-color: #10B981; }
 }
 
 @layer components {
