@@ -116,27 +116,35 @@ Located in **Claims Desk > Claim Detail > Multi-Source Telemetry & Resolution Br
 
 ---
 
-## Feature 2: Calibrated Zero-Hallucination Gemini Vision Forensics
+## Feature 2: Gemini 2.0 Spatial Vision Grounding & Two-Pass Calibrated Vision Forensics
 
 ### The Problem It Solves
-Directly prompting an LLM to "estimate the damage percentage" or "decide if this claim should be paid" results in severe hallucinations, camera lighting bias, and legal non-compliance.
+Directly prompting an LLM to "estimate the damage percentage" or "decide if this claim should be paid" results in severe hallucinations, camera lighting bias, and legal non-compliance. Furthermore, claims adjusters cannot afford to guess which pixels the model inspected when assigning severity scores.
 
-### How It Works
-1. **Concept-Bottleneck Rubric**: Gemini is constrained to scoring only four concrete, physical agronomic signs on an integer 0–3 scale:
-   - `leaf_rolling_0_3`: Degree of longitudinal leaf curling (0 = flat, 3 = tightly rolled pencil-like tubes).
-   - `canopy_senescence_0_3`: Fraction of canopy exhibiting yellowing/necrosis (0 = green, 3 = complete brownout).
-   - `stunting_0_3`: Stand height deficit relative to standard crop growth stage.
-   - `soil_cracking_visible`: Boolean detection of polygonal dry soil fissures.
-2. **Tri-Anchor Calibration (`AnchorLibrary`)**:
-   - Every Gemini call includes three fixed reference images:
-     - `anchor_healthy` (Score: 0)
-     - `anchor_moderate` (Score: 2)
-     - `anchor_severe` (Score: 3)
-   - These anchors eliminate prompt drift caused by camera hardware, exposure, or cloud shadows.
-3. **Two-Pass Agreement Gate**:
-   - Two independent Gemini inferences are executed with shuffled anchor ordering (`pass_1` and `pass_2`).
-   - Pure Java code maps the signs vector to a severity band (`NONE`, `MILD`, `MODERATE`, `SEVERE`).
-   - If `pass_1_band != pass_2_band`, the system refuses to guess and outputs **`ABSTAIN`**, routing the claim to a human agronomist.
+### Google AI Technologies Used
+1. **Gemini 2.0 Spatial Vision Grounding**:
+   - Natively outputs normalized 2D coordinate bounding boxes `[box_2d: [ymin, xmin, ymax, xmax]]` in a 0–1000 coordinate scale.
+   - Every physical symptom scored in the concept-bottleneck rubric is anchored directly to concrete pixel coordinates on the farmer's photo:
+     - `Severe Leaf Rolling`: e.g. `[180, 240, 520, 710]` (94% confidence) — upper-whorl pencil-like curling.
+     - `Canopy Senescence`: e.g. `[460, 110, 810, 590]` (89% confidence) — progressive chlorosis and necrosis.
+     - `Soil Cracking`: e.g. `[620, 290, 940, 850]` (96% confidence) — polygonal desiccated clay soil fissures.
+2. **Concept-Bottleneck Agronomic Rubric**:
+   - The model is strictly constrained to scoring four physical agronomic signs on an integer 0–3 scale (`leaf_rolling_0_3`, `canopy_senescence_0_3`, `stunting_0_3`, `soil_cracking_visible`).
+   - The model **never** outputs a monetary payout or a final severity classification.
+3. **Tri-Anchor Calibration (`AnchorLibrary`)**:
+   - Inferences include three fixed reference images (`anchor_healthy`, `anchor_moderate`, `anchor_severe`) to eliminate camera exposure and phone sensor drift.
+4. **Two-Pass Agreement Gate**:
+   - Two independent inferences execute with shuffled anchor orders (`pass_1` and `pass_2`).
+   - Pure Java code maps the sign vectors to severity bands. If passes disagree, the system outputs **`ABSTAIN`** and routes the claim to a human agronomist.
+
+### Where It Sits in the UI
+Located on **Claims Desk > Claim Detail > Farmer Field Evidence**:
+- **Interactive Multi-Photo Spatial Grounding Inspector**:
+  - Focuses high-resolution photos with dynamic SVG/canvas bounding box overlays.
+  - Interactive toggle button: **"Spatial Grounding: Active"** with real-time symptom highlights.
+  - Hovering any bounding box highlights the symptom card below and displays the exact physical symptom explanation and model confidence score.
+  - Thumbnail selector with instant symptom counters (e.g. `2 symptoms detected`).
+  - Regulatory **Anti-Hallucination Audit Guarantee** badge confirming pixel grounding.
 
 ---
 

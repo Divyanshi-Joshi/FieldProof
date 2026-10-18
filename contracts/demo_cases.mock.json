@@ -43,7 +43,30 @@
       "visible_evidence": ["severe leaf curling", "yellowing canopy", "dry cracked soil between rows"],
       "photo_quality_flags": [],
       "pass_1_band": "SEVERE", "pass_2_band": "SEVERE",
-      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false
+      "passes_agreed": true, "final_severity_band": "SEVERE", "abstain_to_human": false,
+      "visual_grounding": [
+        {
+          "photo_index": 0,
+          "label": "Severe Leaf Rolling",
+          "box_2d": [180, 240, 520, 710],
+          "confidence": 0.94,
+          "symptom_description": "Longitudinal pencil-like curling of upper whorl maize leaves indicating acute turgor loss."
+        },
+        {
+          "photo_index": 0,
+          "label": "Canopy Senescence",
+          "box_2d": [460, 110, 810, 590],
+          "confidence": 0.89,
+          "symptom_description": "Lower-canopy foliar chlorosis with progressive baseline browning from margin inward."
+        },
+        {
+          "photo_index": 1,
+          "label": "Soil Cracking",
+          "box_2d": [620, 290, 940, 850],
+          "confidence": 0.96,
+          "symptom_description": "Polygonal desiccated clay soil fissures exceeding 2.5cm depth between planting rows."
+        }
+      ]
     },
     "evidence": {
       "plot_id": "P-0142", "county": "Beed", "season": "Kharif-2025", "crop": "maize",

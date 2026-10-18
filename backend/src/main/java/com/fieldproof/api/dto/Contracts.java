@@ -112,12 +112,30 @@ public final class Contracts {
         }
     }
 
+    /**
+     * Gemini 2.0 Spatial Vision Grounding 2D Bounding Box.
+     * Normalized 0..1000 coordinates: [ymin, xmin, ymax, xmax].
+     */
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+    public record VisualGroundingBox(
+        @JsonProperty("photo_index")         int photoIndex,
+        @JsonProperty("label")               String label,
+        @JsonProperty("box_2d")              List<Integer> box2d, // [ymin, xmin, ymax, xmax] in 0-1000 scale
+        @JsonProperty("confidence")          double confidence,
+        @JsonProperty("symptom_description") String symptomDescription
+    ) {
+        public VisualGroundingBox(String label, List<Integer> box2d, double confidence, String symptomDescription) {
+            this(0, label, box2d, confidence, symptomDescription);
+        }
+    }
+
     // ─── Core Contract 1: GradingResult ──────────────────────────────────────
 
     /**
      * Output of the Forensics Agent: integrity checks, calibrated two-pass
      * Gemini grading, and agreement-gate decision for a single claim bundle.
      */
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
     public record GradingResult(
         // Identifiers
         @JsonProperty("claim_id")    String claimId,
@@ -156,8 +174,34 @@ public final class Contracts {
         @JsonProperty("pass_2_band")        SeverityBand pass2Band,
         @JsonProperty("passes_agreed")      boolean passesAgreed,
         @JsonProperty("final_severity_band") SeverityBand finalSeverityBand,
-        @JsonProperty("abstain_to_human")   boolean abstainToHuman
-    ) {}
+        @JsonProperty("abstain_to_human")   boolean abstainToHuman,
+
+        // Gemini 2.0 Spatial Vision Grounding
+        @JsonProperty("visual_grounding")   List<VisualGroundingBox> visualGrounding
+    ) {
+        // Backward-compatible 29-argument constructor
+        public GradingResult(
+            String claimId, String plotId, Instant uploadedAt, List<String> photoUrls,
+            boolean integrityPassed, boolean duplicateWithinClaim, boolean duplicateAcrossClaims,
+            String matchedEarlierClaimId, List<Integer> rejectedPhotoIndices,
+            boolean exifTimestampPresent, boolean exifGpsPresent, List<String> integrityFlags,
+            GradingPass pass1, GradingPass pass2,
+            boolean isCropField, boolean sameFieldAcrossPhotos, boolean screenRecaptureSuspected,
+            String crop, GrowthStage growthStage, Signs signs, DamageType damageType,
+            double confidence, List<String> visibleEvidence, List<String> photoQualityFlags,
+            SeverityBand pass1Band, SeverityBand pass2Band, boolean passesAgreed,
+            SeverityBand finalSeverityBand, boolean abstainToHuman
+        ) {
+            this(claimId, plotId, uploadedAt, photoUrls, integrityPassed, duplicateWithinClaim,
+                duplicateAcrossClaims, matchedEarlierClaimId, rejectedPhotoIndices,
+                exifTimestampPresent, exifGpsPresent, integrityFlags, pass1, pass2,
+                isCropField, sameFieldAcrossPhotos, screenRecaptureSuspected, crop, growthStage,
+                signs, damageType, confidence, visibleEvidence, photoQualityFlags,
+                pass1Band, pass2Band, passesAgreed, finalSeverityBand, abstainToHuman,
+                List.of()
+            );
+        }
+    }
 
     // ─── Core Contract 2: EvidenceRecord ─────────────────────────────────────
 

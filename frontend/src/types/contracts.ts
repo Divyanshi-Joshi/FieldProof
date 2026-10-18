@@ -93,6 +93,15 @@ export interface FarmerMessages {
   sw?: string;
 }
 
+export interface VisualGroundingBox {
+  photo_index: number;
+  label: string;
+  /** [ymin, xmin, ymax, xmax] in 0-1000 normalized coordinates */
+  box_2d: [number, number, number, number] | number[];
+  confidence: number;
+  symptom_description: string;
+}
+
 // ─── Core Contract 1: GradingResult ──────────────────────────────────────────
 
 export interface GradingResult {
@@ -136,6 +145,9 @@ export interface GradingResult {
   passes_agreed: boolean;
   final_severity_band: SeverityBand;
   abstain_to_human: boolean;
+
+  /** Gemini 2.0 Spatial Vision Grounding 2D Bounding Boxes */
+  visual_grounding?: VisualGroundingBox[];
 }
 
 // ─── Core Contract 2: EvidenceRecord ─────────────────────────────────────────
