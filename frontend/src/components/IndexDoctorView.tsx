@@ -311,7 +311,6 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            {forecastBusy && <span className="text-xs text-muted animate-pulse">Running BigQuery ML...</span>}
           </div>
         </div>
 
@@ -347,7 +346,13 @@ export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, o
               </div>
             </div>
 
-            <div className="panel p-5">
+            <div className="panel p-5 relative overflow-hidden">
+              {forecastBusy && (
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-surface/75 backdrop-blur-[2px] transition-all">
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-line border-t-field" />
+                  <span className="mt-2 text-xs font-semibold text-ink tracking-wide">Updating Forecast...</span>
+                </div>
+              )}
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="font-semibold text-sm">Rainfall Expectation Envelope & Payout Probability</h3>
                 <span className="text-xs text-muted">Left: Daily Rain (mm) | Right: Payout Probability (%)</span>

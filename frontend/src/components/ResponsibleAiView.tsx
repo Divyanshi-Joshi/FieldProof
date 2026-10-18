@@ -167,19 +167,27 @@ export const ResponsibleAiView: React.FC = () => {
           </p>
 
           {/* Interactive Claim Picker */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-muted">Select Test Claim:</span>
-            {['CLM-1', 'CLM-2', 'CLM-3'].map((id) => (
+            {[
+              { id: 'CLM-1', label: 'CLM-1 (Severe • Agreed)', claimId: 'CLM-2026-001' },
+              { id: 'CLM-2', label: 'CLM-2 (Moderate • Agreed)', claimId: 'CLM-2026-002' },
+              { id: 'CLM-3', label: 'CLM-3 (Disagreement • Abstain)', claimId: 'CLM-2026-006' },
+            ].map((claim) => (
               <button
-                key={id}
-                onClick={() => setSelectedClaimId(id)}
+                key={claim.id}
+                onClick={() => setSelectedClaimId(claim.id)}
                 className={`rounded px-2.5 py-1 text-xs font-semibold transition-colors ${
-                  selectedClaimId === id
+                  selectedClaimId === claim.id
                     ? 'bg-ink text-surface'
                     : 'bg-canvas text-ink border border-line hover:border-ink'
                 }`}
+                title={`Test two-pass agreement gate for ${claim.label}`}
               >
-                {id}
+                {claim.id}
+                <span className="ml-1 text-[10px] opacity-75 font-normal">
+                  {claim.id === 'CLM-1' ? 'Agreed' : claim.id === 'CLM-2' ? 'Agreed' : 'Disagreed'}
+                </span>
               </button>
             ))}
           </div>

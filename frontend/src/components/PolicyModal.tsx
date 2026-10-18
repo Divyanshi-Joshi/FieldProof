@@ -240,7 +240,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, selec
                   Version <span className="font-mono">{lock.hash}</span>, locked {fmtStamp(lock.at)}.
                 </p>
               )}
-              <pre className="scroll-thin overflow-x-auto rounded-lg bg-ink p-4 font-mono text-xs leading-6 text-white">{RULE_SQL}</pre>
+              <pre className="scroll-thin overflow-x-auto rounded-lg border border-line bg-sunk p-4 font-mono text-xs leading-6 text-ink shadow-inner">{RULE_SQL}</pre>
             </div>
           )}
 

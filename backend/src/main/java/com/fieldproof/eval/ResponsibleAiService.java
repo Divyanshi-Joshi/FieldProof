@@ -46,9 +46,20 @@ public class ResponsibleAiService {
      * Compares Pass 1 and Pass 2 for a specific claim to demonstrate the Two-Pass Agreement Gate.
      */
     public Contracts.TwoPassComparison evaluateTwoPassGate(String claimId) {
+        String resolvedId = claimId;
+        if ("CLM-1".equalsIgnoreCase(claimId) || "1".equals(claimId)) {
+            resolvedId = "CLM-2026-001";
+        } else if ("CLM-2".equalsIgnoreCase(claimId) || "2".equals(claimId)) {
+            resolvedId = "CLM-2026-002";
+        } else if ("CLM-3".equalsIgnoreCase(claimId) || "3".equals(claimId) || "CLM-6".equalsIgnoreCase(claimId)) {
+            resolvedId = "CLM-2026-006"; // Demonstrates discrepancy / abstention
+        }
+
         ClaimBundle bundle = null;
         if (claimStore != null) {
-            bundle = claimStore.get(claimId).orElse(null);
+            bundle = claimStore.get(resolvedId)
+                    .or(() -> claimStore.get(claimId))
+                    .orElse(null);
         }
 
         Contracts.SeverityBand pass1 = Contracts.SeverityBand.MODERATE;
