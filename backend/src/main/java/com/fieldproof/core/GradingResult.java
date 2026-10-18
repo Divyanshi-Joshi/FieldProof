@@ -9,6 +9,7 @@ import java.util.List;
  * Evaluates field validity, crop type, signs, damage classification,
  * and photo quality flags.
  */
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public record GradingResult(
         @JsonProperty("is_crop_field") boolean isCropField,
         @JsonProperty("same_field_across_photos") boolean sameFieldAcrossPhotos,

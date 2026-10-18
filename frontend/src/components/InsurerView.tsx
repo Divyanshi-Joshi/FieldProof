@@ -11,7 +11,7 @@ interface InsurerViewProps {
   selectedClaimId: string | null;
   onSelectClaim: (id: string | null) => void;
   onOpenClause: (clauseId: string) => void;
-  onNavigate: (tab: ActiveTab) => void;
+  onNavigate: (tab: ActiveTab, claimId?: string | null, params?: Record<string, string | number>) => void;
 }
 
 type Filter = 'all' | OutcomeGroup;
@@ -272,6 +272,7 @@ export const InsurerView: React.FC<InsurerViewProps> = ({ selectedClaimId, onSel
             claim={shown}
             onDecisionSaved={updateClaim}
             onOpenClause={onOpenClause}
+            onNavigate={onNavigate}
           />
         ) : (
           <div className="panel p-12 text-center text-muted">

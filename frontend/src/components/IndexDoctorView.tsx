@@ -4,7 +4,6 @@ import { IndexDoctorSimulation, CountyActuarialForecast } from '../types/contrac
 import { api } from '../services/api';
 import { fmtUsd, toPct } from '../lib/format';
 import { ErrorNote, Loading } from './ui';
-import { ActuarialForecasterView } from './ActuarialForecasterView';
 
 const CURRENT_RULE = 30; // the trigger committed before evaluation
 const SWEEP = [10, 15, 20, 25, 30, 35, 40, 45, 50];
@@ -22,7 +21,14 @@ function delta(now: number, base: number, fmt: (n: number) => string, goodWhenDo
   return <span className={good ? 'font-semibold text-field' : 'font-semibold text-loss-ink'}>{diff > 0 ? '+' : '−'}{fmt(Math.abs(diff))}</span>;
 }
 
-export const IndexDoctorView: React.FC = () => {
+import { ActiveTab } from '../App';
+
+interface IndexDoctorViewProps {
+  queryParams?: Record<string, string>;
+  onNavigate?: (tab: ActiveTab, claimId?: string | null, params?: Record<string, string | number>) => void;
+}
+
+export const IndexDoctorView: React.FC<IndexDoctorViewProps> = ({ queryParams, onNavigate }) => {
   const [pct, setPct] = useState(CURRENT_RULE);
   const debounced = useDebounced(pct, 200);
   const [sim, setSim] = useState<IndexDoctorSimulation | null>(null);
@@ -31,7 +37,10 @@ export const IndexDoctorView: React.FC = () => {
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [busy, setBusy] = useState(false);
 
-  const [selectedCounty, setSelectedCounty] = useState('Embu');
+  const initialCounty = queryParams?.county
+    ? (queryParams.county.charAt(0).toUpperCase() + queryParams.county.slice(1).toLowerCase())
+    : 'Beed';
+  const [selectedCounty, setSelectedCounty] = useState(initialCounty);
   const [forecast, setForecast] = useState<CountyActuarialForecast | null>(null);
   const [forecastBusy, setForecastBusy] = useState(false);
 
@@ -250,14 +259,39 @@ export const IndexDoctorView: React.FC = () => {
         </section>
       </div>
 
-      {/* 14-Day Forward Risk Forecast (BigQuery ML) */}
-      <section aria-labelledby="forecast-h" className="mt-12">
+      {/* 14-Day Forward Risk Forecast (BigQuery ML ARIMA_PLUS) */}
+      <section id="forward-actuarial-forecast" aria-labelledby="forecast-h" className="mt-12">
+        {queryParams?.claimId && (
+          <div className="mb-6 rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-pulse" />
+              <div>
+                <p className="text-xs font-semibold text-ink">
+                  Case Investigation: Analyzing 14-Day BigQuery ML Risk for Claim {queryParams.claimId} (Plot {queryParams.plot || 'P-0142'}, {selectedCounty})
+                </p>
+                <p className="text-[11px] text-muted">
+                  Daily rainfall probability projection to evaluate drought persistence before harvest conclusion.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => onNavigate?.('insurer', queryParams.claimId)}
+              className="btn-secondary text-xs flex items-center gap-1.5 px-3 py-1.5 font-semibold"
+            >
+              ← Return to Claim {queryParams.claimId}
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
           <div>
             <div className="flex items-center gap-2.5">
               <h2 id="forecast-h" className="text-xl font-semibold">14-Day Forward Risk Forecast</h2>
-              <span className="rounded bg-field-soft px-2.5 py-0.5 text-xs font-semibold text-field">
-                {forecast?.is_simulated_fallback ? 'Offline Statistical Fallback (ARIMA)' : 'BigQuery ML (ARIMA_PLUS)'}
+              <span className={`rounded px-2.5 py-0.5 text-xs font-semibold ${
+                forecast?.is_simulated_fallback
+                  ? 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20'
+                  : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+              }`}>
+                {forecast?.is_simulated_fallback ? 'BigQuery ML (ARIMA_PLUS) • Statistical Fallback' : 'BigQuery ML (ARIMA_PLUS) • Google Cloud Live'}
               </span>
             </div>
             <p className="mt-1 text-sm text-muted">
@@ -266,18 +300,18 @@ export const IndexDoctorView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <label htmlFor="county-select" className="text-sm font-medium text-muted">County:</label>
+            <label htmlFor="county-select" className="text-sm font-medium text-muted">Target District:</label>
             <select
               id="county-select"
               value={selectedCounty}
               onChange={(e) => setSelectedCounty(e.target.value)}
               className="field-input py-1.5 px-3 text-sm font-medium"
             >
-              {['Embu', 'Machakos', 'Kirinyaga', 'Nakuru', 'Bungoma'].map((c) => (
+              {['Beed', 'Jalna', 'Latur', 'Akola', 'Dewas'].map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            {forecastBusy && <span className="text-xs text-muted animate-pulse">Forecasting...</span>}
+            {forecastBusy && <span className="text-xs text-muted animate-pulse">Running BigQuery ML...</span>}
           </div>
         </div>
 
@@ -366,10 +400,6 @@ export const IndexDoctorView: React.FC = () => {
         )}
       </section>
 
-      {/* Predictive Actuarial Risk & Forward Forecast Section */}
-      <div className="mt-14 border-t border-line pt-10">
-        <ActuarialForecasterView />
-      </div>
 
       <p className="mt-10 max-w-prose text-sm text-muted">
         This replays the rule on historical test plots from the dataset. The payout total assumes a flat amount per paid plot

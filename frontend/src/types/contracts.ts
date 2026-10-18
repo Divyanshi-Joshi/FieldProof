@@ -102,6 +102,15 @@ export interface VisualGroundingBox {
   symptom_description: string;
 }
 
+export interface PhotoAnalysis {
+  photo_index: number;
+  perspective: string; // e.g. "Crop Stand", "Field Landscape", "Canopy & Border", "Soil Surface"
+  primary_subject: string; // e.g. "Standing Maize Rows & Tassels", "Landscape Senescence", "Stalks & Boundary Grass"
+  soil_visible: boolean;
+  foliage_visible: boolean;
+  grounded_symptoms: string[];
+}
+
 // ─── Core Contract 1: GradingResult ──────────────────────────────────────────
 
 export interface GradingResult {
@@ -148,6 +157,8 @@ export interface GradingResult {
 
   /** Gemini 2.0 Spatial Vision Grounding 2D Bounding Boxes */
   visual_grounding?: VisualGroundingBox[];
+  /** Dynamic per-photo scene classification & perspective detection */
+  photo_analyses?: PhotoAnalysis[];
 }
 
 // ─── Core Contract 2: EvidenceRecord ─────────────────────────────────────────
@@ -401,41 +412,6 @@ export interface PolicyQueryResponse {
   cited_clauses: PolicyGroundingCitation[];
   zero_hallucination_score: number;
   context_binder_ref: string;
-}
-
-// ─── Pillar 3: Actuarial Forecasting (Gemini Code Execution) ───────────────
-
-export interface RainfallForecastPoint {
-  date: string;
-  expected_rain_mm: number;
-  confidence_lower_90_mm: number;
-  confidence_upper_90_mm: number;
-  cumulative_projected_mm: number;
-}
-
-export interface ActuarialForecastResult {
-  plot_id: string;
-  county: string;
-  season: string;
-  current_cumulative_rain_mm: number;
-  trigger_rain_mm: number;
-  forward_14d_payout_probability: number;
-  drought_escalation_risk: "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
-  projected_portfolio_outlay_usd: number;
-  forecast_time_series: RainfallForecastPoint[];
-  executed_python_code: string;
-  sandbox_execution_output: string;
-  code_execution_engine: string;
-  mathematical_model_type: string;
-  computed_at_utc: string;
-}
-
-export interface ActuarialCounty {
-  id: string;
-  name: string;
-  trigger_p30_mm: number;
-  historical_payout_rate_pct: number;
-  sample_plot: string;
 }
 
 // ─── Pillar 4: Google Responsible AI Framework ─────────────────────────────

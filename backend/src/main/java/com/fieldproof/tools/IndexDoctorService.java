@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
  * This class uses only pure-Java deterministic logic from {@code core/}.
  * Zero AI/LLM SDK imports.
  */
+import com.fieldproof.tools.bq.BigQueryService;
+
 public final class IndexDoctorService {
 
     /** Required spec disclaimer (FROZEN_TRIGGER_PROTOCOL §6). */
@@ -36,15 +38,22 @@ public final class IndexDoctorService {
 
     private final List<TestPlot> testPlots;
     private final Map<String, RainfallDistribution> distributions;
+    private final BigQueryService bigQueryService;
 
     // ── Construction ─────────────────────────────────────────────────────────
 
     /**
-     * Creates a service with the default seeded Kenyan test plot dataset.
+     * Creates a service with the default seeded test plot dataset and no live BigQuery service.
      */
     public IndexDoctorService() {
-        this.distributions = buildDefaultDistributions();
-        this.testPlots = buildDefaultTestPlots();
+        this(null, buildDefaultTestPlots(), buildDefaultDistributions());
+    }
+
+    /**
+     * Creates a service with optional BigQueryService for live BigQuery ML (ARIMA_PLUS) queries.
+     */
+    public IndexDoctorService(BigQueryService bigQueryService) {
+        this(bigQueryService, buildDefaultTestPlots(), buildDefaultDistributions());
     }
 
     /**
@@ -52,6 +61,13 @@ public final class IndexDoctorService {
      */
     public IndexDoctorService(List<TestPlot> testPlots,
                               Map<String, RainfallDistribution> distributions) {
+        this(null, testPlots, distributions);
+    }
+
+    public IndexDoctorService(BigQueryService bigQueryService,
+                              List<TestPlot> testPlots,
+                              Map<String, RainfallDistribution> distributions) {
+        this.bigQueryService = bigQueryService;
         this.testPlots = List.copyOf(testPlots);
         this.distributions = Map.copyOf(distributions);
     }
@@ -289,10 +305,13 @@ public final class IndexDoctorService {
      * Uses an in-memory statistical ARIMA approximation for resilience when BigQuery ML is offline.
      */
     public CountyActuarialForecast getCountyForecast(String county, int triggerPercentile) {
-        String normalizedCounty = county != null && !county.isBlank() ? county.trim() : "Embu";
-        // Default to Embu if county is unknown
+        String normalizedCounty = county != null && !county.isBlank() ? county.trim() : "Beed";
         String distKey = distKey(normalizedCounty, "Long Rains");
         RainfallDistribution dist = distributions.get(distKey);
+        if (dist == null) {
+            distKey = distKey(normalizedCounty, "Kharif");
+            dist = distributions.get(distKey);
+        }
         if (dist == null) {
             normalizedCounty = "Embu";
             dist = distributions.get(distKey("Embu", "Long Rains"));
@@ -301,14 +320,38 @@ public final class IndexDoctorService {
         int clampedPercentile = Math.max(5, Math.min(60, triggerPercentile));
         double triggerThresholdMm = dist != null ? dist.triggerAt(clampedPercentile) : 290.0;
 
+        // Attempt live BigQuery ML (ARIMA_PLUS) execution if BigQuery client is connected
+        if (bigQueryService != null) {
+            Optional<List<DailyRiskForecast>> bqRows = bigQueryService.executeArimaForecast(normalizedCounty, triggerThresholdMm);
+            if (bqRows.isPresent() && !bqRows.get().isEmpty()) {
+                List<DailyRiskForecast> list = bqRows.get();
+                double sum = list.stream().mapToDouble(DailyRiskForecast::payoutProbability).sum();
+                double bqScore = Math.round((sum / (double) list.size()) * 100.0) / 100.0;
+                return new CountyActuarialForecast(
+                    normalizedCounty,
+                    clampedPercentile,
+                    triggerThresholdMm,
+                    bqScore,
+                    list,
+                    false, // Live BigQuery ML ARIMA_PLUS!
+                    "Actuarial forward projection powered by Google Cloud BigQuery ML (ARIMA_PLUS)."
+                );
+            }
+        }
+
         // Daily seasonal baseline rainfall expected per day during the season (14-day window)
-        // Baseline varies by county climate characteristics:
+        // Baseline varies by district climate characteristics (supporting Indian districts & Kenyan baseline):
         double baseDailyRain = switch (normalizedCounty.toLowerCase()) {
+            case "beed" -> 3.1;
+            case "jalna" -> 3.0;
+            case "latur" -> 3.5;
+            case "akola" -> 4.2;
+            case "dewas" -> 4.5;
             case "bungoma" -> 4.8;
             case "kirinyaga" -> 3.9;
             case "nakuru" -> 3.2;
             case "machakos" -> 2.1;
-            default -> 3.4; // Embu
+            default -> 3.4; // Embu / default
         };
 
         // Deterministic pseudo-ARIMA wave oscillation (simulating ARIMA_PLUS seasonality + trend)
@@ -489,6 +532,47 @@ public final class IndexDoctorService {
                 5, 150, 10, 175, 15, 195, 20, 215, 25, 232,
                 30, 250, 35, 268, 40, 285, 45, 305, 50, 325,
                 55, 345, 60, 370)));
+
+        // ── Indian Agricultural Districts (PMFBY / WBCIS Coverage) ───────────
+        // Beed (Maharashtra, Marathwada drought-prone belt) — Kharif
+        map.put(distKey("Beed", "Kharif"), new RainfallDistribution(
+            "Beed", "Kharif", percentiles(
+                5, 170, 10, 205, 15, 230, 20, 255, 25, 275,
+                30, 290, 35, 310, 40, 330, 45, 350, 50, 375,
+                55, 405, 60, 440)));
+        map.put(distKey("Beed", "Long Rains"), map.get(distKey("Beed", "Kharif")));
+
+        // Jalna (Maharashtra)
+        map.put(distKey("Jalna", "Kharif"), new RainfallDistribution(
+            "Jalna", "Kharif", percentiles(
+                5, 165, 10, 200, 15, 225, 20, 250, 25, 270,
+                30, 285, 35, 305, 40, 325, 45, 345, 50, 370,
+                55, 400, 60, 435)));
+        map.put(distKey("Jalna", "Long Rains"), map.get(distKey("Jalna", "Kharif")));
+
+        // Latur (Maharashtra)
+        map.put(distKey("Latur", "Kharif"), new RainfallDistribution(
+            "Latur", "Kharif", percentiles(
+                5, 180, 10, 220, 15, 250, 20, 275, 25, 295,
+                30, 310, 35, 330, 40, 350, 45, 375, 50, 400,
+                55, 430, 60, 465)));
+        map.put(distKey("Latur", "Long Rains"), map.get(distKey("Latur", "Kharif")));
+
+        // Akola (Vidarbha)
+        map.put(distKey("Akola", "Kharif"), new RainfallDistribution(
+            "Akola", "Kharif", percentiles(
+                5, 210, 10, 250, 15, 280, 20, 310, 25, 330,
+                30, 350, 35, 375, 40, 400, 45, 425, 50, 455,
+                55, 490, 60, 530)));
+        map.put(distKey("Akola", "Long Rains"), map.get(distKey("Akola", "Kharif")));
+
+        // Dewas (Madhya Pradesh)
+        map.put(distKey("Dewas", "Kharif"), new RainfallDistribution(
+            "Dewas", "Kharif", percentiles(
+                5, 230, 10, 275, 15, 310, 20, 340, 25, 360,
+                30, 380, 35, 405, 40, 430, 45, 460, 50, 490,
+                55, 525, 60, 565)));
+        map.put(distKey("Dewas", "Long Rains"), map.get(distKey("Dewas", "Kharif")));
 
         return map;
     }

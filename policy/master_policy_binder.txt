@@ -140,6 +140,17 @@ a claim shall be classified as a PHENOLOGICAL BASIS-RISK GAP and escalated for f
       or flowering phenological window.
 Under Clause 4.2, the temporal distribution of rainfall supersedes aggregate volume.
 
+CL-4.2.1: PREVENTED SOWING / PLANTING / GERMINATION RISK
+(PMFBY Operational Guidelines §4.2.1, Page 19, Paragraph 4.2.1)
+In case the majority of the insured farmers of an administrative unit (village / mandal / block),
+having intent to sow/plant and incurred expenditure for the purpose, are prevented from
+sowing/planting/germination due to adverse weather conditions (deficit rainfall or prolonged
+monsoon delay):
+  (a) Farmers shall be eligible for an indemnity payout up to a maximum of 25% of the Sum Insured;
+  (b) The policy contract shall stand terminated upon disbursement of the prevented sowing indemnity;
+  (c) Assessment relies on State Government seasonal rainfall triggers, automatic weather stations (AWS),
+      and Earth Engine Sentinel-1 SAR soil moisture verification.
+
 CL-4.3: SPATIAL BASIS-RISK ESCALATION (TOPOGRAPHIC / MICRO-CLIMATIC DEFICIT)
 (Page 21, Paragraph 4.3)
 Where the Primary Index does NOT trigger, but:
@@ -150,7 +161,7 @@ Where the Primary Index does NOT trigger, but:
 The claim shall be classified as a SPATIAL BASIS-RISK GAP and escalated for adjuster sign-off.
 
 ================================================================================
-SECTION 5 — EVIDENCE CONFLICTS, SAMPLING DEFICITS, AND RE-EVALUATION
+SECTION 5 — EVIDENCE CONFLICTS, LOCALIZED CALAMITIES & MID-SEASON ADVERSITY
 ================================================================================
 
 CL-5.1: EVIDENCE CONFLICT HOLD PROTOCOL
@@ -162,6 +173,24 @@ telemetry (Google Earth Engine Sentinel-2 L2A) does NOT confirm vegetative stres
   (c) The automated system prompts the farmer via SMS/WhatsApp to submit two (2) supplementary
       wide-angle plot photos within forty-eight (48) hours;
   (d) If conflicting signals persist, the claim is assigned to an in-person field adjuster.
+
+CL-5.3: MID-SEASON ADVERSITY ON-ACCOUNT RELIEF
+(PMFBY Operational Guidelines §5.3, Page 25, Paragraph 5.3)
+Where adverse seasonal conditions (severe drought, dry spell, flood, unseasonal widespread rainfall)
+occur during the cropping season, and expected crop yield is projected to drop below 50% of the
+historical threshold yield:
+  (a) An on-account payment of up to 25% of the likely claim amount shall be disbursed immediately
+      to provide liquidity to smallholders;
+  (b) The on-account payment is adjusted against the final claim settlement calculated after harvest.
+
+CL-5.4: LOCALIZED CALAMITIES (HAILSTORM, INUNDATION, CLOUDBURST, LANDSLIDE)
+(PMFBY Operational Guidelines §5.4, Page 26, Paragraph 5.4)
+Loss or damage resulting from the occurrence of identified localized risks of hailstorm,
+landslide, inundation, cloudburst, and natural fire due to lightning affecting isolated farms:
+  (a) Assessment is carried out at the individual affected insured farm plot level;
+  (b) The insured farmer must notify the Insurer or nodal bank within seventy-two (72) hours of the peril;
+  (c) Photographic evidence of submerged crop stands or hail-defoliated canopy is corroborated with
+      Sentinel-1 SAR inundation backscatter (VV/VH dual-pol cross-ratio drop) and local rain gauges.
 
 ================================================================================
 SECTION 6 — NON-WEATHER PERIL EXCLUSIONS & ADVISORY TRANSITION
@@ -202,6 +231,15 @@ calibration anchors (Pass 1 and Pass 2).
   (b) The system outputs ABSTAIN;
   (c) The claim is routed to a human adjuster with an explicit notification that model
       uncertainty exceeded the contractual tolerance threshold.
+
+CL-7.1.4: POST-HARVEST LOSSES UNDER CUT & SPREAD CONDITION
+(PMFBY Operational Guidelines §7.1.4, Page 37, Paragraph 7.1.4)
+Coverage is available for harvested crops kept in 'cut and spread' or small bundled condition in
+the open field to dry, for a maximum period of fourteen (14) days from the harvesting date:
+  (a) Covered perils include unseasonal rainfall, cyclonic rain, and hailstorm across all notified districts;
+  (b) Assessment of post-harvest loss is conducted on an individual plot basis;
+  (c) The farmer must provide geotagged photos of the cut harvest in the field showing water-logging,
+      grain germination/sprouting, or mold discoloration within 72 hours of damage occurrence.
 
 ================================================================================
 SECTION 8 — FORENSIC IMAGE INTEGRITY AND PLANT-FRAUD PREVENTION
