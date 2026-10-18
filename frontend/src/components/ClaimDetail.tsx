@@ -351,21 +351,33 @@ export const ClaimDetail: React.FC<Props> = ({ claim, onDecisionSaved, onOpenCla
   return (
     <article className="settle space-y-6">
       {/* Header */}
-      <header className={`rounded-lg p-6 ${GROUP_TONE[o.group].soft}`}>
+      <header className={`rounded-lg p-6 border ${
+        o.group === 'missed' 
+          ? 'bg-loss-soft dark:bg-amber-950/40 border-loss/20 dark:border-amber-500/30 text-ink' 
+          : o.group === 'paid' 
+          ? 'bg-field-soft dark:bg-emerald-950/40 border-field/20 dark:border-emerald-500/30 text-ink' 
+          : o.group === 'hold' 
+          ? 'bg-hold-soft dark:bg-red-950/40 border-hold/20 dark:border-red-500/30 text-ink' 
+          : o.group === 'review' 
+          ? 'bg-review-soft dark:bg-purple-950/40 border-review/20 dark:border-purple-500/30 text-ink' 
+          : 'bg-calm-soft dark:bg-slate-800/40 border-line text-ink'
+      }`}>
         <p className="text-sm text-muted">
           Claim {g.claim_id}. Plot {g.plot_id}, {e.county} county, {e.crop}, season {e.season}. Sent {fmtDate(g.uploaded_at)}.
         </p>
-        <h2 className="mt-2 flex items-start gap-3 text-xl font-semibold sm:text-2xl">
+        <h2 className="mt-2 flex items-start gap-3 text-xl font-semibold sm:text-2xl text-ink">
           <OutcomeDot group={o.group} className="mt-2.5 h-3 w-3" />
-          {o.label}
+          <span className={o.group === 'missed' ? 'text-loss-ink dark:text-amber-300' : 'text-ink'}>
+            {o.label}
+          </span>
         </h2>
         {/* Single clear conclusion — removes redundancy */}
-        <p className="mt-2 text-base text-ink leading-relaxed max-w-prose">
+        <p className="mt-2 text-base text-ink/90 dark:text-slate-100 leading-relaxed max-w-prose">
           {d.failure_mode || o.summary}
         </p>
         <p className="mt-4 text-sm">
           <span className="text-muted">System suggestion: </span>
-          <strong>{ACTIONS[d.recommended_action] ?? d.recommended_action}</strong>
+          <strong className="text-ink dark:text-white">{ACTIONS[d.recommended_action] ?? d.recommended_action}</strong>
           <span className="text-muted">. You make the decision.</span>
         </p>
       </header>

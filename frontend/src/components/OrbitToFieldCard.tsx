@@ -103,19 +103,19 @@ export const OrbitToFieldCard: React.FC<Props> = ({
           {/* Executive Conclusion Banner */}
           <div className={`rounded-xl border p-4 space-y-2 ${
             synthesis.concordance_classification.includes('GAP')
-              ? 'border-loss/30 bg-loss-soft/40'
+              ? 'border-loss/30 bg-loss-soft/40 dark:border-amber-500/30 dark:bg-amber-950/40'
               : synthesis.concordance_classification.includes('CONFIRMED')
-              ? 'border-emerald-500/30 bg-emerald-500/10'
+              ? 'border-emerald-500/30 bg-emerald-500/10 dark:border-emerald-500/40 dark:bg-emerald-950/30'
               : 'border-line bg-canvas/70'
           }`}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
-                synthesis.concordance_classification.includes('GAP') ? 'text-loss-ink' : 'text-field'
+                synthesis.concordance_classification.includes('GAP') ? 'text-loss-ink dark:text-amber-300' : 'text-field dark:text-emerald-300'
               }`}>
                 {synthesis.concordance_classification.includes('GAP') ? (
-                  <AlertTriangle className="h-4 w-4 text-loss" />
+                  <AlertTriangle className="h-4 w-4 text-loss dark:text-amber-400" />
                 ) : (
-                  <CheckCircle2 className="h-4 w-4 text-field" />
+                  <CheckCircle2 className="h-4 w-4 text-field dark:text-emerald-400" />
                 )}
                 {synthesis.concordance_classification === 'PHENOLOGICAL_BASIS_RISK_GAP'
                   ? 'Reconciliation Conclusion: Missed by Weather Index (Phenological Drought)'
@@ -125,15 +125,15 @@ export const OrbitToFieldCard: React.FC<Props> = ({
               </span>
               <span className={`rounded px-2.5 py-0.5 text-[11px] font-bold ${
                 synthesis.concordance_classification.includes('GAP')
-                  ? 'bg-loss/15 text-loss-ink'
-                  : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                  ? 'bg-loss/15 text-loss-ink dark:bg-amber-500/20 dark:text-amber-300'
+                  : 'bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
               }`}>
                 {synthesis.concordance_classification.includes('GAP')
                   ? 'Action: Payout Recommended (§7.1.4)'
                   : 'Action: Automated Determination'}
               </span>
             </div>
-            <p className="text-xs text-ink leading-relaxed font-medium">
+            <p className="text-xs text-ink/90 dark:text-slate-100 leading-relaxed font-medium">
               {synthesis.basis_risk_summary ||
                 (synthesis.concordance_classification.includes('GAP')
                   ? "The 10km regional weather index recorded normal rainfall (above trigger, index paid ₹0). However, Google Earth Engine Sentinel-2 at 10m resolution detected severe crop collapse (z = -1.9σ) caused by a 21-day dry spell during flowering. Ground photos corroborate leaf rolling and soil desiccation. This is a verified basis-risk gap; payout is recommended."

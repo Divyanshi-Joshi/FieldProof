@@ -5,6 +5,7 @@ import { SeasonChart } from './SeasonChart';
 
 interface HeroLandingProps {
   onNavigate: (tab: ActiveTab, claimId?: string) => void;
+  onOpenPolicy?: () => void;
 }
 
 const SOURCES = [
@@ -49,20 +50,16 @@ const STEPS = [
 ];
 
 const PEOPLE: { who: string; does: string; cta: string; tab: ActiveTab }[] = [
-  { who: 'Farmer', does: 'Sends three photos from a phone in a simple guided flow.', cta: 'Open the farmer page', tab: 'farmer' },
-  { who: 'Claims adjuster', does: 'Sees every source side by side, reads a short brief and makes the call.', cta: 'Open the claims queue', tab: 'insurer' },
-  { who: 'Actuarial team', does: 'Sees where the index misses losses and tests a new trigger on past seasons.', cta: 'Open Index Doctor', tab: 'doctor' },
+  { who: 'Farmer', does: 'Sends three photos from a phone in a simple guided flow.', cta: 'Open the farmer page ↗', tab: 'farmer' },
+  { who: 'Claims adjuster', does: 'Sees every source side by side, reads a short brief and makes the call.', cta: 'Open the claims queue ↗', tab: 'insurer' },
+  { who: 'Actuarial team', does: 'Sees where the index misses losses and tests a new trigger on past seasons.', cta: 'Open Index Doctor ↗', tab: 'doctor' },
 ];
 
-export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
+export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate, onOpenPolicy }) => (
   <div>
     {/* Hero */}
     <section className="mx-auto grid max-w-7xl gap-10 px-5 pb-16 pt-10 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pt-16">
       <div className="lg:col-span-5 lg:pt-6">
-        <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 py-1 text-xs font-semibold text-field mb-4">
-          <span className="h-2 w-2 rounded-full bg-field animate-pulse"></span>
-          <span>JAPAC Agricultural Parametric Engine • India (PMFBY) • Indonesia • Thailand</span>
-        </div>
         <h1 className="text-3xl font-semibold sm:text-4xl lg:text-[3.2rem] lg:leading-[1.1] text-ink">
           His crop failed. The weather index said it was a normal season.
         </h1>
@@ -73,18 +70,27 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
         <p className="mt-3 max-w-prose text-base sm:text-lg leading-7 sm:leading-8 text-muted">
           FieldProof resolves this basis-risk paradox by triangulating <strong>ground smartphone photos</strong>, <strong>Copernicus Sentinel-2 orbit</strong>, and <strong>BigQuery ML predictive forecasting</strong>.
         </p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <button onClick={() => onNavigate('farmer')} className="btn-primary px-5 py-3 text-sm sm:text-base font-semibold shadow-lg shadow-field/20">
+      </div>
+
+      {/* Right Column: Season Chart + Action Buttons Below It */}
+      <div className="lg:col-span-7 flex flex-col gap-5">
+        <SeasonChart />
+
+        {/* Two buttons side by side directly below the chart image */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <button
+            onClick={() => onNavigate('farmer')}
+            className="btn-primary w-full py-3.5 px-4 text-sm sm:text-base font-semibold shadow-md flex items-center justify-center gap-2"
+          >
             🌾 Farmer Portal (Submit & Track)
           </button>
-          <button onClick={() => onNavigate('insurer')} className="btn-quiet px-5 py-3 text-sm sm:text-base font-semibold">
+          <button
+            onClick={() => onNavigate('insurer')}
+            className="btn-quiet w-full py-3.5 px-4 text-sm sm:text-base font-semibold flex items-center justify-center gap-2"
+          >
             🏛️ Adjuster Console (Triage & Audit)
           </button>
         </div>
-        <p className="mt-4 text-xs text-faint">Instant interactive walkthrough. 1-Click Persona switching enabled.</p>
-      </div>
-      <div className="lg:col-span-7">
-        <SeasonChart />
       </div>
     </section>
 
@@ -120,9 +126,8 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
                     <th scope="row" className="py-4 pr-4 font-semibold">{s.source}</th>
                     <td className="py-4 pr-4 text-muted">{s.says}</td>
                     <td className="py-4">
-                      <span className={`inline-flex items-center gap-2 rounded px-2 py-1 text-sm font-semibold ${
-                        s.loss ? 'bg-loss-soft text-loss-ink' : 'bg-calm-soft text-calm'
-                      }`}>
+                      <span className={`inline-flex items-center gap-2 rounded px-2 py-1 text-sm font-semibold ${s.loss ? 'bg-loss-soft text-loss-ink' : 'bg-calm-soft text-calm'
+                        }`}>
                         <span className={`h-2 w-2 rounded-full ${s.loss ? 'bg-loss' : 'bg-calm'}`} />
                         {s.loss ? 'Yes' : 'No'}
                       </span>
@@ -131,9 +136,9 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
                 ))}
               </tbody>
             </table>
-            <div className="mt-6 rounded-lg bg-loss-soft p-5">
-              <p className="font-semibold text-loss-ink">Result: missed by the index, badly timed dry spell</p>
-              <p className="mt-1 text-ink">
+            <div className="mt-6 rounded-lg bg-loss-soft border border-loss/20 dark:border-amber-500/30 dark:bg-amber-950/30 p-5">
+              <p className="font-semibold text-loss-ink dark:text-amber-300">Result: missed by the index, badly timed dry spell</p>
+              <p className="mt-1 text-ink/90 dark:text-slate-200 text-sm leading-relaxed">
                 Two sources show a loss the index did not pay. The claim goes to an adjuster with the photos, the rain
                 record and a short brief that cites the policy.
               </p>
@@ -192,7 +197,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
             </div>
             <button
               onClick={() => onNavigate('insurer')}
-              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1.5 font-semibold text-field dark:text-emerald-300 dark:hover:text-emerald-200 dark:border-emerald-800/60 dark:bg-emerald-950/30 transition-colors"
             >
               Explore Claims Desk <ArrowRight className="h-3.5 w-3.5" />
             </button>
@@ -211,10 +216,10 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
               </p>
             </div>
             <button
-              onClick={() => onNavigate('insurer')}
-              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+              onClick={() => (onOpenPolicy ? onOpenPolicy() : onNavigate('insurer'))}
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1.5 font-semibold text-field dark:text-emerald-300 dark:hover:text-emerald-200 dark:border-emerald-800/60 dark:bg-emerald-950/30 transition-colors"
             >
-              Review Grounded Claims <ArrowRight className="h-3.5 w-3.5" />
+              Review Policy Clauses <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
 
@@ -231,7 +236,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
             </div>
             <button
               onClick={() => onNavigate('doctor')}
-              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1.5 font-semibold text-field dark:text-emerald-300 dark:hover:text-emerald-200 dark:border-emerald-800/60 dark:bg-emerald-950/30 transition-colors"
             >
               Open Index Doctor <ArrowRight className="h-3.5 w-3.5" />
             </button>
@@ -251,7 +256,7 @@ export const HeroLanding: React.FC<HeroLandingProps> = ({ onNavigate }) => (
             </div>
             <button
               onClick={() => onNavigate('validation')}
-              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1 font-semibold text-field"
+              className="btn-quiet text-xs w-full py-2 flex items-center justify-center gap-1.5 font-semibold text-field dark:text-emerald-300 dark:hover:text-emerald-200 dark:border-emerald-800/60 dark:bg-emerald-950/30 transition-colors"
             >
               Inspect Validation Results <ArrowRight className="h-3.5 w-3.5" />
             </button>

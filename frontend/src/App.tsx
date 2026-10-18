@@ -45,16 +45,35 @@ export const App: React.FC = () => {
   const [policyOpen, setPolicyOpen] = useState(false);
   const [clauseId, setClauseId] = useState<string | null>(null);
 
-  // Phase 5: Dark mode state (default: dark)
+  // Theme state: defaults to light (classic FieldProof cream & sage)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('fieldproof_theme');
-    return saved === 'light' ? 'light' : 'dark';
+    return saved === 'dark' ? 'dark' : 'light';
   });
 
   // Phase 3: Persona switcher state ('farmer' | 'insurer')
   const [persona, setPersona] = useState<'farmer' | 'insurer'>(() => {
     return route.tab === 'farmer' ? 'farmer' : 'insurer';
   });
+
+  // Slider state for going to top when user reaches footer/scrolls down
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      // Show slider button when scrolled down (e.g. past 350px or nearing footer)
+      setShowScrollTop(scrollY > 350 || scrollY + windowHeight >= docHeight - 500);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -119,7 +138,12 @@ export const App: React.FC = () => {
       />
 
       <main id="main" className="flex-1">
-        {route.tab === 'landing' && <HeroLanding onNavigate={navigate} />}
+        {route.tab === 'landing' && (
+          <HeroLanding 
+            onNavigate={navigate} 
+            onOpenPolicy={() => openPolicy()} 
+          />
+        )}
         {route.tab === 'farmer' && (
           <FarmerView onNavigate={navigate} />
         )}
@@ -139,58 +163,156 @@ export const App: React.FC = () => {
 
       <PolicyModal isOpen={policyOpen} onClose={() => setPolicyOpen(false)} selectedClauseId={clauseId} />
 
-      {/* Enterprise JAPAC Footer with Copyright & Attribution */}
-      <footer className="border-t border-line bg-surface/80 backdrop-blur transition-colors">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pb-6 border-b border-line text-xs">
-            <div>
-              <p className="font-display font-semibold text-ink text-sm">FieldProof JAPAC</p>
-              <p className="mt-1 text-muted leading-relaxed">
-                Autonomous parametric basis-risk resolution engine powered by Gemini 2.0 Multimodal Vision, Google Earth Engine & BigQuery ML.
+      {/* Standard Clean Website Footer */}
+      <footer className="border-t border-line bg-canvas text-ink transition-colors">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
+            {/* Column 1: Brand & Summary */}
+            <div className="col-span-2 space-y-3 pr-4">
+              <div className="flex items-center gap-2.5">
+                <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden="true">
+                  <rect width="32" height="32" rx="7" fill="var(--color-field)" />
+                  <rect x="7" y="17" width="4" height="8" rx="1.5" fill="#F2DD8C" />
+                  <rect x="14" y="11" width="4" height="14" rx="1.5" fill="#fff" />
+                  <rect x="21" y="7" width="4" height="18" rx="1.5" fill="#fff" />
+                </svg>
+                <span className="font-display font-bold text-base tracking-tight text-ink">FieldProof</span>
+              </div>
+              <p className="text-xs text-muted leading-relaxed max-w-sm">
+                Parametric basis-risk reconciliation engine closing the insurance payout gap with multimodal vision and satellite intelligence.
+              </p>
+              <p className="text-[11px] text-muted/70">
+                Google Cloud AI Builder Cup 2026
               </p>
             </div>
-            <div>
-              <p className="font-semibold text-ink uppercase tracking-wider text-[11px]">Jurisdictional Coverage</p>
-              <ul className="mt-2 space-y-1 text-muted">
-                <li>🇮🇳 India (PMFBY / AgriStack compliant)</li>
-                <li>🇮🇩 Indonesia (Jasindo / OJK Parametric)</li>
-                <li>🇹🇭 Thailand (BAAC Rice & Cassava Index)</li>
+
+            {/* Column 2: Platform Links */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ink/75">Platform</h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <button 
+                    onClick={() => navigate('landing')} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    System Overview
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigate('farmer')} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    Farmer Photo Capture
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigate('insurer')} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    Claims Adjuster Console
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => navigate('doctor')} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    Index Doctor (Forward ML)
+                  </button>
+                </li>
               </ul>
             </div>
-            <div>
-              <p className="font-semibold text-ink uppercase tracking-wider text-[11px]">Auditability & Compliance</p>
-              <ul className="mt-2 space-y-1 text-muted">
-                <li>Two-pass anchor permutation grading</li>
-                <li>Cryptographic protocol freeze hash</li>
-                <li>Immutable BigQuery audit logging</li>
+
+            {/* Column 3: Resources & Policy */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ink/75">Resources</h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <button 
+                    onClick={() => navigate('validation')} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    Evidence & Metrics
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => openPolicy()} 
+                    className="text-left text-muted hover:text-ink transition-colors"
+                  >
+                    PMFBY Policy Clauses
+                  </button>
+                </li>
               </ul>
             </div>
-            <div>
-              <p className="font-semibold text-ink uppercase tracking-wider text-[11px]">Policy & Governance</p>
-              <p className="mt-2 text-muted">
-                Adheres to statutory drought & dry-spell trigger indices with mandatory human-in-the-loop sign-off.
-              </p>
-              <button onClick={() => openPolicy()} className="btn-text mt-2 block">
-                View Master Policy Binder →
-              </button>
+
+            {/* Column 4: Contact / Creators */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ink/75">Connect</h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <a
+                    href="https://www.linkedin.com/in/rudra-mriganka/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-muted hover:text-field dark:hover:text-emerald-400 transition-colors"
+                  >
+                    <svg className="h-3.5 w-3.5 fill-current opacity-80" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    <span>Rudra Mriganka</span>
+                    <span className="text-[10px] opacity-60">↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.linkedin.com/in/divyanshi-joshi-352a73256/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-muted hover:text-field dark:hover:text-emerald-400 transition-colors"
+                  >
+                    <svg className="h-3.5 w-3.5 fill-current opacity-80" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    <span>Divyanshi Joshi</span>
+                    <span className="text-[10px] opacity-60">↗</span>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-            <p>
-              © 2026 FieldProof Technologies. Built for Google Cloud AI Builder Cup (BFSI / InsurTech Track).
+          {/* Bottom Row */}
+          <div className="mt-10 pt-6 border-t border-line/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-muted">
+            <p className="text-[11px]">
+              © 2026 FieldProof Technologies. All rights reserved.
             </p>
-            <div className="flex items-center gap-4 text-[11px]">
-              <span className="inline-flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-field"></span>
-                <span>Production Ready</span>
-              </span>
+            <div className="flex items-center gap-3 text-[11px] text-muted">
+              <span>BFSI / InsurTech Track</span>
+              <span>•</span>
               <span>Cloud Run Global</span>
-              <span>Vertex AI / BigQuery ML</span>
+              <span>•</span>
+              <span>Vertex AI</span>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Floating slider button for going to top when reaching footer / scrolling */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-line bg-surface/95 px-3.5 py-2 text-xs font-semibold text-ink shadow-lg backdrop-blur-md transition-all duration-300 hover:border-field hover:text-field hover:shadow-xl ${
+          showScrollTop ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-8 opacity-0 pointer-events-none'
+        }`}
+        aria-label="Back to top"
+      >
+        <span>Top</span>
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </button>
     </div>
   );
 };

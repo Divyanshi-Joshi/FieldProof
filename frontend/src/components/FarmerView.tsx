@@ -150,32 +150,24 @@ export const FarmerView: React.FC<FarmerViewProps> = ({ onNavigate }) => {
                 role="radio"
                 aria-checked={on}
                 onClick={() => loadSample(s)}
-                className={`flex w-full items-start gap-3 p-4 text-left transition-colors ${on ? 'bg-field-soft' : 'hover:bg-canvas'}`}
+                className={`flex w-full items-start gap-3 p-4 text-left transition-colors ${
+                  on 
+                    ? 'bg-field-soft/70 dark:bg-emerald-950/40 border-l-4 border-l-field' 
+                    : 'hover:bg-canvas'
+                }`}
               >
-                <span className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-field' : 'border-faint'}`}>
-                  {on && <span className="h-2 w-2 rounded-full bg-field" />}
+                <span className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-field dark:border-emerald-400' : 'border-faint'}`}>
+                  {on && <span className="h-2 w-2 rounded-full bg-field dark:bg-emerald-400" />}
                 </span>
                 <span>
-                  <span className="block font-semibold">{s.title}</span>
+                  <span className={`block font-semibold ${on ? 'text-ink dark:text-emerald-200' : 'text-ink'}`}>
+                    {s.title}
+                  </span>
                   <span className="mt-0.5 block text-sm text-muted">{s.expect}</span>
                 </span>
               </button>
             );
           })}
-        </div>
-
-        <div className="mt-8 border-t border-line pt-6">
-          <h2 className="text-base font-semibold">After sending the claim</h2>
-          <p className="mt-2 max-w-prose text-sm text-muted">
-            The farmer is told the claim was received and that a person makes the decision. The claim lands in the adjuster's
-            queue with everything the system found.
-          </p>
-          <button
-            onClick={() => onNavigate('insurer', result?.claim_id || undefined)}
-            className={result ? 'btn-primary mt-4' : 'btn-quiet mt-4'}
-          >
-            {result?.claim_id ? `See claim ${result.claim_id} as the adjuster` : 'See the adjuster’s queue'}
-          </button>
         </div>
       </aside>
 
